@@ -1,0 +1,29 @@
+version: "3"
+services:
+  api:
+    image: 568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest
+    depends_on:
+      - postgres
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgres://owner:s3kr1t@postgres/polytomic
+      - DEPLOYMENT
+      - GOOGLE_CLIENT_ID
+      - GOOGLE_CLIENT_SECRET
+      - LIVECHAT_CLIENT_ID
+      - LIVECHAT_CLIENT_SECRET
+      - SHIPBOB_CLIENT_ID
+      - SHIPBOB_CLIENT_SECRET
+      - ZENDESK_CLIENT_ID
+      - ZENDESK_CLIENT_SECRET
+      - PORT=5100
+    ports:
+      - "5100:5100"
+      - "2345:2345"
+  postgres:
+    image: postgres:11
+    restart: always
+    environment:
+      - POSTGRES_DB=polytomic
+      - POSTGRES_USER=owner
+      - POSTGRES_PASSWORD=s3kr1t
