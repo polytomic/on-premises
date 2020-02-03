@@ -35,6 +35,8 @@ The following environment variables are optional, depending on which integration
 
   You will need to ensure Zendesk can communicate with Polytomic; Zendesk publishes the [IP ranges](https://support.zendesk.com/hc/en-us/articles/203660846) they use.
 
+  Your valid redirect URLs *must* include `{POLYTOMIC_URL}/connect/zendesk_support`.
+
 * `LIVECHAT_CLIENT_ID`, `LIVECHAT_CLIENT_SECRET`
 * `SHIPBOB_CLIENT_ID`, `SHIPBOB_CLIENT_SECRET`
 
