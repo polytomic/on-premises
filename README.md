@@ -24,7 +24,7 @@ Polytomic accepts configuration via environment variables. The following are req
 * `POLYTOMIC_URL`
   Base URL for accessing Polytomic; for example, `https://apppolytomic.mycompany.com`. This will be used when redirecting back from Google after authentication.
 
-The following environment variables are optional, depending no which integratinos you plan to use:
+The following environment variables are optional, depending on which integrations you plan to use:
 
 * `ZENDESK_CLIENT_ID`, `ZENDESK_CLIENT_SECRET`
   Zendesk OAuthn Client ID and secret; required if you intend to use Zendesk with Polytomic. An OAuth client may be created in your Zendesk domain by visiting:
