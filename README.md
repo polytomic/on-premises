@@ -18,11 +18,13 @@ Polytomic accepts configuration via environment variables. The following are req
 * `DATABASE_URL`
   Connection URL for Polytomic's database; should be in the form of `postgres://user:password@host:port/database`.
 
+* `POLYTOMIC_URL`
+  Base URL for accessing Polytomic; for example, `https://polytomic.mycompany.com`. This will be used when redirecting back from Google and other integrations after authenticating with OAuth.
+
 * `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
   Google OAuth Client ID and secret, obtained by creating a [OAuth 2.0 Client ID](https://console.developers.google.com/apis/credentials)
 
-* `POLYTOMIC_URL`
-  Base URL for accessing Polytomic; for example, `https://apppolytomic.mycompany.com`. This will be used when redirecting back from Google after authentication.
+  Your valid redirect URLs *must* include `{POLYTOMIC_URL}/auth`.
 
 The following environment variables are optional, depending on which integrations you plan to use:
 
@@ -31,8 +33,16 @@ The following environment variables are optional, depending on which integration
 
   `https://<my_company>.zendesk.com/agent/admin/api/oauth_clients`
 
+  You will need to ensure Zendesk can communicate with Polytomic; Zendesk publishes the [IP ranges](https://support.zendesk.com/hc/en-us/articles/203660846) they use.
+
 * `LIVECHAT_CLIENT_ID`, `LIVECHAT_CLIENT_SECRET`
 * `SHIPBOB_CLIENT_ID`, `SHIPBOB_CLIENT_SECRET`
+
+## Information We Need
+
+In order to provide secure communication with our integrations, we whitelist specific domains. For on premises installations, we use `<deployment>.op.polytomic.net`.
+
+Before you can use the integrations, we'll need the hostname which we should point your on premises domain to. You may choose to use this as the primary domain for your installation, as well. In that case, set `POLYTOMIC_URL` accordingly.
 
 ## First Run
 
