@@ -29,7 +29,7 @@ Polytomic accepts configuration via environment variables. The following are req
 The following environment variables are optional, depending on which integrations you plan to use:
 
 * `ZENDESK_CLIENT_ID`, `ZENDESK_CLIENT_SECRET`
-  Zendesk OAuthn Client ID and secret; required if you intend to use Zendesk with Polytomic. An OAuth client may be created in your Zendesk domain by visiting:
+  Zendesk OAuth Client ID and secret; required if you intend to use Zendesk with Polytomic. An OAuth client may be created in your Zendesk domain by visiting:
 
   `https://<my_company>.zendesk.com/agent/admin/api/oauth_clients`
 
@@ -38,7 +38,20 @@ The following environment variables are optional, depending on which integration
   Your valid redirect URLs *must* include `{POLYTOMIC_URL}/connect/zendesk_support`.
 
 * `LIVECHAT_CLIENT_ID`, `LIVECHAT_CLIENT_SECRET`
+  LiveChat OAuth Client ID and secret; required if you intend to use LiveChat with Polytomic.
+
+  An OAuth client may be created for your LiveChat license by visiting:
+
+  `https://developers.livechatinc.com/console/apps`
+
+  Your valid redirect URLs *must* include `{POLYTOMIC_URL}/connect/livechat`.
+
 * `SHIPBOB_CLIENT_ID`, `SHIPBOB_CLIENT_SECRET`
+  ShipBob OAuth Client ID and secret; required if you intend to use ShipBob with Polytomic.
+
+  Instructions for requesting an OAuth client are available on the [ShipBob Developer site](https://developer.shipbob.com/auth)
+
+  Your valid redirect URLs *must* include `{POLYTOMIC_URL}/connect/shipbob`.
 
 ## Information We Need
 
