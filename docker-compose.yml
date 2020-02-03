@@ -8,7 +8,7 @@ services:
     environment:
       - DEPLOYMENT
       - POLYTOMIC_URL
-      - DATABASE_URL=postgres://owner:s3kr1t@postgres/polytomic
+      - DATABASE_URL
       - GOOGLE_CLIENT_ID
       - GOOGLE_CLIENT_SECRET
       - LIVECHAT_CLIENT_ID
@@ -20,7 +20,6 @@ services:
       - PORT=5100
     ports:
       - "5100:5100"
-      - "2345:2345"
   postgres:
     image: postgres:11
     restart: always
