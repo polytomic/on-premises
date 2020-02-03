@@ -6,8 +6,9 @@ services:
       - postgres
     env_file: .env
     environment:
-      - DATABASE_URL=postgres://owner:s3kr1t@postgres/polytomic
       - DEPLOYMENT
+      - POLYTOMIC_URL
+      - DATABASE_URL=postgres://owner:s3kr1t@postgres/polytomic
       - GOOGLE_CLIENT_ID
       - GOOGLE_CLIENT_SECRET
       - LIVECHAT_CLIENT_ID

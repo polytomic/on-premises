@@ -46,6 +46,8 @@ Before you can use the integrations, we'll need the hostname which we should poi
 
 ## First Run
 
+### Database Schema
+
 Before you can start Polytomic, you need to create the base database schema. You can do this using the provided Docker container.
 
 ```bash
@@ -54,10 +56,32 @@ $ docker run -it -e DATABASE_URL=... polytomic-onprem:latest ./migrate up
 
 After migrations have completed, you can run the container without a command, and the server will start.
 
+### Create an Organization & User
+
+Polytomic uses GSuite for authenticating users. Before users can authenticate, however, they'll need to be added to an organization in Polytomic.
+
+To create the organization, use the `orgs add` command:
+
+```bash
+$ docker run -it -e DATABASE_URL=... polytomic-onprem:latest ./cli orgs add -n "My Company"
+New organization ID:  26c8d7ea-13b2-4f60-a949-bbe7dde13f5c
+```
+
+You'll need the organization ID to add the user: 
+
+```bash
+$ docker run -it -e DATABASE_URL=... polytomic-onprem:latest ./cli users add -o 26c8d7ea-13b2-4f60-a949-bbe7dde13f5c -e user@mycompany.com
+Successfully created user user@mycompany.com (8b9546bd-a59d-4561-83d2-428432dfed99)
+```
+
+The email address you use should be the user's primary email address in GSuite.
+
+Note that you only need to add users who will be configuring pipelines in Polytomic; users who interact with the integrations are tracked independently.
+
 ## Data We Send
 
 Polytomic On Premises makes the following outbound requests:
 
-* periodic ping to `license.polytomic.com` to verify your license is valid
-* application traces are sent to DataDog; these *do not* include queries executed, but do help us understand how Polytomic is performing
-* errors are sent to Sentry.io when they occur to assist us with debugging
+* Periodic pings to `license.polytomic.com` to verify your license is valid.
+* Application traces are sent to DataDog; these *may* include queries executed, but **do not** contain variables used while processing the pipline. These traces help us understand how Polytomic is performing.
+* Errors are sent to Sentry.io when they occur to assist us with debugging; error payloads **do not** contain values used to trigger the pipeline.
