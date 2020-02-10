@@ -12,6 +12,9 @@ This repository contains instructions and scripts for running Polytomic on premi
 
 Polytomic accepts configuration via environment variables. The following are required:
 
+* `ROOT_USER`
+  The email address to use when starting for the first time; this user will be able to add additional users and configure Polytomic
+
 * `DEPLOYMENT`
   A unique key for your on premises deploy, provided by Polytomic.
 
@@ -63,13 +66,7 @@ Before you can use the integrations, we'll need the hostname which we should poi
 
 ### Database Schema
 
-Before you can start Polytomic, you need to create the base database schema. You can do this using the provided Docker container.
-
-```bash
-$ docker run -it -e DATABASE_URL=... polytomic-onprem:latest ./migrate up
-```
-
-After migrations have completed, you can run the container without a command, and the server will start.
+Polytomic runs database migrations on startup. Therefore the user accessing the Polytomic database will need permission to create and alter the schema.
 
 ### Create an Organization & User
 
