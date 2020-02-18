@@ -90,6 +90,10 @@ The email address you use should be the user's primary email address in GSuite.
 
 Note that you only need to add users who will be configuring pipelines in Polytomic; users who interact with the integrations are tracked independently.
 
+## Monitoring
+
+The Polytomic On Premises image exposes a health-check endpoint at `/health`, which can be used to verify the container is up and running.
+
 ## Data We Send
 
 Polytomic On Premises makes the following outbound requests:
