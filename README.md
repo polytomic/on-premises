@@ -66,27 +66,11 @@ Before you can use the integrations, we'll need the hostname which we should poi
 
 ### Database Schema
 
-Polytomic runs database migrations on startup. Therefore the user accessing the Polytomic database will need permission to create and alter the schema.
+Polytomic runs database migrations on startup. Therefore the database user accessing the Polytomic database will need permission to create and alter the schema.
 
-### Create an Organization & User
+### Organization & User
 
-Polytomic uses GSuite for authenticating users. Before users can authenticate, however, they'll need to be added to an organization in Polytomic.
-
-To create the organization, use the `orgs add` command:
-
-```bash
-$ docker run -it -e DATABASE_URL=... polytomic-onprem:latest ./cli orgs add -n "My Company"
-New organization ID:  26c8d7ea-13b2-4f60-a949-bbe7dde13f5c
-```
-
-You'll need the organization ID to add the user: 
-
-```bash
-$ docker run -it -e DATABASE_URL=... polytomic-onprem:latest ./cli users add -o 26c8d7ea-13b2-4f60-a949-bbe7dde13f5c -e user@mycompany.com
-Successfully created user user@mycompany.com (8b9546bd-a59d-4561-83d2-428432dfed99)
-```
-
-The email address you use should be the user's primary email address in GSuite.
+Polytomic uses GSuite for authenticating users. The first user email address is set via the `ROOT_USER` environment variable. This user will be able to add additional users through the web interface.
 
 Note that you only need to add users who will be configuring pipelines in Polytomic; users who interact with the integrations are tracked independently.
 
