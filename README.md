@@ -58,9 +58,11 @@ The following environment variables are optional, depending on which integration
 
 ## Information We Need
 
-In order to provide secure communication with our integrations, we whitelist specific domains. For on premises installations, we use `<deployment>.op.polytomic.net`.
+In order to provide secure communication with our integrations, we whitelist specific domains.
 
-Before you can use the integrations, we'll need the hostname which we should point your on premises domain to. You may choose to use this as the primary domain for your installation, as well. In that case, set `POLYTOMIC_URL` accordingly.
+For on premises installations, we use `<deployment>.op.polytomic.net`.
+
+Before you can use the integrations, we'll need the hostname or address which we should point your on premises domain to. You may choose to use this as the primary domain for your installation, as well. In that case, set `POLYTOMIC_URL` accordingly.
 
 ## First Run
 
