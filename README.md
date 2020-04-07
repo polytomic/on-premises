@@ -2,6 +2,8 @@
 
 This repository contains instructions and scripts for running Polytomic on premises. When run on premises, Polytomic will process all queries within your private cloud.
 
+Find out more about [Polytomic](https://www.polytomic.com) and schedule a demo by emailing [contact@polytomic.com](email:contact@polytomic.com).
+
 ## Requirements
 
 - Ability to run Docker containers
