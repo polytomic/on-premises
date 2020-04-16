@@ -27,6 +27,11 @@ Polytomic accepts configuration via environment variables. The following are req
 - `DATABASE_URL`
   Connection URL for Polytomic's database; should be in the form of `postgres://user:password@host:port/database`.
 
+- `EXECUTOR_CACHE_URL`
+  Connection URL for Redis used as execution cache; should be in the form of `redis://:password@host:6379/`.
+
+  For SSL/TLS connections specify the protocol as `rediss` (two `s`'s).
+
 - `POLYTOMIC_URL`
   Base URL for accessing Polytomic; for example, `https://polytomic.mycompany.com`. This will be used when redirecting back from Google and other integrations after authenticating with OAuth.
 
