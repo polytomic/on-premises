@@ -68,6 +68,12 @@ Polytomic On Premises makes the following outbound requests:
 
 Some integrations require additional configuration when running on premises.
 
+### Salesforce
+
+To connect Polytomic On Premises to Salesforce you will need to create a Connected App to allow OAuth connections.
+
+For more information, see the [Salesforce setup instructions](./salesforce).
+
 ### Zendesk
 
 Set the following environment variables if you plan to use Zendesk.
