@@ -1,5 +1,20 @@
 # Polytomic for Salesforce
 
+In order to use Polytomic On Premises with Salesforce, you must configure the two systems to talk to one another. This involves two settings in the Salesforce Organization, and two environment variables for Polytomic.
+
+## Create the Content Security Policy
+
+A Content Security Policy allows the Polytomic widget to make HTTP requests from within Salesforce to your Polytomic installation.
+
+You can find instructions for adding a CSP in the [Salesforce documentation](https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/csp_trusted_sites.htm).
+
+You should whitelist the following actions for your your installation:
+
+* `connect-src`
+* `frame-src`
+
+## Create the Connected App
+
 In order to connect Polytomic On Premises to Salesforce, you must create a Connected App in the Salesforce Console. A Connected App allows Polytomic to make a secure connection to Salesforce using OAuth.
 
 To create a new Connected App, go to Setup in Salesforce and open the App Manager, located in Platform Tools.
