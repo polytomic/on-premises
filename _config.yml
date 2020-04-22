@@ -20,7 +20,7 @@ description: >- # this means to ignore newlines until "baseurl:"
   the tools your team already use.
 baseurl: "/on-premises" # the subpath of your site, e.g. /blog
 upstreamurl: "https://www.polytomic.com"
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://docs.polytomic.com/" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: polytomic
 github_username: polytomic
 
