@@ -11,6 +11,14 @@ Find out more about [Polytomic](https://www.polytomic.com) and schedule a demo b
 - Postgres database for pipeline configuration
 - Redis for caching (optional)
 
+## Deploying
+
+We ship Polytomic On Premises as a Docker image. To pull the latest version of the software, use the following image name:
+
+`568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest`
+
+A sample [Docker Compose](https://docs.docker.com/compose/) configuration [is available here](./examples/docker-compose.yml).
+
 ## Configuration
 
 Polytomic accepts configuration via environment variables. The following are required:
