@@ -72,9 +72,20 @@ Polytomic On Premises makes the following outbound requests:
 - Application traces are sent to DataDog; these _may_ include queries executed, but **do not** contain variables used while processing the pipline. These traces help us understand how Polytomic is performing.
 - Errors are sent to Sentry.io when they occur to assist us with debugging; error payloads **do not** contain values used to trigger the pipeline.
 
-## Integrations
+## Integrations & Connections
 
 Some integrations require additional configuration when running on premises.
+
+### Google Sheets
+
+Set the following environment variables if you plan to use Google Sheets connections:
+
+- `GSHEETS_CLIENT_ID`, `GSHEETS_CLIENT_SECRET`
+  Google OAuth Client ID and secret, obtained by creating a [OAuth 2.0 Client ID](https://console.developers.google.com/apis/credentials).
+
+  The Google Drive API and Google Sheets API *must* be enabled for the associated project. See [Google Help](https://support.google.com/googleapi/answer/6158841?hl=en) for instructions on enabling APIs.
+
+  Your valid redirect URLs _must_ include `{POLYTOMIC_URL}/connect/gsheets`.
 
 ### Salesforce
 
