@@ -1,3 +1,7 @@
+---
+redirect_from: "/salesforce/"
+---
+
 # Polytomic for Salesforce
 
 In order to use Polytomic On Premises with Salesforce, you must configure the two systems to talk to one another. This involves two settings in the Salesforce Organization, and two environment variables for Polytomic.

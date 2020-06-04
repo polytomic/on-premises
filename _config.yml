@@ -47,3 +47,11 @@ titles_from_headings:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+plugins:
+  - jekyll-redirect-from
+
+readme_index:
+  enabled:          true
+  remove_originals: true
+  with_frontmatter: true
