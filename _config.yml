@@ -16,8 +16,7 @@
 title: Polytomic
 email: contact@polytomic.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Polytomic automatically displays the full customer record in
-  the tools your team already use.
+  The slickest sync platform on the planet.
 baseurl: "/on-premises" # the subpath of your site, e.g. /blog
 upstreamurl: "https://www.polytomic.com"
 url: "https://docs.polytomic.com/" # the base hostname & protocol for your site, e.g. http://example.com
