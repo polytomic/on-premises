@@ -52,6 +52,13 @@ Polytomic accepts configuration via environment variables. The following are req
 
   **Your valid redirect URLs _must_ include `{POLYTOMIC_URL}/auth`.**
 
+The following environment variables may also be specified:
+
+- `LOG_LEVEL`
+
+  Controls the logging output; valid values are `debug`, `info`, `warn`,
+  `error`; the default is `info` if not specified.
+
 ## Monitoring
 
 The Polytomic On Premises image exposes a health-check endpoint at `/status.txt`, which can be used to verify the container is up and running.
