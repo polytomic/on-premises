@@ -1,88 +1,65 @@
-# Polytomic On Premises
+# Running Polytomic On-Premises
 
-This repository contains instructions and scripts for running Polytomic on premises. When run on premises, Polytomic will process all queries within your private cloud.
+Most of the information on hosting Polytomic on-prem can be found alongside the
+rest of our [documentation](https://polytomic.readme.io/docs/on-premise-setup).
+If you are new to Polytomic On-prem, that is the best place to start.
 
-Find out more about [Polytomic](https://www.polytomic.com) and schedule a demo by emailing [contact@polytomic.com](email:contact@polytomic.com).
+This repo exists to assist customers in setting up Polytomic on specific
+container deployment platforms. This repo cantains fils that removes some of the
+guess work in spinning up a new deployment. We currently support the following
+deployment platforms:
 
-## Requirements
+ - Aptible
 
-- Ability to run Docker containers
-- Ability to expose running Polytomic container to external traffic with SSL/TLS termination
-- Postgres database for pipeline configuration
-- Redis for caching (optional)
+Please reach out if you would like us to support a new deployment platform.
 
-## Deploying
 
-We ship Polytomic On Premises as a Docker image. To pull the latest version of the software, use the following image name:
+# Platform-specific deployment instructions
 
-`568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest`
+Before beginning, please read the On-Premises Setup document.
 
-A sample [Docker Compose](https://docs.docker.com/compose/) configuration [is available here](./examples/docker-compose.yml).
+## Aptible
 
-## Configuration
 
-Polytomic accepts configuration via environment variables. The following are required:
+1. Add your public SSH key to your Aptible account through the Aptible dashboard
+1. Install the Aptible CLI (instructions on their website).
+1. Login to Aptible CLI if you haven't already: `aptible login`.
+1. Clone this repo `git clone https://github.com/polytomic/polytomic-onprem`
+1. Change the working directory to the newly cloned repository `cd polytomic-onprem`
+1. Specify the version of Polytomic that you'd like to install in the `Dockerfile`. You can see a full release catalog in the [Changelog](https://polytomic.readme.io/docs/changelog).  We strongly suggest specifying a version number when deploying. For example: `568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:rel2021.06.08.02`
+1. Create a new Aptible app with `aptible apps:create your-app-name`
+1. The result of `apps:create` will be a git remote uri. It's a good idea to setup your remote right now: `git remote add <aptible-git-remote-url>`
+1. Add a database: `aptible db:create your-database-name --type postgresql`. Record the value of the newly created database credentials. If you are providing your own database, please make sure to grant the Polytomic user `superuser` rights to its own database.
+1. Add a redis database `aptible db:create <db-name> --type redis --version 5.0`. Record the value of the newly created database credentials.
+1. Polytomic uses Google SSO in order to handle authentication. You will need to setup an OAuth client for Polytomic.
+    - In your OAuth Client configuration, Google will allow you specify *Authorized Javascript Origins*. Set this to `https://aptible-test.polytomic.net`.
+    - In your OAuth Client configuration, Google will allow you specify *Authorized Redirect URIs*. Set this to `https://aptible-test.polytomic.net/auth`.
+1. Use the above database values, along with Polytomic-provided values in order configure the app. Note: Polytomic needs to know the URI you are hosting it on. If you intend to use an aptible-supplied hostname, you can remove it from here and setup it up later.
+    ```
+    aptible config:set --app your-app-name \
+        ROOT_USER=<first@users.email> \
+        DEPLOYMENT=<identifier-provided-by-polytomic> \
+        DEPLOYMENT_KEY=<key-provided-by-polytomic> \
+        DATABASE_URL=postgresql://<postgres-connection-string> \
+        REDIS_URL=redis://<redis-connection-string> \
+        POLYTOMIC_URL=https://<uri-you-intend-to-host-polytomic-on> \
+        GOOGLE_CLIENT_ID=<google-client-id> \
+        GOOGLE_CLIENT_SECRET=<google-client-secret>
+    ```
+1. We use the recommended method for synchronized deploys. To do this we:
+   1. Get a new AWS ECR auth token: `aws ecr get-login-password`
+   1. Push the code to new branch on aptible without trigging a deploy: `git push aptible master:release-2021-06-23`
+   1. Trigger a deploy using the credentials:
 
-- `ROOT_USER`
-  The email address to use when starting for the first time; this user will be able to add additional users and configure Polytomic
+   ```
+   aptible deploy \
+        --app your-app-name \
+        --git-commitish release-2021-06-23 \
+        --private-registry-username AWS \
+        --private-registry-password token-from-aws-ecr-get-login-password
+   ```
 
-- `DEPLOYMENT`
-  A unique identifier for your on premises deploy, provided by Polytomic.
-
-- `DEPLOYMENT_KEY`
-  The license key for your deployment, provided by Polytomic.
-
-- `DATABASE_URL`
-  Connection URL for Polytomic's database; should be in the form of `postgres://user:password@host:port/database`.
-
-- `REDIS_URL`
-  Connection URL for Redis; should be in the form of `redis://:password@host:6379/`.
-
-  For SSL/TLS connections specify the protocol as `rediss` (two `s`'s).
-
-  Note: this was previously named `CACHE_URL`; Polytomic will still use that
-  environment variable if `REDIS_URL` is unset, however it is deprecated and
-  will be removed in a future version.
-
-- `POLYTOMIC_URL`
-  Base URL for accessing Polytomic; for example, `https://polytomic.mycompany.com`. This will be used when redirecting back from Google and other integrations after authenticating with OAuth.
-
-- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
-  Google OAuth Client ID and secret, obtained by creating a [OAuth 2.0 Client ID](https://console.developers.google.com/apis/credentials)
-
-  **Your valid redirect URLs _must_ include `{POLYTOMIC_URL}/auth`.**
-
-The following environment variables may also be specified:
-
-- `LOG_LEVEL`
-
-  Controls the logging output; valid values are `debug`, `info`, `warn`,
-  `error`; the default is `info` if not specified.
-
-## Monitoring
-
-The Polytomic On Premises image exposes a health-check endpoint at `/status.txt`, which can be used to verify the container is up and running.
-
-## First Run
-
-### Database Schema
-
-Polytomic runs database migrations on startup. Therefore the database user accessing the Polytomic database will need permission to create and alter the schema.
-
-### Organization & User
-
-Polytomic uses GSuite for authenticating users. The first user email address is set via the `ROOT_USER` environment variable. This user will be able to add additional users through the web interface.
-
-Note that you only need to add users who will be configuring pipelines in Polytomic; users who interact with the integrations are tracked independently.
-
-## Data We Record
-
-Polytomic On Premises makes the following outbound requests:
-
-- Periodic requests to `ping.polytomic.com` to verify your license is valid and to record usage telemetry; telemetry **does not** include any personally identifiable information.
-- Application traces are sent to DataDog; these _may_ include queries executed, but **do not** contain variables used while processing the pipline. These traces help us understand how Polytomic is performing.
-- Errors are sent to Sentry.io when they occur to assist us with debugging; error payloads **do not** contain values used to trigger the pipeline.
-
-## Integrations & Connections
-
-Some integrations require additional configuration when running on premises. See the [Integrations documentation](./integrations) for more information.
+1. Navigate to your Aptible control panel and create a new endpoint for Polytomic.
+   - You can use a custom CNAME or one generated by Aptible, just be sure to update the app configuration after (using
+   - You do not need to change the port (5100 is the default and correct port to expose).
+1. You should be able to sign into Polytomic at the specified host, with the specified ROOT_USER!
