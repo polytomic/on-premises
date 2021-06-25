@@ -26,8 +26,8 @@ Before beginning, please read the [On-Premises Setup document](https://polytomic
 1. If you are not bringing your own database, create one: `aptible db:create your-database-name --type postgresql`. Record the value of the newly created database credentials. If you are providing your own database, please make sure to grant the Polytomic user `superuser` rights to its own database.
 1. If you are not bringing your own cache, create one: `aptible db:create <db-name> --type redis --version 5.0`. Record the value of the newly created database credentials.
 1. Polytomic uses Google SSO in order to handle authentication. You will need to setup an OAuth client for Polytomic.
-    - In your OAuth Client configuration, Google will allow you specify *Authorized Javascript Origins*. Set this to `https://aptible-test.polytomic.net`.
-    - In your OAuth Client configuration, Google will allow you specify *Authorized Redirect URIs*. Set this to `https://aptible-test.polytomic.net/auth`.
+    - In your OAuth Client configuration, Google will allow you to specify *Authorized Javascript Origins*. Set this to `https://$POLYTOMIC_HOST`.
+    - In your OAuth Client configuration, Google will allow you to specify *Authorized Redirect URIs*. Set this to `https://$POLYTOMIC_HOST/auth`.
 1. Use the above database values, along with Polytomic-provided values in order configure the app. Note: Polytomic needs to know the URI you are hosting it on. If you intend to use an aptible-supplied hostname, you can remove it from here and setup it up later.
     ```
     aptible config:set --app your-app-name \
