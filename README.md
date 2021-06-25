@@ -20,7 +20,7 @@ Before beginning, please read the [On-Premises Setup document](https://polytomic
 1. Login to Aptible CLI if you haven't already: `aptible login`.
 1. Clone this repo: `git clone https://github.com/polytomic/polytomic-onprem`
 1. Change the working directory to the newly cloned repository: `cd polytomic-onprem`
-1. Specify the version of Polytomic that you'd like to install in the `Dockerfile`. You can see a full release catalog in the [Changelog](https://polytomic.readme.io/docs/changelog).  We strongly suggest specifying a version number when deploying. For example: `568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:rel2021.06.08.02`
+1. Specify the version of Polytomic that you'd like to install in the `Dockerfile`, and commit it. You can see a full release catalog in the [Changelog](https://polytomic.readme.io/docs/changelog).  We strongly suggest specifying a version number when deploying. For example: `568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:rel2021.06.08.02`
 1. Create a new Aptible app: `aptible apps:create your-app-name`
 1. The result of `apps:create` will be a git remote url. It's a good idea to setup your remote right now: `git remote add <aptible-git-remote-url>`
 1. If you are not bringing your own database, create one: `aptible db:create your-database-name --type postgresql`. Record the value of the newly created database credentials. If you are providing your own database, please make sure to grant the Polytomic user `superuser` rights to its own database.
