@@ -12,6 +12,23 @@ deployment platforms.
 
 Before beginning, please read the [On-Premises Setup document](https://polytomic.readme.io/docs/on-premise-setup).
 
+During setup you will need a specific tagged version to deploy. You can find version tags and their changelogs here: https://docs.polytomic.com/docs/changelog
+
+## Docker Compose
+1. Install Docker on your machine, as well as the AWS cli with your credentials that you'll use to pull the image.
+2. Copy the contents of `examples/docker-compose.yml` into a new file on your host machine.
+3. Edit docker-compose.yml:
+    - in the `api` `service` entry, change the `latest` docker image tag to a specific release (i.e. `rel2021.11.04`)
+    - Fill in the rest of the mandataory environment variables
+    - You can use the built-in docker postgres and redis, but it is _highly_ recommended you configure these as separate redis/postgres instances.
+       - To do so, just delete the top-level `postgres` and `cache` service blocks in `docker-compose.yml` and specify your connection strings in the environment variables. 
+4. run `docker compose up` -- traffic should be served on `localhost:5100`
+
+#### To upgrade:
+1. `docker compose down`
+2. Edit `docker-compose.yml` to change the release version of the image. Please use a concrete version tag rather than `latest`.
+3. `docker compose up`
+
 ## Aptible
 
 
