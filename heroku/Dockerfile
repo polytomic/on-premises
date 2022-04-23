@@ -1,4 +1,4 @@
-FROM 568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:rel2022.04.19
+FROM polytomic/on-prem:rel2022.04.21
 
 COPY ./entrypoint.sh .
 
