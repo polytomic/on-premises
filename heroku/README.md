@@ -39,11 +39,9 @@ up to two Polytomic dynos running.
 10. Push the container to your heroku account: `heroku container:push web --app my-polytomic-deployment`
 11. Release the container: `heroku container:release web --app my-polytomic-deployment`
 
+We recommend running with Standard-2X dynos on Heroku.
+
 ## Upgrade a deployment
 
 You can upgrade the version of your deployment at any time by following steps 1, 2, 3, 4, 10, and 11.
 
-
-## Left to do:
-- test dyno sizes/concurrency (and break out worker roles if necessary)
-- instruction to adjust main dyno
