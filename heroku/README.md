@@ -22,12 +22,19 @@ heroku config:set --app my-polytomic-deployment\
     DEPLOYMENT=<deployment>\
     DEPLOYMENT_KEY=<deploymentKey>\
     DATABASE_URL=postgres://<postgres-connection-string>\
+    DATABASE_POOL_SIZE=50\
     REDIS_URL=redis://<redis-connection-string>\
+    REDIS_POOL_SIZE=15\
     POLYTOMIC_URL=<polytomicUrl>\
     GOOGLE_CLIENT_ID=<googleClientId>\
     GOOGLE_CLIENT_SECRET=<googleClientSecret>\
     ROOT_USER=you@yourcompany.com
 ```
+
+Note that the value for `DATABASE_POOL_SIZE` and `REDIS_POOL_SIZE` may vary
+based on your specific Postgres and Redis deployment; the values here are
+appropriate for `heroku-postgresql:standard-0` and `heroku-redis:premium-0` with
+up to two Polytomic dynos running.
 
 10. Push the container to your heroku account: `heroku container:push web --app my-polytomic-deployment`
 11. Release the container: `heroku container:release web --app my-polytomic-deployment`
