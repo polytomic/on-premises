@@ -16,7 +16,7 @@ heroku create my-polytomic-deployment
   - In your OAuth Client configuration, Google will allow you to specify *Authorized Redirect URIs*. Set this to `https://$POLYTOMIC_HOST/auth`.
 
 9. You will need to set up the rest of your environment variables. You can do this from the CLI or through the Heroku UI.
-You can find a full explanation of each variable at https://docs.polytomic.com. Note: if you used Heroku Redis/Postgres, those variables will be set already.
+You can find a full explanation of each variable in the 'Configuration' section here: https://docs.polytomic.com/docs/on-premise-setup. Note: if you used Heroku Redis/Postgres rather than your own, those variables will be set already.
 ```
 heroku config:set --app my-polytomic-deployment\
     DEPLOYMENT=<deployment>\
