@@ -1,9 +1,9 @@
 # Deploying Polytomic on Heroku
 
 1. Clone this repository, and `cd` into this folder.
-2. Login into docker hub: `docker login`
-3. Login to the Heroku container repository: `heroku container:login`
-4. Open Dockerfile and replace <polytomic-version> with the version you want to deploy
+2. Log in to Docker Hub: `docker login`.
+3. Log in to the Heroku container repository: `heroku container:login`.
+4. Open the Dockerfile and replace <polytomic-version> with the version you want to deploy.
 5. Create a new app for your Polytomic Deployment:
 ```
 heroku create my-polytomic-deployment
