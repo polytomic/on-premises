@@ -42,6 +42,7 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
+
 {{/*
 Selector labels
 */}}
@@ -49,6 +50,34 @@ Selector labels
 app.kubernetes.io/name: {{ include "polytomic.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Web Selector labels
+*/}}
+{{- define "polytomic.web-selectorLabels" -}}
+app.kubernetes.io/name: {{ include "polytomic.name" . }}-web
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Sync Selector labels
+*/}}
+{{- define "polytomic.sync-selectorLabels" -}}
+app.kubernetes.io/name: {{ include "polytomic.name" . }}-sync
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+
+{{/*
+Worker Selector labels
+*/}}
+{{- define "polytomic.worker-selectorLabels" -}}
+app.kubernetes.io/name: {{ include "polytomic.name" . }}-worker
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+
+
 
 {{/*
 Create the name of the service account to use
@@ -59,4 +88,31 @@ Create the name of the service account to use
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
+{{- end }}
+
+{{/*
+Construct Polytomic Configuration
+*/}}
+{{- define "polytomic.config" -}}
+ROOT_USER: {{ .Values.polytomic.auth.root_user | quote }}
+DEPLOYMENT: {{ .Values.polytomic.deployment.name | quote }}
+DEPLOYMENT_KEY: {{ .Values.polytomic.deployment.key | quote }}
+{{ if .Values.polytomic.postgres.ssl -}}
+DATABASE_URL: postgres://{{ .Values.polytomic.postgres.username }}{{- if .Values.polytomic.postgres.password}}:{{ .Values.polytomic.postgres.password }}{{- end}}@{{ .Values.polytomic.postgres.host }}:{{ .Values.polytomic.postgres.port }}/{{ .Values.polytomic.postgres.database }}
+{{- else}}
+DATABASE_URL: postgres://{{ .Values.polytomic.postgres.username }}{{- if .Values.polytomic.postgres.password}}:{{ .Values.polytomic.postgres.password }}{{- end}}@{{ .Values.polytomic.postgres.host }}:{{ .Values.polytomic.postgres.port }}/{{ .Values.polytomic.postgres.database }}?sslmode=disable
+{{- end }}
+{{ if .Values.polytomic.redis.ssl -}}
+REDIS_URL: rediss://{{- if .Values.polytomic.redis.username}}{{ .Values.polytomic.redis.username }}{{- end}}{{- if .Values.polytomic.redis.password}}:{{ .Values.polytomic.redis.password }}{{- end}}{{- if or .Values.polytomic.redis.username  .Values.polytomic.redis.password}}@{{- end}}{{ .Values.polytomic.redis.host }}:{{ .Values.polytomic.redis.port }}/
+{{- else}}
+REDIS_URL: redis://{{- if .Values.polytomic.redis.username}}{{ .Values.polytomic.redis.username }}{{- end}}{{- if .Values.polytomic.redis.password}}:{{ .Values.polytomic.redis.password }}{{- end}}{{- if or .Values.polytomic.redis.username .Values.polytomic.redis.password}}@{{- end}}{{ .Values.polytomic.redis.host }}:{{ .Values.polytomic.redis.port }}/
+{{- end }}
+POLYTOMIC_URL: {{ .Values.polytomic.auth.url | quote }}
+GOOGLE_CLIENT_ID: {{ .Values.polytomic.auth.google_client_id | quote }}
+GOOGLE_CLIENT_SECRET: {{ .Values.polytomic.auth.google_client_secret | quote }}
+EXECUTION_LOG_BUCKET: {{ .Values.polytomic.s3.log_bucket | quote }}
+EXECUTION_LOG_REGION: {{ .Values.polytomic.s3.region| quote }}
+EXPORT_QUERY_BUCKET: {{ .Values.polytomic.s3.query_bucket | quote }}
+EXPORT_QUERY_REGION: {{ .Values.polytomic.s3.region | quote }}
+LOG_LEVEL: {{ .Values.polytomic.log_level | quote }}
 {{- end }}

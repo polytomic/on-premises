@@ -2,8 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 3
-
 image:
   repository: polytomic-jake
   pullPolicy: IfNotPresent
@@ -14,27 +12,6 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
-
-podAnnotations: {}
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
 
 service:
   type: ClusterIP
@@ -56,42 +33,68 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
 
-autoscaling:
-  enabled: true
-  minReplicas: 3
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
+polytomic:
+  # valid values are debug, info, warn, error; the default is info
+  log_level: info
 
-nodeSelector: {}
+  deployment:
+    # A unique identifier for your on premises deploy, provided by Polytomic.
+    name: ""
+    # The license key for your deployment, provided by Polytomic.
+    key: ""
 
-tolerations: []
+  auth:
+    # The email address to use when starting for the first time; 
+    # this user will be able to add additional users and configure Polytomic.
+    root_user: joe@gmail.com
 
-affinity: {}
+    # Base URL for accessing Polytomic; for example, https://polytomic.mycompany.com. 
+    # This will be used when redirecting back from Google and 
+    # other integrations after authenticating with OAuth.
+    url: https://polytomic.mycompany.com
 
-env:          
- DEPLOYMENT: ""
- DEPLOYMENT_KEY: ""
- POLYTOMIC_URL: http://localhost
- GOOGLE_CLIENT_ID: ""
- GOOGLE_CLIENT_SECRET: ""
- ROOT_USER: ""
- DATABASE_URL: postgres://polytomic:polytomic@polytomic-postgresql:5432/polytomic?sslmode=disable
- REDIS_URL: redis://polytomic-redis-master:6379
+    #  Google OAuth Client ID and secret, obtained by creating a OAuth 2.0 Client ID
+    google_client_id: ""
+    google_client_secret: ""
+  
+  # Postgres connection settings
+  postgres: 
+   # Postgres user name
+    username: polytomic
+    # Password for given user
+    password: polytomic
+    # Host address
+    host: polytomic-postgresql
+    # Port number
+    port: 5432
+    # Database name
+    database: polytomic
+    # enable/disable SSL
+    ssl: false
+
+  # Redis connection settings
+  redis:
+    username:
+    password: polytomic
+    host: polytomic-redis-master
+    port: 6379
+    ssl: false
+
+  # The bucket stores log files containing records involved in a sync execution.
+  # Record logging is enabled from the Settings page within the app ({POLYTOMIC_URL}/user). 
+  # Credentials for AWS are pulled through the AWS-SDK's credential chain and the user/role must have permissions for the bucket. 
+  # We recommend setting a bucket lifecycle rule to automatically expire objects.
+  s3:
+    # The bucket stores log files containing records involved in a sync execution
+    log_bucket: executions
+    # The bucket is used to store query exports from Polytomic's SQL Runner.
+    query_bucket: queries
+    # S3 region e.g. us-east-1
+    region: us-east-1
 
 
+# Convience subcharts for dependencies
 postgresql:
   enabled: true
   auth:
@@ -102,5 +105,95 @@ postgresql:
 redis:
   enabled: true
   auth:
-    enabled: false
+    password: polytomic
+    enabled: true
   architecture: standalone
+
+
+
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+
+worker:
+  replicaCount: 1
+  resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+    # fsGroup: 2000
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+
+web:
+  replicaCount: 3
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+
+sync:
+  replicaCount: 1
+  resources: {}
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+    # fsGroup: 2000
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "polytomic.fullname" . }}-sync
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.sync.autoscaling.enabled }}
+  replicas: {{ .Values.sync.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "polytomic.sync-selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.sync.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "polytomic.sync-selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "polytomic.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.sync.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.sync.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+          - secretRef:
+              name: {{ include "polytomic.fullname" . }}-config
+          env:          
+          - name: ROLE
+            value: sync
+          resources:
+            {{- toYaml .Values.sync.resources | nindent 12 }}
+      {{- with .Values.sync.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.sync.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.sync.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
