@@ -1,0 +1,42 @@
+[{
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "secretOptions": null,
+        "options": {
+            "awslogs-group": "polytomic-web",
+            "awslogs-region": "${region}",
+            "awslogs-stream-prefix": "service",
+            "awslogs-create-group": "true"
+        }
+    },
+    "essential": true,
+    "portMappings": [{
+        "containerPort": ${polytomic_port},
+        "hostPort": ${polytomic_port}
+    }],
+    "environment": [
+        %{ for key, value in env ~}
+        {
+            "name": "${key}",
+            "value": "${value}"
+        },
+        %{ endfor ~}
+        {
+            "name": "ROLE",
+            "value": "web"
+        },
+        {
+            "name": "PORT",
+            "value": "${polytomic_port}"
+        }
+    ],
+    "mountPoints": [
+    {
+        "containerPath": "/var/polytomic",
+        "sourceVolume": "polytomic"
+    }],
+    "memoryReservation": 512,
+    "image": "${image}",
+    "privileged": false,
+    "name": "web"
+}]
