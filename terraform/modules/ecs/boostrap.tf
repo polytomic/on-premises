@@ -6,10 +6,10 @@ locals {
           name = "sync"
           command = [
             "ptctl",
-            "--name=${vars.polytomic_workspace_name}",
-            "--domain=${polytomic_sso_domain}",
-            "--worksos_id=${vars.polytomic_workos_org_id}",
-            "--users=${vars.polytomic_root_user}",
+            "--name=${var.polytomic_workspace_name}",
+            "--domain=${var.polytomic_sso_domain}",
+            "--workos_id=${var.polytomic_workos_org_id}",
+            "--users=${var.polytomic_root_user}",
             "--yes",
           ]
         }
