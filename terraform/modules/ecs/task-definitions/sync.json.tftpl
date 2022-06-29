@@ -1,0 +1,32 @@
+[{
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "secretOptions": null,
+        "options": {
+            "awslogs-group": "polytomic-sync",
+            "awslogs-region": "${region}",
+            "awslogs-stream-prefix": "service",
+            "awslogs-create-group": "true"
+        }
+    },
+    "environment": [
+        %{ for key, value in env ~}
+        {
+            "name": "${key}",
+            "value": "${value}"
+        },
+        %{ endfor ~}
+        {
+            "name": "ROLE",
+            "value": "sync"
+        }
+    ],
+    "mountPoints": [
+    {
+        "containerPath": "/var/polytomic",
+        "sourceVolume": "polytomic"
+    }],
+    "memoryReservation": 2048,
+    "image": "${image}",
+    "name": "sync"
+}]

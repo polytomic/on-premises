@@ -3,3 +3,9 @@ _site
 .sass-cache
 .jekyll-metadata
 .bundle/vendor
+**/**.tgz
+**/**.tfstate
+**/**.tfstate.backup
+**/**.tfstate.*.backup
+**/**.terraform.lock.hcl
+.terraform
