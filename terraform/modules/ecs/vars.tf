@@ -56,6 +56,21 @@ variable "polytomic_log_level" {
   description = "The log level to use for Polytomic"
 }
 
+variable "polytomic_workos_api_key" {
+  description = "The API key for the WorkOS account to use for Polytomic"
+  default     = ""
+}
+
+variable "polytomic_react_app_workos_client_id" {
+  description = "The WorkOS client ID"
+  default     = ""
+}
+
+variable "polytomic_bootstrap" {
+  default     = false
+  description = "Whether to bootstrap Polytomic"
+}
+
 variable "vpc_id" {
   description = "VPC ID"
   default     = ""

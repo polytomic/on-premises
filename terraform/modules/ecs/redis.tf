@@ -31,8 +31,7 @@ module "redis" {
 }
 
 resource "random_password" "redis" {
-  count            = var.redis_auth_token == "" && var.redis_endpoint == "" ? 1 : 0
-  length           = 32
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+  count   = var.redis_auth_token == "" && var.redis_endpoint == "" ? 1 : 0
+  length  = 32
+  special = false
 }

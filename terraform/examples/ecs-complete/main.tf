@@ -9,7 +9,7 @@ module "polytomic-ecs" {
   tags = {
     Owner       = "polytomic"
     Environment = "staging"
-    Billing     = "R&D"
+    Billing     = "R/D"
   }
 
   region = "us-east-1"
@@ -24,6 +24,10 @@ module "polytomic-ecs" {
   polytomic_google_client_id     = "GOOGLE_ID"
   polytomic_google_client_secret = "GOOGLE_SECRET"
   polytomic_url                  = ""
+
+  polytomic_single_player = false
+  polytomic_bootstrap     = true
+
 
   # valid values are debug, info, warn, error; the default is info
   polytomic_log_level = "info"
@@ -103,7 +107,7 @@ module "polytomic-ecs" {
 
 
   database_enabled_cloudwatch_logs_exports       = ["postgresql", "upgrade"]
-  database_create_cloudwatch_log_group           = true
+  database_create_cloudwatch_log_group           = false
   database_performance_insights_enabled          = true
   database_performance_insights_retention_period = 7
 

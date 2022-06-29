@@ -6,5 +6,6 @@ _site
 **/**.tgz
 **/**.tfstate
 **/**.tfstate.backup
+**/**.tfstate.*.backup
 **/**.terraform.lock.hcl
 .terraform
