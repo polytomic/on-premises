@@ -32,7 +32,7 @@ module "polytomic-ecs" {
   tags = {
     Owner       = "polytomic"
     Environment = "staging"
-    Billing     = "R&D"
+    Billing     = "R/D"
   }
 
   region = "us-east-1"
@@ -47,6 +47,10 @@ module "polytomic-ecs" {
   polytomic_google_client_id     = "GOOGLE_ID"
   polytomic_google_client_secret = "GOOGLE_SECRET"
   polytomic_url                  = ""
+
+  polytomic_single_player = false
+  polytomic_bootstrap     = true
+
 
   # valid values are debug, info, warn, error; the default is info
   polytomic_log_level = "info"
@@ -126,7 +130,7 @@ module "polytomic-ecs" {
 
 
   database_enabled_cloudwatch_logs_exports       = ["postgresql", "upgrade"]
-  database_create_cloudwatch_log_group           = true
+  database_create_cloudwatch_log_group           = false
   database_performance_insights_enabled          = true
   database_performance_insights_retention_period = 7
 
@@ -189,6 +193,7 @@ module "polytomic-ecs" {
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.6 |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Resources
@@ -208,6 +213,7 @@ module "polytomic-ecs" {
 | [aws_iam_role.polytomic_ecs_task_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy.polytomic_ecs_execution_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.polytomic_ecs_task_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [null_resource.boostrap](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_password.redis](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [aws_ecs_cluster.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ecs_cluster) | data source |
 | [aws_iam_policy_document.ecs_tasks_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -260,6 +266,7 @@ module "polytomic-ecs" {
 | <a name="input_database_skip_final_snapshot"></a> [database\_skip\_final\_snapshot](#input\_database\_skip\_final\_snapshot) | Database skip final snapshot | `bool` | `false` | no |
 | <a name="input_database_username"></a> [database\_username](#input\_database\_username) | Database username | `string` | `"polytomic"` | no |
 | <a name="input_ecs_cluster_name"></a> [ecs\_cluster\_name](#input\_ecs\_cluster\_name) | ECS cluster name | `string` | `""` | no |
+| <a name="input_polytomic_bootstrap"></a> [polytomic\_bootstrap](#input\_polytomic\_bootstrap) | Whether to bootstrap Polytomic | `bool` | `false` | no |
 | <a name="input_polytomic_deployment"></a> [polytomic\_deployment](#input\_polytomic\_deployment) | A unique identifier for your on premises deploy, provided by Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_deployment_key"></a> [polytomic\_deployment\_key](#input\_polytomic\_deployment\_key) | The license key for your deployment, provided by Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_google_client_id"></a> [polytomic\_google\_client\_id](#input\_polytomic\_google\_client\_id) | Google OAuth Client ID, obtained by creating a OAuth 2.0 Client ID | `string` | `""` | no |
@@ -267,9 +274,14 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_image"></a> [polytomic\_image](#input\_polytomic\_image) | Docker image to use for the Polytomic ECS cluster | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"` | no |
 | <a name="input_polytomic_log_level"></a> [polytomic\_log\_level](#input\_polytomic\_log\_level) | The log level to use for Polytomic | `string` | `"info"` | no |
 | <a name="input_polytomic_port"></a> [polytomic\_port](#input\_polytomic\_port) | Port on which Polytomic is listening | `string` | `"80"` | no |
+| <a name="input_polytomic_react_app_workos_client_id"></a> [polytomic\_react\_app\_workos\_client\_id](#input\_polytomic\_react\_app\_workos\_client\_id) | The WorkOS client ID | `string` | `""` | no |
 | <a name="input_polytomic_root_user"></a> [polytomic\_root\_user](#input\_polytomic\_root\_user) | The email address to use when starting for the first time; this user will be able to add additional users and configure Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_single_player"></a> [polytomic\_single\_player](#input\_polytomic\_single\_player) | Whether to use the single player mode | `bool` | `false` | no |
+| <a name="input_polytomic_sso_domain"></a> [polytomic\_sso\_domain](#input\_polytomic\_sso\_domain) | Domain for SSO users of first Polytomic workspace; ie, example.com. | `string` | `""` | no |
 | <a name="input_polytomic_url"></a> [polytomic\_url](#input\_polytomic\_url) | Base URL for accessing Polytomic. This will be used when redirecting back from Google and other integrations after authenticating with OAuth. | `string` | `""` | no |
+| <a name="input_polytomic_workos_api_key"></a> [polytomic\_workos\_api\_key](#input\_polytomic\_workos\_api\_key) | The API key for the WorkOS account to use for Polytomic | `string` | `""` | no |
+| <a name="input_polytomic_workos_org_id"></a> [polytomic\_workos\_org\_id](#input\_polytomic\_workos\_org\_id) | WorkOS organization ID for workspace SSO | `string` | `""` | no |
+| <a name="input_polytomic_workspace_name"></a> [polytomic\_workspace\_name](#input\_polytomic\_workspace\_name) | Name of first Polytomic workspace | `string` | `""` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | n/a | `string` | `""` | no |
 | <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | Private subnet IDs | `list` | `[]` | no |
 | <a name="input_public_subnet_ids"></a> [public\_subnet\_ids](#input\_public\_subnet\_ids) | Public subnet IDs | `list` | `[]` | no |
