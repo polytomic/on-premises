@@ -305,3 +305,18 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "polytomic_workspace_name" {
+  description = "Name of first Polytomic workspace"
+  default     = ""
+}
+
+variable "polytomic_sso_domain" {
+  description = "Domain for SSO users of first Polytomic workspace; ie, example.com."
+  default     = ""
+}
+
+variable "polytomic_workos_org_id" {
+  description = "WorkOS organization ID for workspace SSO"
+  default     = ""
+}

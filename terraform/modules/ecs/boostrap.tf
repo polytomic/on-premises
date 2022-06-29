@@ -5,8 +5,12 @@ locals {
         {
           name = "sync"
           command = [
-            "echo",
-            "hello world",
+            "ptctl",
+            "--name=${vars.polytomic_workspace_name}",
+            "--domain=${polytomic_sso_domain}",
+            "--worksos_id=${vars.polytomic_workos_org_id}",
+            "--users=${vars.polytomic_root_user}",
+            "--yes",
           ]
         }
       ]
