@@ -1,0 +1,5 @@
+version: 0.1
+
+projects:
+  - path: terraform/examples/ecs-complete/
+  - path: terraform/examples/ecs-minimal/
