@@ -61,8 +61,23 @@ variable "polytomic_workos_api_key" {
   default     = ""
 }
 
-variable "polytomic_react_app_workos_client_id" {
+variable "polytomic_workos_client_id" {
   description = "The WorkOS client ID"
+  default     = ""
+}
+
+variable "polytomic_workspace_name" {
+  description = "Name of first Polytomic workspace"
+  default     = ""
+}
+
+variable "polytomic_sso_domain" {
+  description = "Domain for SSO users of first Polytomic workspace; ie, example.com."
+  default     = ""
+}
+
+variable "polytomic_workos_org_id" {
+  description = "WorkOS organization ID for workspace SSO"
   default     = ""
 }
 
@@ -304,19 +319,4 @@ variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
   default     = {}
-}
-
-variable "polytomic_workspace_name" {
-  description = "Name of first Polytomic workspace"
-  default     = ""
-}
-
-variable "polytomic_sso_domain" {
-  description = "Domain for SSO users of first Polytomic workspace; ie, example.com."
-  default     = ""
-}
-
-variable "polytomic_workos_org_id" {
-  description = "WorkOS organization ID for workspace SSO"
-  default     = ""
 }
