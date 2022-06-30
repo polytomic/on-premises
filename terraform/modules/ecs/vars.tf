@@ -89,7 +89,7 @@ variable "public_subnet_ids" {
 
 variable "vpc_cidr" {
   description = "VPC CIDR"
-  default     = ""
+  default     = "10.0.0.0/16"
 }
 
 variable "vpc_azs" {

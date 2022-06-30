@@ -1,10 +1,10 @@
 module "s3_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
-  for_each = toset([
-    local.polytomic_execution_bucket,
-    local.polytomic_export_bucket,
-    local.polytomic_artifact_bucket
-  ])
+  for_each = {
+    exports    = local.polytomic_export_bucket,
+    executions = local.polytomic_execution_bucket,
+    artifacts  = local.polytomic_artifact_bucket
+  }
 
   bucket = "${var.prefix}-${each.key}"
   acl    = "private"
@@ -13,6 +13,28 @@ module "s3_bucket" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+
+  lifecycle_rule = each.key == "exports" || each.key == "executions" ? [
+    {
+      id      = each.key
+      enabled = true
+
+      transition = [
+        {
+          days          = 30
+          storage_class = "ONEZONE_IA"
+        },
+      ]
+
+  }] : []
+
+  server_side_encryption_configuration = {
+    rule = {
+      apply_server_side_encryption_by_default = {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
 
   tags = var.tags
 }
