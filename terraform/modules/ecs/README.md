@@ -1,4 +1,3 @@
-<!-- BEGIN_TF_DOCS -->
 # Polytomic On ECS Fargate
 
 This module will all the necessary configuration to run a Polytomic On ECS Fargate.
@@ -313,4 +312,3 @@ module "polytomic-ecs" {
 | <a name="output_loadbalancer_dns_name"></a> [loadbalancer\_dns\_name](#output\_loadbalancer\_dns\_name) | n/a |
 | <a name="output_loadbalancer_zone_id"></a> [loadbalancer\_zone\_id](#output\_loadbalancer\_zone\_id) | n/a |
 | <a name="output_target_group_arn"></a> [target\_group\_arn](#output\_target\_group\_arn) | n/a |
-<!-- END_TF_DOCS -->
