@@ -1,0 +1,10 @@
+name: TFLint
+on: [pull_request]
+jobs:
+  tflint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Check linting of Terraform files
+      uses: devops-infra/action-tflint@v0.3
