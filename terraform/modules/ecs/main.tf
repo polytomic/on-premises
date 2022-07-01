@@ -34,7 +34,7 @@ locals {
       FARGATE_EXECUTOR_SECURITY_GROUPS = module.fargate_sg.security_group_id,
       SINGLE_PLAYER                    = var.polytomic_single_player,
       WORKOS_API_KEY                   = var.polytomic_workos_api_key,
-      WORKOS_CLIENT_ID                 = var.polytomic_react_app_workos_client_id,
+      WORKOS_CLIENT_ID                 = var.polytomic_workos_client_id,
     }
   }
 }
