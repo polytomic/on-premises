@@ -18,7 +18,7 @@ locals {
       DEPLOYMENT_KEY                   = var.polytomic_deployment_key,
       DATABASE_URL                     = local.database_url,
       REDIS_URL                        = local.redis_url,
-      POLYTOMIC_URL                    = var.polytomic_url == "" ? "http://${aws_alb.main.dns_name}/auth" : var.polytomic_url,
+      POLYTOMIC_URL                    = var.polytomic_url == "" ? "http://${aws_alb.main.dns_name}/" : var.polytomic_url,
       EXECUTION_LOG_BUCKET             = "${var.prefix}-${local.polytomic_execution_bucket}",
       EXECUTION_LOG_REGION             = var.region,
       EXPORT_QUERY_BUCKET              = "${var.prefix}-${local.polytomic_export_bucket}",
@@ -34,7 +34,7 @@ locals {
       FARGATE_EXECUTOR_SECURITY_GROUPS = module.fargate_sg.security_group_id,
       SINGLE_PLAYER                    = var.polytomic_single_player,
       WORKOS_API_KEY                   = var.polytomic_workos_api_key,
-      REACT_APP_WORKOS_CLIENT_ID       = var.polytomic_react_app_workos_client_id,
+      WORKOS_CLIENT_ID                 = var.polytomic_workos_client_id,
     }
   }
 }
