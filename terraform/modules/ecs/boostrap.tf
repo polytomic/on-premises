@@ -5,7 +5,9 @@ locals {
         {
           name = "sync"
           command = [
-            "ptctl",
+            "./ptctl",
+            "workspaces",
+            "provision",
             "--name=${var.polytomic_workspace_name}",
             "--domain=${var.polytomic_sso_domain}",
             "--workos_id=${var.polytomic_workos_org_id}",
