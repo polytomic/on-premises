@@ -320,3 +320,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+
+variable "bucket_prefix" {
+  description = "Bucket prefix"
+  default     = "polytomic"
+}

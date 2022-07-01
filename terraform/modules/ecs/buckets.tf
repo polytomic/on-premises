@@ -6,7 +6,7 @@ module "s3_bucket" {
     artifacts  = local.polytomic_artifact_bucket
   }
 
-  bucket = "${var.prefix}-${each.key}"
+  bucket = "${var.prefix}-${var.bucket_prefix}-${each.key}"
   acl    = "private"
 
   block_public_acls       = true
