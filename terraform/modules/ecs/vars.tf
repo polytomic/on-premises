@@ -150,7 +150,7 @@ variable "redis_engine_version" {
 
 variable "redis_family" {
   description = "Redis family"
-  default     = "redis6.2"
+  default     = "redis6.x"
 }
 
 variable "redis_at_rest_encryption_enabled" {
@@ -176,7 +176,7 @@ variable "redis_snapshot_window" {
 
 variable "redis_maintenance_window" {
   description = "Redis maintenance window"
-  default     = "sun:06:00-sun:06:30"
+  default     = "mon:03:00-mon:04:00"
 
 }
 
