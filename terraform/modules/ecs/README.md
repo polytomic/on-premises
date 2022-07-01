@@ -143,7 +143,8 @@ module "polytomic-ecs" {
 Minimal
 ```hcl
 provider "aws" {
-  region = "us-east-1"
+  region  = "us-east-1"
+  profile = "jake"
 }
 
 module "polytomic-ecs" {
@@ -161,21 +162,6 @@ module "polytomic-ecs" {
 
   polytomic_google_client_id     = "GOOGLE_ID"
   polytomic_google_client_secret = "GOOGLE_SECRET"
-
-  # Existing VPC settings
-  vpc_id             = "vpc-01462540afd033c70"
-  private_subnet_ids = ["subnet-079bc99ddd9bb9a13", "subnet-0658ae11362c98ded", "subnet-0938f40991b78bdb7"]
-  public_subnet_ids  = ["subnet-0ae40b059545091b3", "subnet-09d50ce0d2844f304", "subnet-0f506582cacf64e98"]
-
-
-  # Existing ECS cluster
-  ecs_cluster_name = "polytomic-cluster"
-
-  # Existing RDS settings
-  database_endpoint = "postgres://user:password@host:port/database"
-
-  # Existing redis settings
-  redis_endpoint = "rediss://:password@host:port"
 
 }
 ```
@@ -273,7 +259,6 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_image"></a> [polytomic\_image](#input\_polytomic\_image) | Docker image to use for the Polytomic ECS cluster | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"` | no |
 | <a name="input_polytomic_log_level"></a> [polytomic\_log\_level](#input\_polytomic\_log\_level) | The log level to use for Polytomic | `string` | `"info"` | no |
 | <a name="input_polytomic_port"></a> [polytomic\_port](#input\_polytomic\_port) | Port on which Polytomic is listening | `string` | `"80"` | no |
-| <a name="input_polytomic_react_app_workos_client_id"></a> [polytomic\_react\_app\_workos\_client\_id](#input\_polytomic\_react\_app\_workos\_client\_id) | The WorkOS client ID | `string` | `""` | no |
 | <a name="input_polytomic_root_user"></a> [polytomic\_root\_user](#input\_polytomic\_root\_user) | The email address to use when starting for the first time; this user will be able to add additional users and configure Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_single_player"></a> [polytomic\_single\_player](#input\_polytomic\_single\_player) | Whether to use the single player mode | `bool` | `false` | no |
 | <a name="input_polytomic_sso_domain"></a> [polytomic\_sso\_domain](#input\_polytomic\_sso\_domain) | Domain for SSO users of first Polytomic workspace; ie, example.com. | `string` | `""` | no |
@@ -299,7 +284,7 @@ module "polytomic-ecs" {
 | <a name="input_region"></a> [region](#input\_region) | AWS region to use | `string` | `"us-east-1"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |
 | <a name="input_vpc_azs"></a> [vpc\_azs](#input\_vpc\_azs) | VPC availability zones | `list` | <pre>[<br>  "us-east-1a",<br>  "us-east-1b",<br>  "us-east-1c"<br>]</pre> | no |
-| <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | VPC CIDR | `string` | `""` | no |
+| <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | VPC CIDR | `string` | `"10.0.0.0/16"` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | `""` | no |
 | <a name="input_vpc_private_subnets"></a> [vpc\_private\_subnets](#input\_vpc\_private\_subnets) | VPC private subnets | `list` | <pre>[<br>  "10.0.1.0/24",<br>  "10.0.2.0/24",<br>  "10.0.3.0/24"<br>]</pre> | no |
 | <a name="input_vpc_public_subnets"></a> [vpc\_public\_subnets](#input\_vpc\_public\_subnets) | VPC public subnets | `list` | <pre>[<br>  "10.0.101.0/24",<br>  "10.0.102.0/24",<br>  "10.0.103.0/24"<br>]</pre> | no |

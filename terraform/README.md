@@ -3,6 +3,26 @@
 
 ## Contributing
 
+
+## Using locally
+The best way to make and test changes to the modules it by editing the desired module (e.g. `modules/ecs`) and running terraform inside the minimal example for the given module (e.g. `examples/ecs-minimal`)
+
+```
+cd examples/ecs-minimal
+terraform init
+terraform plan
+terraform apply
+```
+
+To target specific resources for testing, you can provide a target. For example, if you just want to test bucket creation in the ecs module you can run:
+
+```
+terraform plan -target module.polytomic-ecs.module.s3_bucket
+
+terraform apply -target module.polytomic-ecs.module.s3_bucket
+```
+
+
 ### Formatting
 
 Uses Terraform [fmt](https://www.terraform.io/cli/commands/fmt).
