@@ -143,8 +143,7 @@ module "polytomic-ecs" {
 Minimal
 ```hcl
 provider "aws" {
-  region  = "us-east-1"
-  profile = "jake"
+  region = "us-east-1"
 }
 
 module "polytomic-ecs" {
@@ -264,6 +263,7 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_sso_domain"></a> [polytomic\_sso\_domain](#input\_polytomic\_sso\_domain) | Domain for SSO users of first Polytomic workspace; ie, example.com. | `string` | `""` | no |
 | <a name="input_polytomic_url"></a> [polytomic\_url](#input\_polytomic\_url) | Base URL for accessing Polytomic. This will be used when redirecting back from Google and other integrations after authenticating with OAuth. | `string` | `""` | no |
 | <a name="input_polytomic_workos_api_key"></a> [polytomic\_workos\_api\_key](#input\_polytomic\_workos\_api\_key) | The API key for the WorkOS account to use for Polytomic | `string` | `""` | no |
+| <a name="input_polytomic_workos_client_id"></a> [polytomic\_workos\_client\_id](#input\_polytomic\_workos\_client\_id) | The WorkOS client ID | `string` | `""` | no |
 | <a name="input_polytomic_workos_org_id"></a> [polytomic\_workos\_org\_id](#input\_polytomic\_workos\_org\_id) | WorkOS organization ID for workspace SSO | `string` | `""` | no |
 | <a name="input_polytomic_workspace_name"></a> [polytomic\_workspace\_name](#input\_polytomic\_workspace\_name) | Name of first Polytomic workspace | `string` | `""` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | n/a | `string` | `""` | no |
