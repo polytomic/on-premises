@@ -13,6 +13,7 @@ locals {
     polytomic_port = var.polytomic_port,
     env = {
       ROOT_USER                        = var.polytomic_root_user,
+      LOCAL_DATA_PATH                  = var.polytomic_data_path,
       AWS_REGION                       = var.region,
       DEPLOYMENT                       = var.polytomic_deployment,
       DEPLOYMENT_KEY                   = var.polytomic_deployment_key,
