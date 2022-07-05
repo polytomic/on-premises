@@ -39,6 +39,9 @@ spec:
           env:          
           - name: ROLE
             value: sync
+          volumeMounts:
+          - mountPath: /var/polytomic
+            name: cache-volume      
           resources:
             {{- toYaml .Values.sync.resources | nindent 12 }}
       {{- with .Values.sync.nodeSelector }}
@@ -53,3 +56,12 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+      {{ if and (.Values.nfs.enabled) (.Values.polytomic.cache.enabled) }}
+      - name: cache-volume
+        persistentVolumeClaim:
+          claimName: {{ .Values.polytomic.cache.volume_name }}
+      {{ else }}
+      - name: cache-volume
+        emptyDir: {}
+      {{- end -}}

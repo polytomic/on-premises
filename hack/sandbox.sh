@@ -2,7 +2,13 @@
 
 # Ensure kind is installed
 if ! command -v kind >/dev/null; then
-  echo "kind is not installed 😥. Please install kind before running this script."
+  echo "kind is not installed 😥. Please install kind before running this script. https://kind.sigs.k8s.io/docs/user/quick-start/#installation"
+  exit 1
+fi
+
+# Ensure helm is installed
+if ! command -v helm >/dev/null; then
+  echo "helm is not installed 😥. Please install helm before running this script. https://helm.sh/docs/helm/helm_install/"
   exit 1
 fi
 
@@ -35,6 +41,11 @@ echo
 echo
 echo "Installing NGINX ingress controller 🚀 ..."
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+# Ingress controller pre-flight checks
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=120s
 echo "NGINX ingress controller installed 🎉"
 # echo
 # echo
@@ -50,6 +61,7 @@ echo
 echo
 echo "Installing Polytomic 🚀 ..."
 pushd helm/polytomic
+helm dep up
 helm install polytomic .
 popd
 echo "Polytomic installed 🎉"
