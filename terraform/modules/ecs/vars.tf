@@ -7,6 +7,11 @@ variable "region" {
   description = "AWS region to use"
 }
 
+variable "aws_profile" {
+  default     = "default"
+  description = "AWS profile to use"
+}
+
 variable "polytomic_image" {
   default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"
   description = "Docker image to use for the Polytomic ECS cluster"
@@ -39,6 +44,16 @@ variable "polytomic_port" {
 variable "polytomic_root_user" {
   description = "The email address to use when starting for the first time; this user will be able to add additional users and configure Polytomic"
   default     = ""
+}
+
+variable "polytomic_data_path" {
+  description = "Filesystem path to local data cache"
+  default     = "/var/polytomic"
+}
+
+variable "polytomic_preflight_check" {
+  description = "Whether to run a preflight check"
+  default     = true
 }
 
 variable "polytomic_deployment" {
@@ -250,7 +265,7 @@ variable "database_major_engine_version" {
 
 variable "database_instance_class" {
   description = "Database instance class"
-  default     = "t3.medium"
+  default     = "db.t3.small"
 }
 
 variable "database_maintenance_window" {
