@@ -115,4 +115,10 @@ EXECUTION_LOG_REGION: {{ .Values.polytomic.s3.region| quote }}
 EXPORT_QUERY_BUCKET: {{ .Values.polytomic.s3.query_bucket | quote }}
 EXPORT_QUERY_REGION: {{ .Values.polytomic.s3.region | quote }}
 LOG_LEVEL: {{ .Values.polytomic.log_level | quote }}
+SINGLE_PLAYER: {{ .Values.polytomic.auth.single_player | quote }}
+AIRTABLE_CLIENT_SECRET: "polytomic-GUE1aekik4MsgAEUhKyPCTaVUpxSM2KG"
+AWS_REGION: {{ .Values.polytomic.s3.region | quote }}
+AWS_ACCESS_KEY_ID: {{ .Values.polytomic.s3.access_key_id | quote }}
+AWS_SECRET_ACCESS_KEY: {{ .Values.polytomic.s3.secret_access_key | quote }}
+
 {{- end }}

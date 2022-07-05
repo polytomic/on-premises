@@ -1,5 +1,7 @@
 #!/bin/bash
 
+POLYTOMIC_IMAGE_REPO=568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem
+
 # Ensure kind is installed
 if ! command -v kind >/dev/null; then
   echo "kind is not installed 😥. Please install kind before running this script. https://kind.sigs.k8s.io/docs/user/quick-start/#installation"
@@ -33,35 +35,34 @@ nodes:
 EOF
 echo
 echo
-echo "Loading polytomic image 📦 ..."
-# Load polytomic docker image into kind
-kind load docker-image polytomic-jake
-echo "Image loaded 🎉"
-echo
 echo
 echo "Installing NGINX ingress controller 🚀 ..."
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+sleep 30
+echo
+echo "Waiting for NGINX to become ready. This may take a bit..."
 # Ingress controller pre-flight checks
 kubectl wait --namespace ingress-nginx \
   --for=condition=ready pod \
   --selector=app.kubernetes.io/component=controller \
   --timeout=120s
 echo "NGINX ingress controller installed 🎉"
-# echo
-# echo
-# echo "Installing Ceph 🚀 ..."
-# pushd helm/rook/rook-ceph
-# helm install rook-ceph .
-# popd
-# pushd helm/rook/rook-ceph-cluster
-# helm install rook-ceph-cluster .
-# popd
-# echo "Ceph installed 🎉"
+echo
+echo
+echo
+echo "Loading polytomic image creds 📦 ..."
+TOKEN=`aws ecr get-login-password | cut -d' ' -f6`
+kubectl create secret docker-registry regcred \
+  --docker-server=$POLYTOMIC_IMAGE_REPO \
+  --docker-username=AWS \
+  --docker-password=$TOKEN \
+  -n default
+echo "Image creds setup 🎉"
 echo
 echo
 echo "Installing Polytomic 🚀 ..."
-pushd helm/polytomic
+pushd helm/charts/polytomic
 helm dep up
-helm install polytomic .
+helm install polytomic --set "imagePullSecrets[0].name=regcred" .
 popd
 echo "Polytomic installed 🎉"

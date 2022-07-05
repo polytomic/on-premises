@@ -1,0 +1,4 @@
+chart-repos:
+  - bitnami=https://charts.bitnami.com/bitnami
+  - minio=https://charts.min.io/
+  - nfs-ganesha-server-and-external-provisioner=https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/

@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: polytomic-jake
+  repository: 568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
@@ -12,7 +12,6 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-
 service:
   type: ClusterIP
   port: 80
@@ -20,7 +19,8 @@ service:
 ingress:
   enabled: true
   className: nginx
-  annotations: {}
+  annotations:
+    {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
@@ -33,31 +33,6 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-
-nfs-server-provisioner:
-  enabled: true
-  image: 
-    repository: jaken551/nfs-provisioner
-    tag: latest
-
-  storageClass:
-    create: true
-    ## Set a provisioner name. If unset, a name will be generated.
-    # provisionerName:
-
-    ## Set StorageClass as the default StorageClass
-    ## Ignored if storageClass.create is false
-    defaultClass: false
-
-    ## Set a StorageClass name
-    ## Ignored if storageClass.create is false
-    name: nfs
-
-    # set to null to prevent expansion
-    allowVolumeExpansion: true
-    ## StorageClass parameters
-    parameters: {}
-
 polytomic:
   # valid values are debug, info, warn, error; the default is info
   log_level: info
@@ -69,22 +44,26 @@ polytomic:
     key: ""
 
   auth:
-    # The email address to use when starting for the first time; 
+    # The email address to use when starting for the first time;
     # this user will be able to add additional users and configure Polytomic.
-    root_user: joe@gmail.com
+    root_user: user@example.com
 
-    # Base URL for accessing Polytomic; for example, https://polytomic.mycompany.com. 
-    # This will be used when redirecting back from Google and 
+    # Base URL for accessing Polytomic; for example, https://polytomic.mycompany.com.
+    # This will be used when redirecting back from Google and
     # other integrations after authenticating with OAuth.
     url: https://polytomic.mycompany.com
 
     #  Google OAuth Client ID and secret, obtained by creating a OAuth 2.0 Client ID
     google_client_id: ""
     google_client_secret: ""
-  
+
+    # Single player mode
+    # If true, no authentication will be required
+    single_player: true
+
   # Postgres connection settings
-  postgres: 
-   # Postgres user name
+  postgres:
+    # Postgres user name
     username: polytomic
     # Password for given user
     password: polytomic
@@ -106,23 +85,28 @@ polytomic:
     ssl: false
 
   # The bucket stores log files containing records involved in a sync execution.
-  # Record logging is enabled from the Settings page within the app ({POLYTOMIC_URL}/user). 
-  # Credentials for AWS are pulled through the AWS-SDK's credential chain and the user/role must have permissions for the bucket. 
+  # Record logging is enabled from the Settings page within the app ({POLYTOMIC_URL}/user).
+  # Credentials for AWS are pulled through the AWS-SDK's credential chain and the user/role must have permissions for the bucket.
   # We recommend setting a bucket lifecycle rule to automatically expire objects.
   s3:
     # The bucket stores log files containing records involved in a sync execution
     log_bucket: executions
     # The bucket is used to store query exports from Polytomic's SQL Runner.
     query_bucket: queries
+
+    # Access key ID
+    access_key_id: ""
+    # Secret access key
+    secret_access_key: ""
     # S3 region e.g. us-east-1
     region: us-east-1
 
-  
   cache:
     enabled: true
     volume_name: polytomic-cache
     size: 20Mi
 
+#############################################################################################
 # Convience subcharts for dependencies
 postgresql:
   enabled: true
@@ -138,6 +122,40 @@ redis:
     enabled: true
   architecture: standalone
 
+minio:
+  enabled: true
+  rootUser: polytomic
+  rootPassword: polytomic
+  persistence:
+    size: 50Mi
+  mode: standalone
+
+nfs-server-provisioner:
+  enabled: true
+  image:
+    repository: jaken551/nfs-provisioner
+    tag: latest
+
+  storageClass:
+    create: true
+    ## Set a provisioner name. If unset, a name will be generated.
+    # provisionerName:
+
+    ## Set StorageClass as the default StorageClass
+    ## Ignored if storageClass.create is false
+    defaultClass: false
+
+    ## Set a StorageClass name
+    ## Ignored if storageClass.create is false
+    name: nfs
+
+    # set to null to prevent expansion
+    allowVolumeExpansion: true
+    ## StorageClass parameters
+    parameters: {}
+
+#############################################################################################
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -146,7 +164,6 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
-
 
 worker:
   replicaCount: 1
@@ -167,9 +184,11 @@ worker:
   tolerations: []
   affinity: {}
   podAnnotations: {}
-  podSecurityContext: {}
+  podSecurityContext:
+    {}
     # fsGroup: 2000
-  securityContext: {}
+  securityContext:
+    {}
     # capabilities:
     #   drop:
     #   - ALL
@@ -177,10 +196,10 @@ worker:
     # runAsNonRoot: true
     # runAsUser: 1000
 
-
 web:
-  replicaCount: 3
-  resources: {}
+  replicaCount: 1
+  resources:
+    {}
     # limits:
     #   cpu: 100m
     #   memory: 128Mi
@@ -189,7 +208,7 @@ web:
     #   memory: 128Mi
   autoscaling:
     enabled: true
-    minReplicas: 3
+    minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
@@ -213,13 +232,14 @@ sync:
   tolerations: []
   affinity: {}
   podAnnotations: {}
-  podSecurityContext: {}
+  podSecurityContext:
+    {}
     # fsGroup: 2000
-  securityContext: {}
+  securityContext:
+    {}
     # capabilities:
     #   drop:
     #   - ALL
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
     # runAsUser: 1000
-

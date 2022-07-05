@@ -23,17 +23,20 @@ version: 0.0.1
 # It is recommended to use it with quotes.
 appVersion: "0.0.1"
 
+maintainers:
+  - name: "Polytomic"
+    email: "jake@polyotmic.com"
 
 dependencies:
-- name: postgresql
-  version: "11.3.0"
-  repository: "https://charts.bitnami.com/bitnami"
-  condition: postgresql.enabled
-- name: redis
-  version: "16.9.11"
-  repository: "https://charts.bitnami.com/bitnami"
-  condition: redis.enabled
-- name: nfs-server-provisioner
-  version: "1.4.0"
-  repository: "https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/"
-  condition: nfs-server-provisioner.enabled
+  - name: postgresql
+    version: "11.3.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+  - name: redis
+    version: "16.9.11"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
+  - name: nfs-server-provisioner
+    version: "1.4.0"
+    repository: "https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/"
+    condition: nfs-server-provisioner.enabled

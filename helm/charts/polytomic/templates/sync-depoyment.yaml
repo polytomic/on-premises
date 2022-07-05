@@ -57,7 +57,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-      {{ if and (.Values.nfs.enabled) (.Values.polytomic.cache.enabled) }}
+      {{ if and (index .Values "nfs-server-provisioner" "enabled") (.Values.polytomic.cache.enabled) }}
       - name: cache-volume
         persistentVolumeClaim:
           claimName: {{ .Values.polytomic.cache.volume_name }}
