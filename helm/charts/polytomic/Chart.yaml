@@ -1,6 +1,6 @@
 apiVersion: v2
-name: polytomic
-description: A Helm chart for Kubernetes
+name: Polytomic
+description: Polytomic helm chart for kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
 #

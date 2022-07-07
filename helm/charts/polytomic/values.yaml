@@ -3,11 +3,14 @@
 # Declare variables to be passed into your templates.
 
 image:
+  # -- Image repository
   repository: 568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem
+  # -- Image pull policy
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
+  # -- Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
+# -- Reference to one or more secrets to be used when pulling images
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -18,6 +21,7 @@ service:
 
 ingress:
   enabled: true
+  # -- Name of the ingress class to route through this controller
   className: nginx
   annotations:
     {}
@@ -38,42 +42,43 @@ polytomic:
   log_level: info
 
   deployment:
-    # A unique identifier for your on premises deploy, provided by Polytomic.
+    # -- A unique identifier for your on premises deploy, provided by Polytomic.
     name: ""
-    # The license key for your deployment, provided by Polytomic.
+    # -- The license key for your deployment, provided by Polytomic.
     key: ""
 
   auth:
-    # The email address to use when starting for the first time;
+    #  -- The email address to use when starting for the first time;
     # this user will be able to add additional users and configure Polytomic.
     root_user: user@example.com
 
-    # Base URL for accessing Polytomic; for example, https://polytomic.mycompany.com.
+    # -- Base URL for accessing Polytomic; for example, https://polytomic.mycompany.com.
     # This will be used when redirecting back from Google and
     # other integrations after authenticating with OAuth.
     url: https://polytomic.mycompany.com
 
-    #  Google OAuth Client ID and secret, obtained by creating a OAuth 2.0 Client ID
+    # -- Google OAuth Client ID, obtained by creating a OAuth 2.0 Client ID
     google_client_id: ""
+    # -- Google OAuth Client Secret, obtained by creating a OAuth 2.0 Client ID
     google_client_secret: ""
 
-    # Single player mode
+    # -- Single player mode
     # If true, no authentication will be required
     single_player: true
 
   # Postgres connection settings
   postgres:
-    # Postgres user name
+    # -- Postgres user name
     username: polytomic
-    # Password for given user
+    # -- Password for given user
     password: polytomic
-    # Host address
+    # -- Host address
     host: polytomic-postgresql
-    # Port number
+    # -- Port number
     port: 5432
-    # Database name
+    # -- Database name
     database: polytomic
-    # enable/disable SSL
+    # -- enable/disable SSL
     ssl: false
 
   # Redis connection settings
@@ -89,16 +94,16 @@ polytomic:
   # Credentials for AWS are pulled through the AWS-SDK's credential chain and the user/role must have permissions for the bucket.
   # We recommend setting a bucket lifecycle rule to automatically expire objects.
   s3:
-    # The bucket stores log files containing records involved in a sync execution
+    # -- The bucket stores log files containing records involved in a sync execution
     log_bucket: executions
-    # The bucket is used to store query exports from Polytomic's SQL Runner.
+    # -- The bucket is used to store query exports from Polytomic's SQL Runner.
     query_bucket: queries
 
-    # Access key ID
+    # -- Access key ID
     access_key_id: ""
-    # Secret access key
+    # -- Secret access key
     secret_access_key: ""
-    # S3 region e.g. us-east-1
+    # -- S3 region e.g. us-east-1
     region: us-east-1
 
   cache:
