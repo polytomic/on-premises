@@ -1,8 +1,8 @@
 locals {
   private_subnet_cidrs       = var.vpc_id == "" ? module.vpc[0].private_subnets_cidr_blocks : [for s in data.aws_subnet.subnet : s.cidr_block]
-  polytomic_export_bucket    = "export"
-  polytomic_execution_bucket = "execution"
-  polytomic_artifact_bucket  = "artifact"
+  polytomic_export_bucket    = "exports"
+  polytomic_execution_bucket = "executions"
+  polytomic_artifact_bucket  = "artifacts"
   redis_auth_token           = var.redis_auth_token != "" ? var.redis_auth_token : var.redis_endpoint == "" ? random_password.redis[0].result : ""
   database_url               = var.database_endpoint == "" ? "postgres://${var.database_username}:${module.database[0].db_instance_password}@${module.database[0].db_instance_address}:${var.database_port}/${var.database_name}" : var.database_endpoint
   redis_url                  = var.redis_endpoint == "" ? "rediss://:${local.redis_auth_token}@${module.redis[0].elasticache_replication_group_primary_endpoint_address}:${var.redis_port}" : var.redis_endpoint
@@ -22,9 +22,9 @@ locals {
       DATABASE_URL                     = local.database_url,
       REDIS_URL                        = local.redis_url,
       POLYTOMIC_URL                    = var.polytomic_url == "" ? "http://${aws_alb.main.dns_name}/" : var.polytomic_url,
-      EXECUTION_LOG_BUCKET             = "${var.prefix}-${local.polytomic_execution_bucket}",
+      EXECUTION_LOG_BUCKET             = "${var.prefix}-${var.bucket_prefix}-${local.polytomic_execution_bucket}",
       EXECUTION_LOG_REGION             = var.region,
-      EXPORT_QUERY_BUCKET              = "${var.prefix}-${local.polytomic_export_bucket}",
+      EXPORT_QUERY_BUCKET              = "${var.prefix}-${var.bucket_prefix}-${local.polytomic_export_bucket}",
       EXPORT_QUERY_REGION              = var.region,
       LOG_LEVEL                        = var.polytomic_log_level,
       GOOGLE_CLIENT_ID                 = var.polytomic_google_client_id,
