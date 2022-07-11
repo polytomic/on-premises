@@ -19,7 +19,8 @@ locals {
     env = {
       ROOT_USER                        = var.polytomic_root_user,
       LOCAL_DATA                       = var.polytomic_data_path != "",
-      LOCAL_DATA_PATH                  = var.polytomic_data_path,
+      LOCAL_DATA_PATH                  = "${var.polytomic_data_path}/models",
+      JOB_PAYLOAD_PATH                 = "${var.polytomic_data_path}/jobs"
       AWS_REGION                       = var.region,
       DEPLOYMENT                       = var.polytomic_deployment,
       DEPLOYMENT_KEY                   = var.polytomic_deployment_key,
