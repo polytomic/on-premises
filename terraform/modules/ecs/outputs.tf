@@ -16,4 +16,5 @@ output "target_group_arn" {
 
 output "deploy_api_key" {
   value = random_password.deployment_api_key.result
+  description = "API key used to authenticate with the Polytomic management API."
 }
