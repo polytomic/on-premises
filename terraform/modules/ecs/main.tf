@@ -1,3 +1,7 @@
+resource "random_password" "deployment_api_key" {
+  length = 64
+}
+
 locals {
   private_subnet_cidrs       = var.vpc_id == "" ? module.vpc[0].private_subnets_cidr_blocks : [for s in data.aws_subnet.subnet : s.cidr_block]
   polytomic_export_bucket    = "exports"
@@ -19,6 +23,7 @@ locals {
       AWS_REGION                       = var.region,
       DEPLOYMENT                       = var.polytomic_deployment,
       DEPLOYMENT_KEY                   = var.polytomic_deployment_key,
+      DEPLOYMENT_API_KEY               = random_password.deployment_api_key.result
       DATABASE_URL                     = local.database_url,
       REDIS_URL                        = local.redis_url,
       POLYTOMIC_URL                    = var.polytomic_url == "" ? "http://${aws_alb.main.dns_name}/" : var.polytomic_url,
