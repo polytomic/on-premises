@@ -13,3 +13,7 @@ output "loadbalancer_arn" {
 output "target_group_arn" {
   value = aws_alb_target_group.polytomic.id
 }
+
+output "deploy_api_key" {
+  value = random_password.deployment_api_key.result
+}
