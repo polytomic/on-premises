@@ -31,6 +31,7 @@ locals {
       EXECUTION_LOG_REGION             = var.region,
       EXPORT_QUERY_BUCKET              = "${var.prefix}-${var.bucket_prefix}-${local.polytomic_export_bucket}",
       EXPORT_QUERY_REGION              = var.region,
+      RECORD_LOG_DISABLED              = var.record_log_disabled
       LOG_LEVEL                        = var.polytomic_log_level,
       GOOGLE_CLIENT_ID                 = var.polytomic_google_client_id,
       GOOGLE_CLIENT_SECRET             = var.polytomic_google_client_secret,
