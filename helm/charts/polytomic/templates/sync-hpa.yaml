@@ -1,0 +1,28 @@
+{{- if .Values.sync.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "polytomic.fullname" . }}-sync
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "polytomic.fullname" . }}-sync
+  minReplicas: {{ .Values.sync.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.sync.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.sync.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.sync.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.sync.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.sync.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

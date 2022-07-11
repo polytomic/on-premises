@@ -1,5 +1,8 @@
 name: TFLint
-on: [pull_request]
+on:
+  pull_request:
+    paths:
+      - 'terraform/**'
 jobs:
   tflint:
     runs-on: ubuntu-latest

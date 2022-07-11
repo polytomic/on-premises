@@ -1,0 +1,21 @@
+{{ template "chart.header" . }}
+{{ template "chart.description" . }}
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+
+## Installing the Chart
+
+To install the chart with the release name `polytomic`:
+
+```console
+git clone https://github.com/polytomic/on-premises.git
+cd on-premises
+helm install helm/charts/polytomic polytomic
+```
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

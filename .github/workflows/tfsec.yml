@@ -1,6 +1,8 @@
 name: tfsec-pr-commenter
 on:
   pull_request:
+    paths:
+      - 'terraform/**'
 jobs:
   tfsec:
     name: tfsec PR commenter
