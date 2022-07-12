@@ -27,7 +27,7 @@ module "polytomic-ecs" {
 
   polytomic_single_player = false
   polytomic_bootstrap     = true
-
+  polytomic_record_log_disabled = false
 
   # valid values are debug, info, warn, error; the default is info
   polytomic_log_level = "info"

@@ -20,7 +20,7 @@ locals {
       ROOT_USER                        = var.polytomic_root_user,
       LOCAL_DATA                       = var.polytomic_data_path != "",
       LOCAL_DATA_PATH                  = "${var.polytomic_data_path}/models",
-      JOB_PAYLOAD_PATH                 = "${var.polytomic_data_path}/jobs"
+      JOB_PAYLOAD_PATH                 = "${var.polytomic_data_path}/jobs",
       AWS_REGION                       = var.region,
       DEPLOYMENT                       = var.polytomic_deployment,
       DEPLOYMENT_KEY                   = var.polytomic_deployment_key,
@@ -32,7 +32,7 @@ locals {
       EXECUTION_LOG_REGION             = var.region,
       EXPORT_QUERY_BUCKET              = "${var.prefix}-${var.bucket_prefix}-${local.polytomic_export_bucket}",
       EXPORT_QUERY_REGION              = var.region,
-      RECORD_LOG_DISABLED              = var.record_log_disabled
+      RECORD_LOG_DISABLED              = var.polytomic_record_log_disabled,
       LOG_LEVEL                        = var.polytomic_log_level,
       GOOGLE_CLIENT_ID                 = var.polytomic_google_client_id,
       GOOGLE_CLIENT_SECRET             = var.polytomic_google_client_secret,
