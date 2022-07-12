@@ -9,3 +9,4 @@ _site
 **/**.tfstate.*.backup
 **/**.terraform.lock.hcl
 .terraform
+.vscode/

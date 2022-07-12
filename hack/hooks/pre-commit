@@ -1,0 +1,57 @@
+#!/bin/sh
+echo
+echo "Running pre-commit hooks..."
+echo
+
+echo "Terraform docs:"
+SRC_PATTERN="terraform/modules/"
+if git diff --cached --name-only | grep --quiet "$SRC_PATTERN"
+then
+  # Ensure terraform-docs is installed
+  if ! command -v terraform-docs >/dev/null; then
+    echo "terraform-docs is not installed 😥. Please install terraform-docs: https://terraform-docs.io/user-guide/installation/"
+    exit 1
+  fi
+
+  # Keep module docs up to date
+  for d in terraform/modules/*; do
+    if terraform-docs md "$d" > "$d/README.md"; then
+      echo "Documentation for module $d/README.md written... 🤠"
+      git add "./$d/README.md"
+    fi
+  done
+  echo
+else
+  echo "No terraform files changed. Not writing docs 😴"
+  echo
+fi
+
+
+
+echo "Terraform format:"
+SRC_PATTERN="terraform/modules/"
+if git diff --cached --name-only | grep --quiet "$SRC_PATTERN"
+then
+  # Ensure terraform is installed
+  if ! command -v terraform >/dev/null; then
+    echo "Terraform is not installed 😥. Please install Terraform: https://www.terraform.io/downloads"
+    exit 1
+  fi
+
+  # Keep module formatted
+  for d in terraform/modules/*; do
+    if files=$(terraform fmt "$d") ; then
+      for f in $files; do
+        echo "File $f formatted... 🤠"
+        git add "$f"
+      done
+    fi
+  done
+  echo
+else
+  echo "No terraform files changed. Not formatting 😴"
+  echo
+fi
+
+
+
