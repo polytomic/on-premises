@@ -49,7 +49,7 @@ module "polytomic-ecs" {
 
   polytomic_single_player = false
   polytomic_bootstrap     = true
-
+  polytomic_record_log_disabled = false
 
   # valid values are debug, info, warn, error; the default is info
   polytomic_log_level = "info"
@@ -264,6 +264,7 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_log_level"></a> [polytomic\_log\_level](#input\_polytomic\_log\_level) | The log level to use for Polytomic | `string` | `"info"` | no |
 | <a name="input_polytomic_port"></a> [polytomic\_port](#input\_polytomic\_port) | Port on which Polytomic is listening | `string` | `"80"` | no |
 | <a name="input_polytomic_preflight_check"></a> [polytomic\_preflight\_check](#input\_polytomic\_preflight\_check) | Whether to run a preflight check | `bool` | `true` | no |
+| <a name="input_polytomic_record_log_disabled"></a> [polytomic\_record\_log\_disabled](#input\_polytomic\_record\_log\_disabled) | Globally disable record logging for this deployment | `bool` | `false` | no |
 | <a name="input_polytomic_root_user"></a> [polytomic\_root\_user](#input\_polytomic\_root\_user) | The email address to use when starting for the first time; this user will be able to add additional users and configure Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_single_player"></a> [polytomic\_single\_player](#input\_polytomic\_single\_player) | Whether to use the single player mode | `bool` | `false` | no |
 | <a name="input_polytomic_sso_domain"></a> [polytomic\_sso\_domain](#input\_polytomic\_sso\_domain) | Domain for SSO users of first Polytomic workspace; ie, example.com. | `string` | `""` | no |
@@ -275,7 +276,6 @@ module "polytomic-ecs" {
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | n/a | `string` | `""` | no |
 | <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | Private subnet IDs | `list` | `[]` | no |
 | <a name="input_public_subnet_ids"></a> [public\_subnet\_ids](#input\_public\_subnet\_ids) | Public subnet IDs | `list` | `[]` | no |
-| <a name="input_record_log_disabled"></a> [record\_log\_disabled](#input\_record\_log\_disabled) | Globally disable record logging for this deployment | `bool` | `false` | no |
 | <a name="input_redis_at_rest_encryption_enabled"></a> [redis\_at\_rest\_encryption\_enabled](#input\_redis\_at\_rest\_encryption\_enabled) | Redis at rest encryption enabled | `string` | `"true"` | no |
 | <a name="input_redis_auth_token"></a> [redis\_auth\_token](#input\_redis\_auth\_token) | Redis auth token | `string` | `""` | no |
 | <a name="input_redis_cluster_size"></a> [redis\_cluster\_size](#input\_redis\_cluster\_size) | Redis cluster size | `string` | `"1"` | no |

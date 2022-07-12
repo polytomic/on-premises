@@ -342,7 +342,7 @@ variable "bucket_prefix" {
   default     = "polytomic"
 }
 
-variable "record_log_disabled" {
+variable "polytomic_record_log_disabled" {
   description = "Globally disable record logging for this deployment"
   default = false
 }
