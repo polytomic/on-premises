@@ -1,4 +1,5 @@
 resource "random_password" "deployment_api_key" {
+  count  = var.polytomic_deploymet_api_key == "" ? 1 : 0
   length = 64
 }
 
@@ -24,7 +25,7 @@ locals {
       AWS_REGION                       = var.region,
       DEPLOYMENT                       = var.polytomic_deployment,
       DEPLOYMENT_KEY                   = var.polytomic_deployment_key,
-      DEPLOYMENT_API_KEY               = random_password.deployment_api_key.result
+      DEPLOYMENT_API_KEY               = var.polytomic_deploymet_api_key == "" ? random_password.deployment_api_key[0].result : var.polytomic_deploymet_api_key,
       DATABASE_URL                     = local.database_url,
       REDIS_URL                        = local.redis_url,
       POLYTOMIC_URL                    = var.polytomic_url == "" ? "http://${aws_alb.main.dns_name}/" : var.polytomic_url,
