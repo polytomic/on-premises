@@ -86,3 +86,12 @@ It will setup a local kind cluster and install the polytomic helm chart.
 ```
 ./hack/sandbox.sh
 ```
+
+
+## Contributing
+
+Install git hooks
+
+```
+git config core.hooksPath hack/hooks
+```
