@@ -17,16 +17,17 @@ module "polytomic-ecs" {
   ####### Polytomic settings #######
   polytomic_image = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:rel2022.06.21.01"
 
-  polytomic_root_user      = "user@example.com"
-  polytomic_deployment     = "DEPLYOMENT"
-  polytomic_deployment_key = "DEPLYOMENT_KEY"
+  polytomic_root_user          = "user@example.com"
+  polytomic_deployment         = "DEPLOYMENT"
+  polytomic_deployment_key     = "DEPLOYMENT_KEY"
+  polytomic_deployment_api_key = "DEPLOYMENT_API_KEY"
 
   polytomic_google_client_id     = "GOOGLE_ID"
   polytomic_google_client_secret = "GOOGLE_SECRET"
   polytomic_url                  = ""
 
-  polytomic_single_player = false
-  polytomic_bootstrap     = true
+  polytomic_single_player       = false
+  polytomic_bootstrap           = true
   polytomic_record_log_disabled = false
 
   # valid values are debug, info, warn, error; the default is info

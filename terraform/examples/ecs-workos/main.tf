@@ -19,8 +19,8 @@ module "polytomic-ecs" {
   polytomic_image = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:rel2022.06.30.01"
 
   polytomic_root_user      = "user@example.com"
-  polytomic_deployment     = "DEPLYOMENT"
-  polytomic_deployment_key = "DEPLYOMENT_KEY"
+  polytomic_deployment     = "DEPLOYMENT"
+  polytomic_deployment_key = "DEPLOYMENT_KEY"
 
   # Name of first Polytomic workspace
   polytomic_workspace_name = "polytomic-workspace"

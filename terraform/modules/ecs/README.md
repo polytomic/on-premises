@@ -39,16 +39,17 @@ module "polytomic-ecs" {
   ####### Polytomic settings #######
   polytomic_image = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:rel2022.06.21.01"
 
-  polytomic_root_user      = "user@example.com"
-  polytomic_deployment     = "DEPLYOMENT"
-  polytomic_deployment_key = "DEPLYOMENT_KEY"
+  polytomic_root_user          = "user@example.com"
+  polytomic_deployment         = "DEPLOYMENT"
+  polytomic_deployment_key     = "DEPLOYMENT_KEY"
+  polytomic_deployment_api_key = "DEPLOYMENT_API_KEY"
 
   polytomic_google_client_id     = "GOOGLE_ID"
   polytomic_google_client_secret = "GOOGLE_SECRET"
   polytomic_url                  = ""
 
-  polytomic_single_player = false
-  polytomic_bootstrap     = true
+  polytomic_single_player       = false
+  polytomic_bootstrap           = true
   polytomic_record_log_disabled = false
 
   # valid values are debug, info, warn, error; the default is info
@@ -156,8 +157,8 @@ module "polytomic-ecs" {
   polytomic_image = "005734951936.dkr.ecr.us-east-1.amazonaws.com/jake-on-prem:rel2022.06.29.rc1"
 
   polytomic_root_user      = "user@example.com"
-  polytomic_deployment     = "DEPLYOMENT"
-  polytomic_deployment_key = "DEPLYOMENT_KEY"
+  polytomic_deployment     = "DEPLOYMENT"
+  polytomic_deployment_key = "DEPLOYMENT_KEY"
 
   polytomic_google_client_id     = "GOOGLE_ID"
   polytomic_google_client_secret = "GOOGLE_SECRET"
@@ -257,6 +258,7 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_bootstrap"></a> [polytomic\_bootstrap](#input\_polytomic\_bootstrap) | Whether to bootstrap Polytomic | `bool` | `false` | no |
 | <a name="input_polytomic_data_path"></a> [polytomic\_data\_path](#input\_polytomic\_data\_path) | Filesystem path to local data cache | `string` | `"/var/polytomic"` | no |
 | <a name="input_polytomic_deployment"></a> [polytomic\_deployment](#input\_polytomic\_deployment) | A unique identifier for your on premises deploy, provided by Polytomic | `string` | `""` | no |
+| <a name="input_polytomic_deployment_api_key"></a> [polytomic\_deployment\_api\_key](#input\_polytomic\_deployment\_api\_key) | API key used to authenticate with the Polytomic management API | `string` | `""` | no |
 | <a name="input_polytomic_deployment_key"></a> [polytomic\_deployment\_key](#input\_polytomic\_deployment\_key) | The license key for your deployment, provided by Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_google_client_id"></a> [polytomic\_google\_client\_id](#input\_polytomic\_google\_client\_id) | Google OAuth Client ID, obtained by creating a OAuth 2.0 Client ID | `string` | `""` | no |
 | <a name="input_polytomic_google_client_secret"></a> [polytomic\_google\_client\_secret](#input\_polytomic\_google\_client\_secret) | Google OAuth Client Secret, obtained by creating a OAuth 2.0 Client ID | `string` | `""` | no |
