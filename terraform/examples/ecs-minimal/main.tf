@@ -12,8 +12,8 @@ module "polytomic-ecs" {
   polytomic_image = "005734951936.dkr.ecr.us-east-1.amazonaws.com/jake-on-prem:rel2022.06.29.rc1"
 
   polytomic_root_user      = "user@example.com"
-  polytomic_deployment     = "DEPLYOMENT"
-  polytomic_deployment_key = "DEPLYOMENT_KEY"
+  polytomic_deployment     = "DEPLOYMENT"
+  polytomic_deployment_key = "DEPLOYMENT_KEY"
 
   polytomic_google_client_id     = "GOOGLE_ID"
   polytomic_google_client_secret = "GOOGLE_SECRET"

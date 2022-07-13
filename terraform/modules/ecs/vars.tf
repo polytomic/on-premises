@@ -101,7 +101,7 @@ variable "polytomic_bootstrap" {
   description = "Whether to bootstrap Polytomic"
 }
 
-variable "polytomic_deploymet_api_key" {
+variable "polytomic_deployment_api_key" {
   description = "API key used to authenticate with the Polytomic management API"
   default     = ""
 }

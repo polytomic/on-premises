@@ -17,10 +17,10 @@ module "polytomic-ecs" {
   ####### Polytomic settings #######
   polytomic_image = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:rel2022.06.21.01"
 
-  polytomic_root_user         = "user@example.com"
-  polytomic_deployment        = "DEPLYOMENT"
-  polytomic_deployment_key    = "DEPLYOMENT_KEY"
-  polytomic_deploymet_api_key = "DEPLYOMENT_API_KEY"
+  polytomic_root_user          = "user@example.com"
+  polytomic_deployment         = "DEPLOYMENT"
+  polytomic_deployment_key     = "DEPLOYMENT_KEY"
+  polytomic_deployment_api_key = "DEPLOYMENT_API_KEY"
 
   polytomic_google_client_id     = "GOOGLE_ID"
   polytomic_google_client_secret = "GOOGLE_SECRET"
