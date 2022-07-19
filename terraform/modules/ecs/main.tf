@@ -12,6 +12,9 @@ locals {
   database_url               = var.database_endpoint == "" ? "postgres://${var.database_username}:${module.database[0].db_instance_password}@${module.database[0].db_instance_address}:${var.database_port}/${var.database_name}" : var.database_endpoint
   redis_url                  = var.redis_endpoint == "" ? "rediss://:${local.redis_auth_token}@${module.redis[0].elasticache_replication_group_primary_endpoint_address}:${var.redis_port}" : var.redis_endpoint
 
+
+  parsed_polytomic_url = regex("(?:(?P<scheme>[^:/?#]+):)?(?://(?P<authority>[^/?#]*))?(?P<path>[^?#]*)(?:\\?(?P<query>[^#]*))?(?:#(?P<fragment>.*))?", var.polytomic_url)
+
   environment = {
     image          = var.polytomic_image,
     region         = var.region,
@@ -28,7 +31,7 @@ locals {
       DEPLOYMENT_API_KEY               = var.polytomic_deployment_api_key == "" ? random_password.deployment_api_key[0].result : var.polytomic_deployment_api_key,
       DATABASE_URL                     = local.database_url,
       REDIS_URL                        = local.redis_url,
-      POLYTOMIC_URL                    = var.polytomic_url == "" ? "http://${aws_alb.main.dns_name}/" : var.polytomic_url,
+      POLYTOMIC_URL                    = var.polytomic_url == "" ? "http://${aws_alb.main.dns_name}/" : local.parsed_polytomic_url.scheme == null ? "https://${var.polytomic_url}" : "${var.polytomic_url}",
       EXECUTION_LOG_BUCKET             = "${var.prefix}-${var.bucket_prefix}-${local.polytomic_execution_bucket}",
       EXECUTION_LOG_REGION             = var.region,
       EXPORT_QUERY_BUCKET              = "${var.prefix}-${var.bucket_prefix}-${local.polytomic_export_bucket}",
