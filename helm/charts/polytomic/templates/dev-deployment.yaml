@@ -1,25 +1,23 @@
-{{- if not .Values.development -}}
+{{- if .Values.development -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "polytomic.fullname" . }}-worker
+  name: {{ include "polytomic.fullname" . }}-development
   labels:
     {{- include "polytomic.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.worker.autoscaling.enabled }}
-  replicas: {{ .Values.worker.replicaCount }}
-  {{- end }}
+  replicas: 1
   selector:
     matchLabels:
-      {{- include "polytomic.worker-selectorLabels" . | nindent 6 }}
+      {{- include "polytomic.dev-selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.worker.podAnnotations }}
+      {{- with .Values.dev.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "polytomic.worker-selectorLabels" . | nindent 8 }}
+        {{- include "polytomic.dev-selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -27,11 +25,11 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "polytomic.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.worker.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.dev.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.worker.securityContext | nindent 12 }}
+            {{- toYaml .Values.dev.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
@@ -39,18 +37,30 @@ spec:
               name: {{ include "polytomic.fullname" . }}-config
           env:          
           - name: ROLE
-            value: web
+            value: web,worker,sync
+          - name: DEPLOYMENT
+            value: local
+          - name: NAMESPACE
+            value: development
+          - name: LOCAL
+            value: "true"
+          - name: SENTRY_DSN
+            value: ""
+          ports:
+            - name: http
+              containerPort: 5100
+              protocol: TCP
           resources:
-            {{- toYaml .Values.worker.resources | nindent 12 }}
-      {{- with .Values.worker.nodeSelector }}
+            {{- toYaml .Values.dev.resources | nindent 12 }}
+      {{- with .Values.dev.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.worker.affinity }}
+      {{- with .Values.dev.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.worker.tolerations }}
+      {{- with .Values.dev.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

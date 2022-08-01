@@ -77,6 +77,15 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 
+{{/*
+Development Selector labels
+*/}}
+{{- define "polytomic.dev-selectorLabels" -}}
+app.kubernetes.io/name: {{ include "polytomic.name" . }}-dev
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+
 
 
 {{/*
