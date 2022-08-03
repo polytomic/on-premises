@@ -63,6 +63,6 @@ echo
 echo "Installing Polytomic 🚀 ..."
 pushd helm/charts/polytomic
 helm dep up
-helm install polytomic --set "imagePullSecrets[0].name=regcred" .
+helm install polytomic --set development=true --set "imagePullSecrets[0].name=regcred" .
 popd
 echo "Polytomic installed 🎉"
