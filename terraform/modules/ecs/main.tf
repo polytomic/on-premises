@@ -48,6 +48,8 @@ locals {
       SINGLE_PLAYER                    = var.polytomic_single_player,
       WORKOS_API_KEY                   = var.polytomic_workos_api_key,
       WORKOS_CLIENT_ID                 = var.polytomic_workos_client_id,
+      GA_MEASUREMENT_ID                = var.polytomic_ga_measurement_id,
+      ENABLED_BACKENDS                 = join(",", var.polytomic_enabled_backends)
     }
   }
 }

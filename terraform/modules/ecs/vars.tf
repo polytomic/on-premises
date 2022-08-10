@@ -106,6 +106,16 @@ variable "polytomic_deployment_api_key" {
   default     = ""
 }
 
+variable "polytomic_enabled_backends" {
+  description = "List of backends to enable"
+  default     = []
+}
+
+variable "polytomic_ga_measurement_id" {
+  description = "Google Analytics Measurement ID"
+  default     = ""
+}
+
 variable "vpc_id" {
   description = "VPC ID"
   default     = ""
