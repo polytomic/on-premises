@@ -260,6 +260,8 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_deployment"></a> [polytomic\_deployment](#input\_polytomic\_deployment) | A unique identifier for your on premises deploy, provided by Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_deployment_api_key"></a> [polytomic\_deployment\_api\_key](#input\_polytomic\_deployment\_api\_key) | API key used to authenticate with the Polytomic management API | `string` | `""` | no |
 | <a name="input_polytomic_deployment_key"></a> [polytomic\_deployment\_key](#input\_polytomic\_deployment\_key) | The license key for your deployment, provided by Polytomic | `string` | `""` | no |
+| <a name="input_polytomic_enabled_backends"></a> [polytomic\_enabled\_backends](#input\_polytomic\_enabled\_backends) | List of backends to enable | `list` | `[]` | no |
+| <a name="input_polytomic_ga_measurement_id"></a> [polytomic\_ga\_measurement\_id](#input\_polytomic\_ga\_measurement\_id) | Google Analytics Measurement ID | `string` | `""` | no |
 | <a name="input_polytomic_google_client_id"></a> [polytomic\_google\_client\_id](#input\_polytomic\_google\_client\_id) | Google OAuth Client ID, obtained by creating a OAuth 2.0 Client ID | `string` | `""` | no |
 | <a name="input_polytomic_google_client_secret"></a> [polytomic\_google\_client\_secret](#input\_polytomic\_google\_client\_secret) | Google OAuth Client Secret, obtained by creating a OAuth 2.0 Client ID | `string` | `""` | no |
 | <a name="input_polytomic_image"></a> [polytomic\_image](#input\_polytomic\_image) | Docker image to use for the Polytomic ECS cluster | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"` | no |
