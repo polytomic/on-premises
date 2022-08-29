@@ -8,6 +8,7 @@ locals {
   polytomic_export_bucket    = "exports"
   polytomic_execution_bucket = "executions"
   polytomic_artifact_bucket  = "artifacts"
+  polytomic_stats_bucket     = "stats"
   redis_auth_token           = var.redis_auth_token != "" ? var.redis_auth_token : var.redis_endpoint == "" ? random_password.redis[0].result : ""
   database_url               = var.database_endpoint == "" ? "postgres://${var.database_username}:${module.database[0].db_instance_password}@${module.database[0].db_instance_address}:${var.database_port}/${var.database_name}" : var.database_endpoint
   redis_url                  = var.redis_endpoint == "" ? "rediss://:${local.redis_auth_token}@${module.redis[0].elasticache_replication_group_primary_endpoint_address}:${var.redis_port}" : var.redis_endpoint

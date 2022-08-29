@@ -1,0 +1,28 @@
+[{
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "secretOptions": null,
+        "options": {
+            "awslogs-group": "polytomic-stats-reporter",
+            "awslogs-region": "${region}",
+            "awslogs-stream-prefix": "service",
+            "awslogs-create-group": "true"
+        }
+    },
+    "environment": [
+        %{ for key, value in env ~}
+        {
+            "name": "${key}",
+            "value": "${value}"
+        },
+        %{ endfor ~}
+        {
+            "name": "ROLE",
+            "value": "stats"
+        }
+    ],
+    "memoryReservation": 2048,
+    "image": "${image}",
+    "name": "stats",
+    "command": ["./ptctl", "--log-level", "warn", "stats", "-f", "${format}", "-o", "s3://${bucket}"]
+}]

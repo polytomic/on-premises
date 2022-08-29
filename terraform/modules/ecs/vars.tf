@@ -361,3 +361,19 @@ variable "polytomic_record_log_disabled" {
   description = "Globally disable record logging for this deployment"
   default     = false
 }
+
+variable "stats_cron" {
+  description = "Stats cron"
+  // Default is every day at midnight
+  default = "cron(0 0 * * ? *)"
+}
+
+variable "stats_format" {
+  description = "Output format for stats reporter"
+  default     = "json"
+}
+
+variable "enable_stats" {
+  description = "enable automatic stats reporting"
+  default     = false
+}

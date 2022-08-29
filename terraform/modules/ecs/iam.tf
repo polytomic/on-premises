@@ -107,3 +107,51 @@ resource "aws_iam_role_policy" "polytomic_ecs_execution_policy" {
   role   = aws_iam_role.polytomic_ecs_execution_role.id
   policy = data.aws_iam_policy_document.polytomic_execution.json
 }
+
+
+data "aws_iam_policy_document" "polytomic_stats_reporter" {
+  statement {
+    actions = [
+      "ecs:RunTask"
+    ]
+    resources = ["*"]
+  }
+
+
+  statement {
+    actions = [
+      "iam:ListInstanceProfiles",
+      "iam:ListRoles",
+      "iam:PassRole"
+    ]
+    resources = ["*"]
+  }
+
+
+}
+
+resource "aws_iam_role" "polytomic_stats_reporter_role" {
+  count              = var.enable_stats ? 1 : 0
+  name               = "${var.prefix}-stats-reporter-role"
+  assume_role_policy = data.aws_iam_policy_document.events_assume_role_policy.json
+  tags               = var.tags
+}
+
+
+resource "aws_iam_role_policy" "polytomic_stats_reporter_policy" {
+  count  = var.enable_stats ? 1 : 0
+  name   = "${var.prefix}-stats-reporter-policy"
+  role   = aws_iam_role.polytomic_stats_reporter_role[0].id
+  policy = data.aws_iam_policy_document.polytomic_stats_reporter.json
+}
+
+data "aws_iam_policy_document" "events_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["events.amazonaws.com"]
+    }
+  }
+}
