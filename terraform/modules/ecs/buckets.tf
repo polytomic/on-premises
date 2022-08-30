@@ -3,7 +3,8 @@ module "s3_bucket" {
   for_each = {
     exports    = local.polytomic_export_bucket,
     executions = local.polytomic_execution_bucket,
-    artifacts  = local.polytomic_artifact_bucket
+    artifacts  = local.polytomic_artifact_bucket,
+    stats      = local.polytomic_stats_bucket
   }
 
   bucket = "${var.prefix}-${var.bucket_prefix}-${each.key}"

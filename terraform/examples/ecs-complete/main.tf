@@ -33,6 +33,10 @@ module "polytomic-ecs" {
   # valid values are debug, info, warn, error; the default is info
   polytomic_log_level = "info"
 
+  # enable periodically writing stats to S3
+  enable_stats = true
+
+
   ####### VPC settings #######
   #
   # Use this to set the VPC ID to use for the VPC.
