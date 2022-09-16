@@ -28,5 +28,12 @@
     }],
     "memoryReservation": 2048,
     "image": "${image}",
-    "name": "sync"
+    "name": "sync",
+     "ulimits": [
+      {
+        "name": "nofile",
+        "softLimit": 1024000,
+        "hardLimit": 1024000
+      }
+    ]
 }]
