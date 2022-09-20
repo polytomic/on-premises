@@ -35,7 +35,7 @@
         "containerPath": "${mount_path}",
         "sourceVolume": "polytomic"
     }],
-    "memoryReservation": 512,
+    "memoryReservation": ${web_memory},
     "image": "${image}",
     "privileged": false,
     "name": "web"

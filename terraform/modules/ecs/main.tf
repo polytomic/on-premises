@@ -16,7 +16,11 @@ locals {
 
   parsed_polytomic_url = regex("(?:(?P<scheme>[^:/?#]+):)?(?://(?P<authority>[^/?#]*))?(?P<path>[^?#]*)(?:\\?(?P<query>[^#]*))?(?:#(?P<fragment>.*))?", var.polytomic_url)
 
+
   environment = {
+    web_memory     = var.polytomic_resource_web_memory
+    sync_memory    = var.polytomic_resource_sync_memory
+    worker_memory  = var.polytomic_resource_worker_memory
     image          = var.polytomic_image,
     region         = var.region,
     polytomic_port = var.polytomic_port,

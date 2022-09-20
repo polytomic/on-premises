@@ -3,8 +3,8 @@ resource "aws_ecs_task_definition" "web" {
 
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  cpu                      = 1024
-  memory                   = 2048
+  cpu                      = var.polytomic_resource_web_cpu
+  memory                   = var.polytomic_resource_web_memory
 
   task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
   execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
@@ -36,8 +36,8 @@ resource "aws_ecs_task_definition" "worker" {
 
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  cpu                      = 1024
-  memory                   = 2048
+  cpu                      = var.polytomic_resource_worker_cpu
+  memory                   = var.polytomic_resource_worker_memory
 
   task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
   execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
@@ -69,8 +69,8 @@ resource "aws_ecs_task_definition" "sync" {
 
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  cpu                      = 1024
-  memory                   = 2048
+  cpu                      = var.polytomic_resource_sync_cpu
+  memory                   = var.polytomic_resource_sync_memory
 
   task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
   execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
