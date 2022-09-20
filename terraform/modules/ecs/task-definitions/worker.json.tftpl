@@ -26,7 +26,7 @@
         "containerPath": "${mount_path}",
         "sourceVolume": "polytomic"
     }],
-    "memoryReservation": 2048,
+    "memoryReservation": ${worker_memory},
     "image": "${image}",
     "name": "worker",
     "ulimits": [

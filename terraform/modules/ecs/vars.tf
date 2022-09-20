@@ -116,6 +116,36 @@ variable "polytomic_ga_measurement_id" {
   default     = ""
 }
 
+variable "polytomic_resource_web_cpu" {
+  description = "CPU units for the web container"
+  default     = 2048 // 2 vCPU
+}
+
+variable "polytomic_resource_web_memory" {
+  description = "Memory units for the web container"
+  default     = 4096 // 4 GB
+}
+
+variable "polytomic_resource_worker_cpu" {
+  description = "CPU units for the worker container"
+  default     = 2048
+}
+
+variable "polytomic_resource_worker_memory" {
+  description = "Memory units for the worker container"
+  default     = 4096 // 4 GB
+}
+
+variable "polytomic_resource_sync_cpu" {
+  description = "CPU units for the sync container"
+  default     = 2048 // 2 vCPU
+}
+
+variable "polytomic_resource_sync_memory" {
+  description = "Memory units for the sync container"
+  default     = 8192 // 8 GB
+}
+
 variable "vpc_id" {
   description = "VPC ID"
   default     = ""
