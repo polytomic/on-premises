@@ -71,6 +71,11 @@ variable "polytomic_log_level" {
   description = "The log level to use for Polytomic"
 }
 
+variable "polytomic_sync_logging_enabled" {
+  default     = true
+  description = "Record execution logs for syncs performed via Polytomic"
+}
+
 variable "polytomic_workos_api_key" {
   description = "The API key for the WorkOS account to use for Polytomic"
   default     = ""
