@@ -55,6 +55,7 @@ locals {
       WORKOS_CLIENT_ID                 = var.polytomic_workos_client_id,
       GA_MEASUREMENT_ID                = var.polytomic_ga_measurement_id,
       ENABLED_BACKENDS                 = join(",", var.polytomic_enabled_backends)
+      CAPTURE_SYNC_LOGS                = var.polytomic_sync_logging_enabled
     }
   }
 }
