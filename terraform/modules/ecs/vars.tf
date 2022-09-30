@@ -412,3 +412,14 @@ variable "enable_stats" {
   description = "enable automatic stats reporting"
   default     = false
 }
+
+variable "enable_monitoring" {
+  description = "enable automatic monitoring"
+  default     = false
+}
+
+variable "alert_emails" {
+  description = "Email addresses to send alerts to"
+  type        = list(string)
+  default     = []
+}
