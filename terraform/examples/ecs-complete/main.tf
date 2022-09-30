@@ -37,6 +37,12 @@ module "polytomic-ecs" {
   enable_stats = true
 
 
+  alert_emails = ["user@example.com"]
+  aws_profile  = "default"
+
+  enable_monitoring = true
+
+
   ####### VPC settings #######
   #
   # Use this to set the VPC ID to use for the VPC.

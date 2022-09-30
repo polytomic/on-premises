@@ -59,6 +59,12 @@ module "polytomic-ecs" {
   enable_stats = true
 
 
+  alert_emails = ["user@example.com"]
+  aws_profile  = "default"
+
+  enable_monitoring = true
+
+
   ####### VPC settings #######
   #
   # Use this to set the VPC ID to use for the VPC.
@@ -181,9 +187,9 @@ module "polytomic-ecs" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.6 |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.22.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.1.1 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.3.2 |
 
 ## Resources
 
@@ -205,6 +211,9 @@ module "polytomic-ecs" {
 | [aws_iam_role_policy.polytomic_ecs_execution_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.polytomic_ecs_task_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.polytomic_stats_reporter_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_kms_key.alerts](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
+| [aws_sns_topic.alerts](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
+| [aws_sns_topic_subscription.alert_emails](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_subscription) | resource |
 | [null_resource.boostrap](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.preflight](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_password.deployment_api_key](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
@@ -224,11 +233,14 @@ module "polytomic-ecs" {
 | <a name="module_database"></a> [database](#module\_database) | terraform-aws-modules/rds/aws | n/a |
 | <a name="module_database_sg"></a> [database\_sg](#module\_database\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
 | <a name="module_ecs"></a> [ecs](#module\_ecs) | terraform-aws-modules/ecs/aws | n/a |
+| <a name="module_ecs-alerts-worker"></a> [ecs-alerts-worker](#module\_ecs-alerts-worker) | ../monitoring/ecs-alerts | n/a |
 | <a name="module_efs"></a> [efs](#module\_efs) | cloudposse/efs/aws | n/a |
 | <a name="module_efs_sg"></a> [efs\_sg](#module\_efs\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
+| <a name="module_elasticache-alerts"></a> [elasticache-alerts](#module\_elasticache-alerts) | ../monitoring/elasticache-alerts | n/a |
 | <a name="module_fargate_sg"></a> [fargate\_sg](#module\_fargate\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
 | <a name="module_lb_sg"></a> [lb\_sg](#module\_lb\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
 | <a name="module_log_group"></a> [log\_group](#module\_log\_group) | terraform-aws-modules/cloudwatch/aws//modules/log-group | ~> 3.0 |
+| <a name="module_rds-alerts"></a> [rds-alerts](#module\_rds-alerts) | ../monitoring/rds-alerts | n/a |
 | <a name="module_redis"></a> [redis](#module\_redis) | umotif-public/elasticache-redis/aws | n/a |
 | <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | n/a |
 | <a name="module_scheduled_task"></a> [scheduled\_task](#module\_scheduled\_task) | cn-terraform/ecs-fargate-scheduled-task/aws | 1.0.22 |
@@ -238,6 +250,7 @@ module "polytomic-ecs" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_alert_emails"></a> [alert\_emails](#input\_alert\_emails) | Email addresses to send alerts to | `list(string)` | `[]` | no |
 | <a name="input_aws_profile"></a> [aws\_profile](#input\_aws\_profile) | AWS profile to use | `string` | `"default"` | no |
 | <a name="input_bucket_prefix"></a> [bucket\_prefix](#input\_bucket\_prefix) | Bucket prefix | `string` | `"polytomic"` | no |
 | <a name="input_database_allocated_storage"></a> [database\_allocated\_storage](#input\_database\_allocated\_storage) | Database allocated storage | `number` | `20` | no |
@@ -265,6 +278,7 @@ module "polytomic-ecs" {
 | <a name="input_database_skip_final_snapshot"></a> [database\_skip\_final\_snapshot](#input\_database\_skip\_final\_snapshot) | Database skip final snapshot | `bool` | `false` | no |
 | <a name="input_database_username"></a> [database\_username](#input\_database\_username) | Database username | `string` | `"polytomic"` | no |
 | <a name="input_ecs_cluster_name"></a> [ecs\_cluster\_name](#input\_ecs\_cluster\_name) | ECS cluster name | `string` | `""` | no |
+| <a name="input_enable_monitoring"></a> [enable\_monitoring](#input\_enable\_monitoring) | enable automatic monitoring | `bool` | `false` | no |
 | <a name="input_enable_stats"></a> [enable\_stats](#input\_enable\_stats) | enable automatic stats reporting | `bool` | `false` | no |
 | <a name="input_polytomic_bootstrap"></a> [polytomic\_bootstrap](#input\_polytomic\_bootstrap) | Whether to bootstrap Polytomic | `bool` | `false` | no |
 | <a name="input_polytomic_data_path"></a> [polytomic\_data\_path](#input\_polytomic\_data\_path) | Filesystem path to local data cache | `string` | `"/var/polytomic"` | no |
