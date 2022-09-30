@@ -37,8 +37,4 @@ resource "aws_alb_listener" "http" {
     target_group_arn = aws_alb_target_group.polytomic.id
     type             = "forward"
   }
-
-  lifecycle {
-    ignore_changes = [default_action]
-  }
 }
