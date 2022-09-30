@@ -151,6 +151,11 @@ variable "polytomic_resource_sync_memory" {
   default     = 8192 // 8 GB
 }
 
+variable "polytomic_mssql_tx_isolation" {
+  description = "Transaction isolation level for MSSQL connections"
+  default     = ""
+}
+
 variable "vpc_id" {
   description = "VPC ID"
   default     = ""
