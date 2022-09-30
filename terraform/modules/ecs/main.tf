@@ -58,6 +58,7 @@ locals {
       GA_MEASUREMENT_ID                = var.polytomic_ga_measurement_id,
       ENABLED_BACKENDS                 = join(",", var.polytomic_enabled_backends)
       CAPTURE_SYNC_LOGS                = var.polytomic_sync_logging_enabled
+      MSSQL_TX_ISOLATION               = var.polytomic_mssql_tx_isolation
     }
   }
 }
