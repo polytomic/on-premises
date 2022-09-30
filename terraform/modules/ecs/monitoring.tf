@@ -1,5 +1,8 @@
+resource "aws_kms_key" "alerts" {}
+
 resource "aws_sns_topic" "alerts" {
-  name = "${var.prefix}-alerts"
+  name              = "${var.prefix}-alerts"
+  kms_master_key_id = aws_kms_key.alerts.arn
 }
 
 resource "aws_sns_topic_subscription" "alert_emails" {

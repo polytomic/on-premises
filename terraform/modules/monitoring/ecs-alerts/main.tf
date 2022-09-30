@@ -52,7 +52,7 @@ resource "aws_cloudwatch_metric_alarm" "running_tasks_low" {
   alarm_name          = format("%s_running_tasks_low", var.name)
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "1"
-  metric_name         = "RunningTasksCount"
+  metric_name         = "RunningTaskCount"
   namespace           = "ECS/ContainerInsights"
   period              = "120"
   statistic           = "Average"
