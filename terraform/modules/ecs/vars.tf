@@ -303,6 +303,11 @@ variable "database_engine" {
   default     = "postgres"
 }
 
+variable "database_auto_minor_version_upgrade" {
+  description = "Database auto minor version upgrade"
+  default     = false
+}
+
 variable "database_engine_version" {
   description = "Database engine version"
   default     = "14.1"
