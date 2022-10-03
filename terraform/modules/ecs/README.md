@@ -164,7 +164,7 @@ module "polytomic-ecs" {
   region = "us-east-1"
 
   ####### Polytomic settings #######
-  polytomic_image = "005734951936.dkr.ecr.us-east-1.amazonaws.com/jake-on-prem:rel2022.06.29.rc1"
+  polytomic_image = "005734951936.dkr.ecr.us-east-1.amazonaws.com/jake-on-prem:execution-logs"
 
   polytomic_root_user      = "user@example.com"
   polytomic_deployment     = "DEPLOYMENT"
@@ -307,6 +307,7 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_sso_domain"></a> [polytomic\_sso\_domain](#input\_polytomic\_sso\_domain) | Domain for SSO users of first Polytomic workspace; ie, example.com. | `string` | `""` | no |
 | <a name="input_polytomic_sync_logging_enabled"></a> [polytomic\_sync\_logging\_enabled](#input\_polytomic\_sync\_logging\_enabled) | Record execution logs for syncs performed via Polytomic | `bool` | `true` | no |
 | <a name="input_polytomic_url"></a> [polytomic\_url](#input\_polytomic\_url) | Base URL for accessing Polytomic. This will be used when redirecting back from Google and other integrations after authenticating with OAuth. | `string` | `""` | no |
+| <a name="input_polytomic_use_logger"></a> [polytomic\_use\_logger](#input\_polytomic\_use\_logger) | Use polytomic log aggregator | `bool` | `true` | no |
 | <a name="input_polytomic_workos_api_key"></a> [polytomic\_workos\_api\_key](#input\_polytomic\_workos\_api\_key) | The API key for the WorkOS account to use for Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_workos_client_id"></a> [polytomic\_workos\_client\_id](#input\_polytomic\_workos\_client\_id) | The WorkOS client ID | `string` | `""` | no |
 | <a name="input_polytomic_workos_org_id"></a> [polytomic\_workos\_org\_id](#input\_polytomic\_workos\_org\_id) | WorkOS organization ID for workspace SSO | `string` | `""` | no |

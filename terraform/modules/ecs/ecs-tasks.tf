@@ -158,4 +158,3 @@ resource "aws_ecs_service" "sync" {
   }
 }
 
-
