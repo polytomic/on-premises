@@ -6,13 +6,14 @@ module "database" {
   identifier = "${var.prefix}-database"
 
   # All available versions: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts
-  engine                = var.database_engine
-  engine_version        = var.database_engine_version
-  family                = var.database_family
-  major_engine_version  = var.database_major_engine_version
-  instance_class        = var.database_instance_class
-  allocated_storage     = var.database_allocated_storage
-  max_allocated_storage = var.database_max_allocated_storage
+  engine                     = var.database_engine
+  engine_version             = var.database_engine_version
+  auto_minor_version_upgrade = var.database_auto_minor_version_upgrade
+  family                     = var.database_family
+  major_engine_version       = var.database_major_engine_version
+  instance_class             = var.database_instance_class
+  allocated_storage          = var.database_allocated_storage
+  max_allocated_storage      = var.database_max_allocated_storage
 
   # NOTE: Do NOT use 'user' as the value for 'username' as it throws:
   # "Error creating DB Instance: InvalidParameterValue: MasterUsername

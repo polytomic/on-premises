@@ -254,6 +254,7 @@ module "polytomic-ecs" {
 | <a name="input_aws_profile"></a> [aws\_profile](#input\_aws\_profile) | AWS profile to use | `string` | `"default"` | no |
 | <a name="input_bucket_prefix"></a> [bucket\_prefix](#input\_bucket\_prefix) | Bucket prefix | `string` | `"polytomic"` | no |
 | <a name="input_database_allocated_storage"></a> [database\_allocated\_storage](#input\_database\_allocated\_storage) | Database allocated storage | `number` | `20` | no |
+| <a name="input_database_auto_minor_version_upgrade"></a> [database\_auto\_minor\_version\_upgrade](#input\_database\_auto\_minor\_version\_upgrade) | Database auto minor version upgrade | `bool` | `false` | no |
 | <a name="input_database_backup_retention"></a> [database\_backup\_retention](#input\_database\_backup\_retention) | Database backup retention | `number` | `30` | no |
 | <a name="input_database_backup_window"></a> [database\_backup\_window](#input\_database\_backup\_window) | Database backup window | `string` | `"03:00-06:00"` | no |
 | <a name="input_database_create_cloudwatch_log_group"></a> [database\_create\_cloudwatch\_log\_group](#input\_database\_create\_cloudwatch\_log\_group) | Database create cloudwatch log group | `bool` | `true` | no |
