@@ -9,7 +9,7 @@ module "polytomic-ecs" {
   region = "us-east-1"
 
   ####### Polytomic settings #######
-  polytomic_image = "005734951936.dkr.ecr.us-east-1.amazonaws.com/jake-on-prem:rel2022.06.29.rc1"
+  polytomic_image = "005734951936.dkr.ecr.us-east-1.amazonaws.com/jake-on-prem:execution-logs"
 
   polytomic_root_user      = "user@example.com"
   polytomic_deployment     = "DEPLOYMENT"

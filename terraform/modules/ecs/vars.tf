@@ -155,6 +155,11 @@ variable "polytomic_mssql_tx_isolation" {
   description = "Transaction isolation level for MSSQL connections"
   default     = ""
 }
+variable "polytomic_use_logger" {
+  description = "Use polytomic log aggregator"
+  default     = true
+}
+
 
 variable "vpc_id" {
   description = "VPC ID"
