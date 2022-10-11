@@ -59,7 +59,7 @@
 }
 %{~ if polytomic_logger },
 {
-    "image": "jaken551/vector:debug",
+    "image": "${polytomic_logger_image}",
      "logConfiguration": {
         "logDriver": "awslogs",
         "secretOptions": null,

@@ -14,18 +14,18 @@ locals {
   redis_url                  = var.redis_endpoint == "" ? "rediss://:${local.redis_auth_token}@${module.redis[0].elasticache_replication_group_primary_endpoint_address}:${var.redis_port}" : var.redis_endpoint
   monitoring_email           = "monitoring-${var.polytomic_deployment}@polytomic.com"
   alert_emails               = var.alert_emails == [] ? [local.monitoring_email] : concat(var.alert_emails, [local.monitoring_email])
-
-  parsed_polytomic_url = regex("(?:(?P<scheme>[^:/?#]+):)?(?://(?P<authority>[^/?#]*))?(?P<path>[^?#]*)(?:\\?(?P<query>[^#]*))?(?:#(?P<fragment>.*))?", var.polytomic_url)
+  parsed_polytomic_url       = regex("(?:(?P<scheme>[^:/?#]+):)?(?://(?P<authority>[^/?#]*))?(?P<path>[^?#]*)(?:\\?(?P<query>[^#]*))?(?:#(?P<fragment>.*))?", var.polytomic_url)
 
   environment = {
-    web_memory       = var.polytomic_resource_web_memory
-    sync_memory      = var.polytomic_resource_sync_memory
-    worker_memory    = var.polytomic_resource_worker_memory
-    image            = var.polytomic_image,
-    region           = var.region,
-    polytomic_port   = var.polytomic_port,
-    mount_path       = var.polytomic_data_path,
-    polytomic_logger = var.polytomic_use_logger,
+    web_memory             = var.polytomic_resource_web_memory
+    sync_memory            = var.polytomic_resource_sync_memory
+    worker_memory          = var.polytomic_resource_worker_memory
+    image                  = var.polytomic_image,
+    region                 = var.region,
+    polytomic_port         = var.polytomic_port,
+    mount_path             = var.polytomic_data_path,
+    polytomic_logger       = var.polytomic_use_logger,
+    polytomic_logger_image = var.polytomic_logger_image,
 
     env = {
       ROOT_USER                           = var.polytomic_root_user,

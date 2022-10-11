@@ -155,11 +155,16 @@ variable "polytomic_mssql_tx_isolation" {
   description = "Transaction isolation level for MSSQL connections"
   default     = ""
 }
+
 variable "polytomic_use_logger" {
   description = "Use polytomic log aggregator"
   default     = true
 }
 
+variable "polytomic_logger_image" {
+  description = "Docker image to use for the Polytomic log aggregator"
+  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest"
+}
 
 variable "vpc_id" {
   description = "VPC ID"
