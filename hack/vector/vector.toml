@@ -20,8 +20,8 @@ inputs = [ "filter" ]
 bucket =  "${EXECUTION_LOG_BUCKET:?err}"
 key_prefix = "{{ organization_id  }}/execution_logs/{{ sync_id }}/{{ execution_id }}"
 region = "${AWS_REGION:?err}"
-filename_append_uuid = false
-filename_time_format = ""
+filename_append_uuid = true
+filename_time_format = "%s"
 filename_extension = "json"
 [sinks.s3.encoding]
 codec = "json"
