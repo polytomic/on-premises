@@ -143,7 +143,7 @@ variable "polytomic_resource_worker_memory" {
 
 variable "polytomic_resource_sync_cpu" {
   description = "CPU units for the sync container"
-  default     = 2048 // 2 vCPU
+  default     = 4096 // 4 vCPU
 }
 
 variable "polytomic_resource_sync_memory" {
@@ -164,6 +164,16 @@ variable "polytomic_use_logger" {
 variable "polytomic_logger_image" {
   description = "Docker image to use for the Polytomic log aggregator"
   default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest"
+}
+
+variable "polytomic_tx_buffer_size" {
+  description = "Transaction buffer size for datalite cache"
+  default     = 10000
+}
+
+variable "polytomic_query_worker_count" {
+  description = "Number of query workers to use"
+  default     = 20
 }
 
 variable "vpc_id" {

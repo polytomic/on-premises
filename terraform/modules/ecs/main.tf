@@ -61,6 +61,9 @@ locals {
       MSSQL_TX_ISOLATION                  = var.polytomic_mssql_tx_isolation
       EXECUTION_LOGS_V2                   = var.polytomic_use_logger
       TASK_EXECUTOR_CLEANUP_DELAY_SECONDS = 30
+      RETAIN_CACHE_DIR                    = "/var/polytomic/retained"
+      TX_BUFFER_SIZE                      = var.polytomic_tx_buffer_size
+      QUERY_WORKERS                       = var.polytomic_query_worker_count
     }
   }
 }
