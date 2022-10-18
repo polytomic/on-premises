@@ -168,7 +168,7 @@ variable "polytomic_logger_image" {
 
 variable "polytomic_tx_buffer_size" {
   description = "Transaction buffer size for datalite cache"
-  default     = 10000
+  default     = 50000
 }
 
 variable "polytomic_query_worker_count" {
