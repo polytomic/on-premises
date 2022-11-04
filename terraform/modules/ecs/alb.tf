@@ -5,7 +5,6 @@ resource "aws_alb" "main" {
 }
 
 resource "aws_alb_target_group" "polytomic" {
-  name        = "${var.prefix}-target-group"
   port        = 80
   protocol    = "HTTP"
   vpc_id      = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
