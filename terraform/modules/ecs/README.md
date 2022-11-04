@@ -345,8 +345,12 @@ module "polytomic-ecs" {
 
 | Name | Description |
 |------|-------------|
+| <a name="output_cluster_arn"></a> [cluster\_arn](#output\_cluster\_arn) | n/a |
 | <a name="output_deploy_api_key"></a> [deploy\_api\_key](#output\_deploy\_api\_key) | API key used to authenticate with the Polytomic management API. |
 | <a name="output_loadbalancer_arn"></a> [loadbalancer\_arn](#output\_loadbalancer\_arn) | n/a |
 | <a name="output_loadbalancer_dns_name"></a> [loadbalancer\_dns\_name](#output\_loadbalancer\_dns\_name) | n/a |
 | <a name="output_loadbalancer_zone_id"></a> [loadbalancer\_zone\_id](#output\_loadbalancer\_zone\_id) | n/a |
+| <a name="output_override_sgs"></a> [override\_sgs](#output\_override\_sgs) | n/a |
+| <a name="output_override_subnets"></a> [override\_subnets](#output\_override\_subnets) | n/a |
+| <a name="output_override_task_definition"></a> [override\_task\_definition](#output\_override\_task\_definition) | n/a |
 | <a name="output_target_group_arn"></a> [target\_group\_arn](#output\_target\_group\_arn) | n/a |
