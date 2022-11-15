@@ -297,6 +297,7 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_mssql_tx_isolation"></a> [polytomic\_mssql\_tx\_isolation](#input\_polytomic\_mssql\_tx\_isolation) | Transaction isolation level for MSSQL connections | `string` | `""` | no |
 | <a name="input_polytomic_port"></a> [polytomic\_port](#input\_polytomic\_port) | Port on which Polytomic is listening | `string` | `"80"` | no |
 | <a name="input_polytomic_preflight_check"></a> [polytomic\_preflight\_check](#input\_polytomic\_preflight\_check) | Whether to run a preflight check | `bool` | `true` | no |
+| <a name="input_polytomic_query_runner_exclude_dbs"></a> [polytomic\_query\_runner\_exclude\_dbs](#input\_polytomic\_query\_runner\_exclude\_dbs) | List of databases to exclude from query runner | `list` | `[]` | no |
 | <a name="input_polytomic_query_worker_count"></a> [polytomic\_query\_worker\_count](#input\_polytomic\_query\_worker\_count) | Number of query workers to use | `number` | `20` | no |
 | <a name="input_polytomic_record_log_disabled"></a> [polytomic\_record\_log\_disabled](#input\_polytomic\_record\_log\_disabled) | Globally disable record logging for this deployment | `bool` | `false` | no |
 | <a name="input_polytomic_resource_sync_cpu"></a> [polytomic\_resource\_sync\_cpu](#input\_polytomic\_resource\_sync\_cpu) | CPU units for the sync container | `number` | `4096` | no |

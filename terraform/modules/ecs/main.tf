@@ -64,6 +64,7 @@ locals {
       RETAIN_CACHE_DIR                    = "/var/polytomic/retained"
       TX_BUFFER_SIZE                      = var.polytomic_tx_buffer_size
       QUERY_WORKERS                       = var.polytomic_query_worker_count
+      QUERY_RUNNER_EXCLUDE                = join(",", var.polytomic_query_runner_exclude_dbs)
     }
   }
 }

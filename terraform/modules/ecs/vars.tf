@@ -176,6 +176,13 @@ variable "polytomic_query_worker_count" {
   default     = 20
 }
 
+
+variable "polytomic_query_runner_exclude_dbs" {
+  description = "List of databases to exclude from query runner"
+  default     = []
+}
+
+
 variable "vpc_id" {
   description = "VPC ID"
   default     = ""
