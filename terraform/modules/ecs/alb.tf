@@ -2,6 +2,8 @@ resource "aws_alb" "main" {
   name            = "${var.prefix}-alb"
   subnets         = var.vpc_id == "" ? module.vpc[0].public_subnets : var.public_subnet_ids
   security_groups = [module.lb_sg.security_group_id]
+  tags            = var.tags
+
 }
 
 resource "aws_alb_target_group" "polytomic" {
@@ -9,6 +11,8 @@ resource "aws_alb_target_group" "polytomic" {
   protocol    = "HTTP"
   vpc_id      = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
   target_type = "ip"
+  tags        = var.tags
+
 
   health_check {
     healthy_threshold   = "3"
@@ -31,6 +35,8 @@ resource "aws_alb_listener" "http" {
   load_balancer_arn = aws_alb.main.id
   port              = 80
   protocol          = "HTTP"
+  tags              = var.tags
+
 
   default_action {
     target_group_arn = aws_alb_target_group.polytomic.id

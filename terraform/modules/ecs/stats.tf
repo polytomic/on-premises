@@ -27,6 +27,8 @@ resource "aws_ecs_task_definition" "stats_reporter" {
 
   task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
   execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
+  tags               = var.tags
+
 
 
 
