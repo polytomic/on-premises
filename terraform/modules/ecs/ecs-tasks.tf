@@ -8,6 +8,8 @@ resource "aws_ecs_task_definition" "web" {
 
   task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
   execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
+  tags               = var.tags
+
 
   runtime_platform {
     operating_system_family = "LINUX"
@@ -41,6 +43,8 @@ resource "aws_ecs_task_definition" "worker" {
 
   task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
   execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
+  tags               = var.tags
+
 
   runtime_platform {
     operating_system_family = "LINUX"
@@ -74,6 +78,8 @@ resource "aws_ecs_task_definition" "sync" {
 
   task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
   execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
+  tags               = var.tags
+
 
   runtime_platform {
     operating_system_family = "LINUX"
@@ -108,6 +114,8 @@ resource "aws_ecs_service" "web" {
   platform_version                  = "1.4.0"
 
   launch_type = "FARGATE"
+  tags        = var.tags
+
 
   network_configuration {
     subnets          = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
@@ -132,6 +140,8 @@ resource "aws_ecs_service" "worker" {
   platform_version       = "1.4.0"
 
   launch_type = "FARGATE"
+  tags        = var.tags
+
 
   network_configuration {
     subnets          = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
@@ -150,6 +160,8 @@ resource "aws_ecs_service" "sync" {
   platform_version       = "1.4.0"
 
   launch_type = "FARGATE"
+  tags        = var.tags
+
 
   network_configuration {
     subnets          = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
