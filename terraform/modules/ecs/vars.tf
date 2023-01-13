@@ -416,6 +416,11 @@ variable "ecs_cluster_name" {
   default     = ""
 }
 
+variable "ecs_enable_container_insights" {
+  description = "ECS enable container insights"
+  default     = true
+}
+
 
 variable "tags" {
   description = "A map of tags to add to all resources"

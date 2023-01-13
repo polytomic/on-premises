@@ -14,6 +14,12 @@ module "ecs" {
     }
   }
 
+  cluster_settings = {
+    name  = "containerInsights"
+    value = var.ecs_enable_container_insights ? "enabled" : "disabled"
+  }
+
+
   fargate_capacity_providers = {
     FARGATE = {
       default_capacity_provider_strategy = {
