@@ -182,6 +182,10 @@ variable "polytomic_query_runner_exclude_dbs" {
   default     = []
 }
 
+variable "polytomic_legacy_config" {
+  description = "Use legacy configuration"
+  default     = false
+}
 
 variable "vpc_id" {
   description = "VPC ID"
