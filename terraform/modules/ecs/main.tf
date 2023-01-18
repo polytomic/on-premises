@@ -66,6 +66,7 @@ locals {
       QUERY_WORKERS                       = var.polytomic_query_worker_count
       QUERY_RUNNER_EXCLUDE                = join(",", var.polytomic_query_runner_exclude_dbs)
       LEGACY_CONFIG                       = var.polytomic_legacy_config
+      SEND_LOGS                           = var.polytomic_managed_logs && var.polytomic_use_logger
     }
   }
 }
