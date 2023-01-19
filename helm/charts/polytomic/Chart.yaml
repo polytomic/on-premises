@@ -29,11 +29,11 @@ maintainers:
 
 dependencies:
   - name: postgresql
-    version: "11.3.0"
+    version: "12.1.9"
     repository: "https://charts.bitnami.com/bitnami"
     condition: postgresql.enabled
   - name: redis
-    version: "16.9.11"
+    version: "17.4.3"
     repository: "https://charts.bitnami.com/bitnami"
     condition: redis.enabled
   - name: nfs-server-provisioner
