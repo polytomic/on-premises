@@ -3,7 +3,8 @@ _site
 .sass-cache
 .jekyll-metadata
 .bundle/vendor
-**/**.tgz
+**/**.tgz 
+!**/polytomic-*.*.*.tgz
 **/**.tfstate
 **/**.tfstate.backup
 **/**.tfstate.*.backup
