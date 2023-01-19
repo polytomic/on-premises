@@ -128,5 +128,10 @@ SINGLE_PLAYER: {{ .Values.polytomic.auth.single_player | quote }}
 AWS_REGION: {{ .Values.polytomic.s3.region | quote }}
 AWS_ACCESS_KEY_ID: {{ .Values.polytomic.s3.access_key_id | quote }}
 AWS_SECRET_ACCESS_KEY: {{ .Values.polytomic.s3.secret_access_key | quote }}
+KUBERNETES: "true"
+KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
+KUBERNETES_IMAGE: {{ .Values.polytomic.jobs.image | quote }}
+KUBERNETES_VOLUME: {{ .Values.polytomic.jobs.volume_name | quote }}
+KUBERNETES_SECRET: {{ .Values.polytomic.jobs.secret | quote }}
 
 {{- end }}

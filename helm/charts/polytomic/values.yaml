@@ -111,6 +111,11 @@ polytomic:
     volume_name: polytomic-cache
     size: 20Mi
 
+  jobs:
+    image: "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"
+    volume_name: polytomic-cache
+    secret: polytomic-config
+
 #############################################################################################
 # Convience subcharts for dependencies
 postgresql:
@@ -138,8 +143,11 @@ minio:
 nfs-server-provisioner:
   enabled: true
   image:
-    repository: jaken551/nfs-provisioner
-    tag: latest
+    repository: k8s.gcr.io/sig-storage/nfs-provisioner
+    tag: v3.0.1
+
+  persistence:
+    enabled: true
 
   storageClass:
     create: true
@@ -249,7 +257,6 @@ sync:
     # runAsNonRoot: true
     # runAsUser: 1000
 
-
 dev:
   resources: {}
   nodeSelector: {}
@@ -267,6 +274,5 @@ dev:
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
     # runAsUser: 1000
-
 
 development: false
