@@ -33,7 +33,7 @@ jobs:
           done
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.5.0
+        uses: helm/chart-releaser-action@v1.4.0
         with:
           charts_dir: helm/charts
           charts_repo_url: charts.polytomic.com
