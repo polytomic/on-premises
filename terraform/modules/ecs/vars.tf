@@ -66,6 +66,14 @@ variable "polytomic_deployment_key" {
   default     = ""
 }
 
+variable "polytomic_deployment_links" {
+  description = "Additional links to display in the Polytomic navigation"
+  type = list(object({
+    name = string
+    url  = string
+  }))
+  default = []
+}
 variable "polytomic_log_level" {
   default     = "info"
   description = "The log level to use for Polytomic"
@@ -175,7 +183,6 @@ variable "polytomic_query_worker_count" {
   description = "Number of query workers to use"
   default     = 20
 }
-
 
 variable "polytomic_query_runner_exclude_dbs" {
   description = "List of databases to exclude from query runner"

@@ -36,6 +36,7 @@ locals {
       DEPLOYMENT                          = var.polytomic_deployment,
       DEPLOYMENT_KEY                      = var.polytomic_deployment_key,
       DEPLOYMENT_API_KEY                  = var.polytomic_deployment_api_key == "" ? random_password.deployment_api_key[0].result : var.polytomic_deployment_api_key,
+      DEPLOYMENT_LINKS                    = jsonencode(var.polytomic_deployment_links),
       DATABASE_URL                        = local.database_url,
       REDIS_URL                           = local.redis_url,
       POLYTOMIC_URL                       = var.polytomic_url == "" ? "http://${aws_alb.main.dns_name}/" : local.parsed_polytomic_url.scheme == null ? "https://${var.polytomic_url}" : "${var.polytomic_url}",
