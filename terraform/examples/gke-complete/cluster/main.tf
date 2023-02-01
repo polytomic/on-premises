@@ -17,9 +17,8 @@ module "gke_cluster_service_account" {
 module "gke" {
   source = "../../../modules/gke"
 
-  project_id = local.project_id
-  region     = local.region
-
+  project_id              = local.project_id
+  region                  = local.region
   cluster_service_account = module.gke_cluster_service_account.email
 
 }

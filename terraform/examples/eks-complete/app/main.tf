@@ -5,11 +5,9 @@ locals {
   domain                   = "example.com"
   polytomic_deployment     = "deployment"
   polytomic_deployment_key = "key"
-
-  polytomic_image     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"
-  polytomic_image_tag = "latest"
-
-  polytomic_root_user = "user@example.com"
+  polytomic_image          = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"
+  polytomic_image_tag      = "latest"
+  polytomic_root_user      = "user@example.com"
 }
 
 
@@ -57,8 +55,7 @@ module "addons" {
   cluster_name      = data.terraform_remote_state.eks.outputs.cluster_name
   vpc_id            = data.terraform_remote_state.eks.outputs.vpc_id
   oidc_provider_arn = data.terraform_remote_state.eks.outputs.oidc_provider_arn
-
-  efs_id = data.terraform_remote_state.eks.outputs.filesystem_id
+  efs_id            = data.terraform_remote_state.eks.outputs.filesystem_id
 
 }
 
