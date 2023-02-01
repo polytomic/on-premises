@@ -11,11 +11,15 @@ resource "helm_release" "polytomic" {
   values = [<<EOF
 ingress:
   enabled: true
-  className: gce
   annotations:
-    kubernetes.io/ingress.class:  gce
-    ingress.gcp.kubernetes.io/pre-shared-cert: '${var.polytomic_cert_name}'
-    kubernetes.io/ingress.global-static-ip-name: '${var.polytomic_ip_name}'
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: 'ip'
+    alb.ingress.kubernetes.io/subnets: "${var.subnets}"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: '${var.certificate_arn}'
+    alb.ingress.kubernetes.io/ip-address-type: ipv4
+    alb.ingress.kubernetes.io/inbound-cidrs: 0.0.0.0/0
 
   hosts:
   - host: ${var.polytomic_url}
@@ -54,10 +58,16 @@ polytomic:
   jobs:
     image: ${var.polytomic_image}
 
+  cache:
+    storage_class: efs-sc
+
 redis:
   enabled: false
 
 postgresql:
+  enabled: false
+
+nfs-server-provisioner:
   enabled: false
 
 EOF

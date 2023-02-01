@@ -110,6 +110,7 @@ polytomic:
     enabled: true
     volume_name: polytomic-cache
     size: 20Mi
+    storage_class: ""
 
   jobs:
     image: "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"

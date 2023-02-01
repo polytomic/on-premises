@@ -25,7 +25,7 @@ provider "aws" {
 }
 
 module "polytomic-ecs" {
-  source = "../../modules/ecs"
+  source = "github.com/polytomic/on-premises/terraform/modules/ecs"
 
   prefix = "polytomic"
   tags = {
@@ -37,7 +37,7 @@ module "polytomic-ecs" {
   region = "us-east-1"
 
   ####### Polytomic settings #######
-  polytomic_image = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:rel2022.06.21.01"
+  polytomic_image = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"
 
   polytomic_root_user          = "user@example.com"
   polytomic_deployment         = "DEPLOYMENT"
@@ -164,7 +164,7 @@ module "polytomic-ecs" {
   region = "us-east-1"
 
   ####### Polytomic settings #######
-  polytomic_image = "005734951936.dkr.ecr.us-east-1.amazonaws.com/jake-on-prem:execution-logs"
+  polytomic_image = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"
 
   polytomic_root_user      = "user@example.com"
   polytomic_deployment     = "DEPLOYMENT"

@@ -1,21 +1,40 @@
 # Polytomic GKE Module
 
 
-## Prerequisites 
+This module has two stages:
+- cluster install
+- app install
 
-Create service account before applying the entire module
+
+The cluster module must be applied before running the app module.
+
+
+## Cluster Install
 
 ```sh
-terraform apply -target module.gke_cluster_service_account
+cd cluster 
+terraform init
 ```
+
+
+```sh
+terraform apply
+```
+## After applying
+Ensure the load_balancer_ip that is outputted by the terraform has an A record in your DNS for the provided URL.
 
 Take note of the outputted service account principle this must be whitelisted 
 to access the Polytomic container registry.
 
 
-## After applying
-Ensure the load_balancer_ip that is outputted by the terraform has an A record in your DNS for the provided URL.
 
+## App Install
+
+```sh
+cd app 
+terraform init
+terraform apply
+```
 
 ## TLS
 
@@ -24,7 +43,7 @@ Ensure the load_balancer_ip that is outputted by the terraform has an A record i
 This example creates a Google Manage Certificate for TLS termination.
 
 
-Note: Provisioning TLS certs with google will can take a long time. This will usually take around 60 minutes.
+Note: Provisioning TLS certs with google will can take a long time. This will usually take around 10-15 minutes but can take up to 60+ minutes.
 
 ### BYOC (Bring your own certs)
 
