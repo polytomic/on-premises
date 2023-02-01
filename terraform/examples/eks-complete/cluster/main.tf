@@ -10,7 +10,7 @@ provider "aws" {
 
 
 module "eks" {
-  source = "../../../modules/eks"
+  source = "github.com/polytomic/on-premises/terraform/modules/eks"
 
   prefix  = local.prefix
   region  = local.region

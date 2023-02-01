@@ -48,7 +48,7 @@ provider "helm" {
 
 
 module "addons" {
-  source = "../../../modules/eks-addons"
+  source = "github.com/polytomic/on-premises/terraform/modules/eks-addons"
 
   prefix            = local.prefix
   region            = local.region
@@ -60,7 +60,7 @@ module "addons" {
 }
 
 module "eks_helm" {
-  source = "../../../modules/eks-helm"
+  source = "github.com/polytomic/on-premises/terraform/modules/eks-helm"
 
   certificate_arn          = aws_acm_certificate.cert.arn
   subnets                  = join(",", data.terraform_remote_state.eks.outputs.public_subnets)

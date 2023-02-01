@@ -45,7 +45,7 @@ data "google_container_cluster" "my_cluster" {
 
 
 module "gke_helm" {
-  source = "../../../modules/gke-helm"
+  source = "github.com/polytomic/on-premises/terraform/modules/gke-helm"
 
   polytomic_cert_name      = google_compute_managed_ssl_certificate.cert.name
   polytomic_ip_name        = data.terraform_remote_state.gke.outputs.load_balancer_name

@@ -10,12 +10,13 @@ provider "google" {
 
 
 module "gke_cluster_service_account" {
-  source     = "../../../modules/gke-cluster-sa"
+  source = "github.com/polytomic/on-premises/terraform/modules/gke-cluster-sa"
+
   project_id = local.project_id
 }
 
 module "gke" {
-  source = "../../../modules/gke"
+  source = "github.com/polytomic/on-premises/terraform/modules/gke"
 
   project_id              = local.project_id
   region                  = local.region
