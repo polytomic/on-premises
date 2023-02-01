@@ -481,3 +481,8 @@ variable "alert_emails" {
   type        = list(string)
   default     = []
 }
+
+variable "load_balancer_internal" {
+  description = "Load balancer ARN"
+  default     = false
+}

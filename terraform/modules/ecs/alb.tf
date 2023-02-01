@@ -1,8 +1,15 @@
+local {
+  lb_public_subnets  = var.vpc_id == "" ? module.vpc[0].public_subnets : var.public_subnet_ids
+  lb_private_subnets = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
+}
+
 resource "aws_alb" "main" {
   name            = "${var.prefix}-alb"
-  subnets         = var.vpc_id == "" ? module.vpc[0].public_subnets : var.public_subnet_ids
+  subnets         = var.load_balancer_internal ? local.lb_private_subnets : local.lb_public_subnets
   security_groups = [module.lb_sg.security_group_id]
-  tags            = var.tags
+  internal        = var.load_balancer_internal
+
+  tags = var.tags
 
 }
 
@@ -12,7 +19,6 @@ resource "aws_alb_target_group" "polytomic" {
   vpc_id      = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
   target_type = "ip"
   tags        = var.tags
-
 
   health_check {
     healthy_threshold   = "3"

@@ -283,6 +283,7 @@ module "polytomic-ecs" {
 | <a name="input_ecs_enable_container_insights"></a> [ecs\_enable\_container\_insights](#input\_ecs\_enable\_container\_insights) | ECS enable container insights | `bool` | `true` | no |
 | <a name="input_enable_monitoring"></a> [enable\_monitoring](#input\_enable\_monitoring) | enable automatic monitoring | `bool` | `false` | no |
 | <a name="input_enable_stats"></a> [enable\_stats](#input\_enable\_stats) | enable automatic stats reporting | `bool` | `false` | no |
+| <a name="input_load_balancer_internal"></a> [load\_balancer\_internal](#input\_load\_balancer\_internal) | Load balancer ARN | `bool` | `false` | no |
 | <a name="input_polytomic_bootstrap"></a> [polytomic\_bootstrap](#input\_polytomic\_bootstrap) | Whether to bootstrap Polytomic | `bool` | `false` | no |
 | <a name="input_polytomic_data_path"></a> [polytomic\_data\_path](#input\_polytomic\_data\_path) | Filesystem path to local data cache | `string` | `"/var/polytomic"` | no |
 | <a name="input_polytomic_deployment"></a> [polytomic\_deployment](#input\_polytomic\_deployment) | A unique identifier for your on premises deploy, provided by Polytomic | `string` | `""` | no |
