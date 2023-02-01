@@ -196,7 +196,7 @@ variable "polytomic_legacy_config" {
 
 variable "polytomic_managed_logs" {
   description = "Use managed logs"
-  default     = true
+  default     = false
 }
 
 variable "vpc_id" {
