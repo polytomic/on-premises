@@ -1,4 +1,4 @@
-local {
+locals {
   lb_public_subnets  = var.vpc_id == "" ? module.vpc[0].public_subnets : var.public_subnet_ids
   lb_private_subnets = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
 }

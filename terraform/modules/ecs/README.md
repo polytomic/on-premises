@@ -187,9 +187,9 @@ module "polytomic-ecs" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.6 |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.22.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.1.1 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.3.2 |
 
 ## Resources
 
@@ -283,13 +283,13 @@ module "polytomic-ecs" {
 | <a name="input_ecs_enable_container_insights"></a> [ecs\_enable\_container\_insights](#input\_ecs\_enable\_container\_insights) | ECS enable container insights | `bool` | `true` | no |
 | <a name="input_enable_monitoring"></a> [enable\_monitoring](#input\_enable\_monitoring) | enable automatic monitoring | `bool` | `false` | no |
 | <a name="input_enable_stats"></a> [enable\_stats](#input\_enable\_stats) | enable automatic stats reporting | `bool` | `false` | no |
-| <a name="input_load_balancer_internal"></a> [load\_balancer\_internal](#input\_load\_balancer\_internal) | Load balancer ARN | `bool` | `false` | no |
+| <a name="input_load_balancer_internal"></a> [load\_balancer\_internal](#input\_load\_balancer\_internal) | use internal load balancer | `bool` | `false` | no |
 | <a name="input_polytomic_bootstrap"></a> [polytomic\_bootstrap](#input\_polytomic\_bootstrap) | Whether to bootstrap Polytomic | `bool` | `false` | no |
 | <a name="input_polytomic_data_path"></a> [polytomic\_data\_path](#input\_polytomic\_data\_path) | Filesystem path to local data cache | `string` | `"/var/polytomic"` | no |
 | <a name="input_polytomic_deployment"></a> [polytomic\_deployment](#input\_polytomic\_deployment) | A unique identifier for your on premises deploy, provided by Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_deployment_api_key"></a> [polytomic\_deployment\_api\_key](#input\_polytomic\_deployment\_api\_key) | API key used to authenticate with the Polytomic management API | `string` | `""` | no |
 | <a name="input_polytomic_deployment_key"></a> [polytomic\_deployment\_key](#input\_polytomic\_deployment\_key) | The license key for your deployment, provided by Polytomic | `string` | `""` | no |
-| <a name="input_polytomic_deployment_links"></a> [polytomic\_deployment\_links](#input\_polytomic\_deployment\_links) | Additional links to display in the Polytomic navigation | <pre>list(object({<br>    name = string<br>    url = string<br>  }))</pre> | `[]` | no |
+| <a name="input_polytomic_deployment_links"></a> [polytomic\_deployment\_links](#input\_polytomic\_deployment\_links) | Additional links to display in the Polytomic navigation | <pre>list(object({<br>    name = string<br>    url  = string<br>  }))</pre> | `[]` | no |
 | <a name="input_polytomic_enabled_backends"></a> [polytomic\_enabled\_backends](#input\_polytomic\_enabled\_backends) | List of backends to enable | `list` | `[]` | no |
 | <a name="input_polytomic_ga_measurement_id"></a> [polytomic\_ga\_measurement\_id](#input\_polytomic\_ga\_measurement\_id) | Google Analytics Measurement ID | `string` | `""` | no |
 | <a name="input_polytomic_google_client_id"></a> [polytomic\_google\_client\_id](#input\_polytomic\_google\_client\_id) | Google OAuth Client ID, obtained by creating a OAuth 2.0 Client ID | `string` | `""` | no |

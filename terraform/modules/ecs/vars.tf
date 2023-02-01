@@ -483,6 +483,6 @@ variable "alert_emails" {
 }
 
 variable "load_balancer_internal" {
-  description = "Load balancer ARN"
+  description = "use internal load balancer"
   default     = false
 }
