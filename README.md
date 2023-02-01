@@ -152,7 +152,7 @@ Follow the steps in the [GKE terraform module](terraform/examples/gke-complete) 
 Follow the steps in the [EKS terraform module](terraform/examples/eks-complete) to deploy Polytomic on EKS.
 
 
-### Kind
+### KIND (Kubernetes in Docker)
 
 To get a sandbox kubernetes environment set up, run the sandbox script located at `hack/sandbox.sh`
 
