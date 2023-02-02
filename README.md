@@ -3,6 +3,8 @@
 [![Contributors][contributors-shield]][contributors-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
+[![Pull Requests][pr-shield]][pr-url]
+[![Release][release-shield]][release-url]
 [![MIT License][license-shield]][license-url]
 
 
@@ -94,6 +96,7 @@ A number of examples can be found in the [terraform/examples](terraform/examples
 3. `docker compose up`
 
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Aptible
 
@@ -141,16 +144,19 @@ A number of examples can be found in the [terraform/examples](terraform/examples
    - You do not need to change the port (5100 is the default and correct port to expose).
 1. You should be able to sign into Polytomic at the specified host with the specified ROOT_USER.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### GKE
 
 Follow the steps in the [GKE terraform module](terraform/examples/gke-complete) to deploy Polytomic on GKE.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### EKS
 
 Follow the steps in the [EKS terraform module](terraform/examples/eks-complete) to deploy Polytomic on EKS.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### KIND (Kubernetes in Docker)
 
@@ -161,6 +167,8 @@ It will setup a local kind cluster and install the polytomic helm chart.
 ```
 ./hack/sandbox.sh
 ```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 
 <!-- CONTRIBUTING -->
@@ -201,4 +209,8 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 [issues-url]: https://github.com/polytomic/on-premises/issues
 [license-shield]: https://img.shields.io/github/license/polytomic/on-premises.svg?style=for-the-badge
 [license-url]: https://github.com/polytomic/on-premises/blob/master/LICENSE.md
+[release-shield]: https://img.shields.io/github/v/release/polytomic/on-premises?style=for-the-badge
+[release-url]: https://github.com/polytomic/on-premises/releases
+[pr-shield]: https://img.shields.io/github/issues-pr/polytomic/on-premises?style=for-the-badge
+[pr-url]: https://github.com/polytomic/on-premises/pulls
 
