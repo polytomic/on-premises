@@ -1,7 +1,6 @@
 <a name="readme-top"></a>
 
 [![Contributors][contributors-shield]][contributors-url]
-[![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![Pull Requests][pr-shield]][pr-url]
 [![Release][release-shield]][release-url]
