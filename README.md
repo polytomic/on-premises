@@ -4,7 +4,6 @@
 [![Issues][issues-shield]][issues-url]
 [![Pull Requests][pr-shield]][pr-url]
 [![Release][release-shield]][release-url]
-[![MIT License][license-shield]][license-url]
 
 
 
