@@ -253,7 +253,7 @@ module "polytomic-ecs" {
 |------|-------------|------|---------|:--------:|
 | <a name="input_alert_emails"></a> [alert\_emails](#input\_alert\_emails) | Email addresses to send alerts to | `list(string)` | `[]` | no |
 | <a name="input_aws_profile"></a> [aws\_profile](#input\_aws\_profile) | AWS profile to use | `string` | `"default"` | no |
-| <a name="input_bucket_prefix"></a> [bucket\_prefix](#input\_bucket\_prefix) | Bucket prefix | `string` | `"polytomic"` | no |
+| <a name="input_bucket_prefix"></a> [bucket\_prefix](#input\_bucket\_prefix) | Bucket prefix | `string` | `""` | no |
 | <a name="input_database_allocated_storage"></a> [database\_allocated\_storage](#input\_database\_allocated\_storage) | Database allocated storage | `number` | `20` | no |
 | <a name="input_database_auto_minor_version_upgrade"></a> [database\_auto\_minor\_version\_upgrade](#input\_database\_auto\_minor\_version\_upgrade) | Database auto minor version upgrade | `bool` | `false` | no |
 | <a name="input_database_backup_retention"></a> [database\_backup\_retention](#input\_database\_backup\_retention) | Database backup retention | `number` | `30` | no |
@@ -284,6 +284,7 @@ module "polytomic-ecs" {
 | <a name="input_enable_monitoring"></a> [enable\_monitoring](#input\_enable\_monitoring) | enable automatic monitoring | `bool` | `false` | no |
 | <a name="input_enable_stats"></a> [enable\_stats](#input\_enable\_stats) | enable automatic stats reporting | `bool` | `false` | no |
 | <a name="input_load_balancer_internal"></a> [load\_balancer\_internal](#input\_load\_balancer\_internal) | use internal load balancer | `bool` | `false` | no |
+| <a name="input_load_balancer_security_groups"></a> [load\_balancer\_security\_groups](#input\_load\_balancer\_security\_groups) | security groups for load balancer | `list(string)` | `[]` | no |
 | <a name="input_polytomic_bootstrap"></a> [polytomic\_bootstrap](#input\_polytomic\_bootstrap) | Whether to bootstrap Polytomic | `bool` | `false` | no |
 | <a name="input_polytomic_data_path"></a> [polytomic\_data\_path](#input\_polytomic\_data\_path) | Filesystem path to local data cache | `string` | `"/var/polytomic"` | no |
 | <a name="input_polytomic_deployment"></a> [polytomic\_deployment](#input\_polytomic\_deployment) | A unique identifier for your on premises deploy, provided by Polytomic | `string` | `""` | no |
@@ -322,7 +323,7 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_workos_client_id"></a> [polytomic\_workos\_client\_id](#input\_polytomic\_workos\_client\_id) | The WorkOS client ID | `string` | `""` | no |
 | <a name="input_polytomic_workos_org_id"></a> [polytomic\_workos\_org\_id](#input\_polytomic\_workos\_org\_id) | WorkOS organization ID for workspace SSO | `string` | `""` | no |
 | <a name="input_polytomic_workspace_name"></a> [polytomic\_workspace\_name](#input\_polytomic\_workspace\_name) | Name of first Polytomic workspace | `string` | `""` | no |
-| <a name="input_prefix"></a> [prefix](#input\_prefix) | n/a | `string` | `""` | no |
+| <a name="input_prefix"></a> [prefix](#input\_prefix) | n/a | `any` | n/a | yes |
 | <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | Private subnet IDs | `list` | `[]` | no |
 | <a name="input_public_subnet_ids"></a> [public\_subnet\_ids](#input\_public\_subnet\_ids) | Public subnet IDs | `list` | `[]` | no |
 | <a name="input_redis_at_rest_encryption_enabled"></a> [redis\_at\_rest\_encryption\_enabled](#input\_redis\_at\_rest\_encryption\_enabled) | Redis at rest encryption enabled | `string` | `"true"` | no |

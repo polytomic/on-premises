@@ -1,6 +1,4 @@
-variable "prefix" {
-  default = ""
-}
+variable "prefix" {}
 
 variable "region" {
   default     = "us-east-1"
@@ -447,7 +445,7 @@ variable "tags" {
 
 variable "bucket_prefix" {
   description = "Bucket prefix"
-  default     = "polytomic"
+  default     = ""
 }
 
 variable "polytomic_record_log_disabled" {
@@ -485,4 +483,10 @@ variable "alert_emails" {
 variable "load_balancer_internal" {
   description = "use internal load balancer"
   default     = false
+}
+
+variable "load_balancer_security_groups" {
+  description = "security groups for load balancer"
+  type        = list(string)
+  default     = []
 }
