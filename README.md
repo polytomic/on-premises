@@ -3,7 +3,7 @@
 [![Contributors][contributors-shield]][contributors-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-
+[![MIT License][license-shield]][license-url]
 
 
 
@@ -194,11 +194,13 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/polytomic/on-premises.svg?style=for-the-badge
-[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
+[contributors-url]: https://github.com/polytomic/on-premises/graphs/contributors
 [forks-shield]: https://img.shields.io/github/contributors/polytomic/on-premises.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/repo_name/network/members
+[forks-url]: https://github.com/polytomic/on-premises/network/members
 [stars-shield]: https://img.shields.io/github/contributors/polytomic/on-premises.svg?style=for-the-badge
-[stars-url]: https://github.com/github_username/repo_name/stargazers
+[stars-url]: https://github.com/polytomic/on-premises/stargazers
 [issues-shield]: https://img.shields.io/github/contributors/polytomic/on-premises.svg?style=for-the-badge
-[issues-url]: https://github.com/github_username/repo_name/issues
+[issues-url]: https://github.com/polytomic/on-premises/issues
+[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
+[license-url]: https://github.com/polytomic/on-premises/blob/master/LICENSE.md
 
