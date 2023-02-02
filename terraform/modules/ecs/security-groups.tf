@@ -79,6 +79,8 @@ module "lb_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.0"
 
+  count = length(var.lb_override_sgs) == 0 ? 1 : 0
+
   name   = "${var.prefix}-lb"
   vpc_id = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
 
