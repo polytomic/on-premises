@@ -490,3 +490,10 @@ variable "load_balancer_security_groups" {
   type        = list(string)
   default     = []
 }
+
+
+variable "extra_environment" {
+  description = "Extra environment variables to pass to the containers"
+  type        = map(string)
+  default     = {}
+}

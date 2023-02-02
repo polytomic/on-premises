@@ -64,6 +64,10 @@ module "polytomic-ecs" {
 
   enable_monitoring = true
 
+  extra_environment = {
+    FOO = "BAR"
+  }
+
 
   ####### VPC settings #######
   #
@@ -160,7 +164,7 @@ provider "aws" {
 module "polytomic-ecs" {
   source = "github.com/polytomic/on-premises/terraform/modules/ecs"
 
-  prefix = "jake-polytomic"
+  prefix = "polytomic-2"
   region = "us-east-1"
 
   ####### Polytomic settings #######
@@ -283,6 +287,7 @@ module "polytomic-ecs" {
 | <a name="input_ecs_enable_container_insights"></a> [ecs\_enable\_container\_insights](#input\_ecs\_enable\_container\_insights) | ECS enable container insights | `bool` | `true` | no |
 | <a name="input_enable_monitoring"></a> [enable\_monitoring](#input\_enable\_monitoring) | enable automatic monitoring | `bool` | `false` | no |
 | <a name="input_enable_stats"></a> [enable\_stats](#input\_enable\_stats) | enable automatic stats reporting | `bool` | `false` | no |
+| <a name="input_extra_environment"></a> [extra\_environment](#input\_extra\_environment) | Extra environment variables to pass to the containers | `map(string)` | `{}` | no |
 | <a name="input_load_balancer_internal"></a> [load\_balancer\_internal](#input\_load\_balancer\_internal) | use internal load balancer | `bool` | `false` | no |
 | <a name="input_load_balancer_security_groups"></a> [load\_balancer\_security\_groups](#input\_load\_balancer\_security\_groups) | security groups for load balancer | `list(string)` | `[]` | no |
 | <a name="input_polytomic_bootstrap"></a> [polytomic\_bootstrap](#input\_polytomic\_bootstrap) | Whether to bootstrap Polytomic | `bool` | `false` | no |

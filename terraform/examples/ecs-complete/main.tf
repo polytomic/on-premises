@@ -42,6 +42,10 @@ module "polytomic-ecs" {
 
   enable_monitoring = true
 
+  extra_environment = {
+    FOO = "BAR"
+  }
+
 
   ####### VPC settings #######
   #
