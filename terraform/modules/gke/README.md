@@ -7,7 +7,6 @@ No requirements.
 | Name | Version |
 |------|---------|
 | <a name="provider_google"></a> [google](#provider\_google) | n/a |
-| <a name="provider_local"></a> [local](#provider\_local) | n/a |
 
 ## Modules
 
@@ -15,7 +14,6 @@ No requirements.
 |------|--------|---------|
 | <a name="module_gcp_network"></a> [gcp\_network](#module\_gcp\_network) | terraform-google-modules/network/google | 6.0.0 |
 | <a name="module_gke"></a> [gke](#module\_gke) | terraform-google-modules/kubernetes-engine/google//modules/private-cluster | 24.1.0 |
-| <a name="module_gke_auth"></a> [gke\_auth](#module\_gke\_auth) | terraform-google-modules/kubernetes-engine/google//modules/auth | 24.1.0 |
 | <a name="module_memorystore"></a> [memorystore](#module\_memorystore) | terraform-google-modules/memorystore/google | n/a |
 | <a name="module_postgres"></a> [postgres](#module\_postgres) | GoogleCloudPlatform/sql-db/google//modules/postgresql | n/a |
 
@@ -27,7 +25,6 @@ No requirements.
 | [google_compute_global_address.private_ip_address](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_global_address) | resource |
 | [google_compute_network_peering_routes_config.peering_routes](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering_routes_config) | resource |
 | [google_service_networking_connection.default](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_networking_connection) | resource |
-| [local_file.kubeconfig](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [google_client_config.default](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/client_config) | data source |
 | [google_compute_zones.available](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
 
@@ -49,11 +46,7 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_cluster_ca_certificate"></a> [cluster\_ca\_certificate](#output\_cluster\_ca\_certificate) | Cluster CA certificate |
-| <a name="output_cluster_endpoint"></a> [cluster\_endpoint](#output\_cluster\_endpoint) | Cluster endpoint |
 | <a name="output_cluster_name"></a> [cluster\_name](#output\_cluster\_name) | Cluster name |
-| <a name="output_cluster_token"></a> [cluster\_token](#output\_cluster\_token) | Cluster token |
-| <a name="output_kubeconfig_file"></a> [kubeconfig\_file](#output\_kubeconfig\_file) | Kubeconfig file |
 | <a name="output_lb_ip"></a> [lb\_ip](#output\_lb\_ip) | Load balancer IP |
 | <a name="output_lb_name"></a> [lb\_name](#output\_lb\_name) | Load balancer IP Name |
 | <a name="output_postgres_host"></a> [postgres\_host](#output\_postgres\_host) | n/a |

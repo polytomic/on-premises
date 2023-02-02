@@ -1,13 +1,17 @@
-{{- if and ( index .Values "nfs-server-provisioner" "enabled") (.Values.polytomic.cache.enabled) -}}
+{{- if .Values.polytomic.cache.enabled -}}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: {{ .Values.polytomic.cache.volume_name }}
 spec:
+  {{- if index .Values "nfs-server-provisioner" "enabled" }}
   storageClassName: {{ index .Values "nfs-server-provisioner" "storageClass" "name" }}
+  {{- else }}
+  storageClassName: {{ .Values.polytomic.cache.storage_class }}
+  {{- end }}
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: {{ .Values.polytomic.cache.size }}
-{{- end -}}
+  {{- end -}}
