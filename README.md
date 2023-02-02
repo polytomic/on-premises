@@ -195,12 +195,10 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/polytomic/on-premises.svg?style=for-the-badge
 [contributors-url]: https://github.com/polytomic/on-premises/graphs/contributors
-[forks-shield]: https://img.shields.io/github/contributors/polytomic/on-premises.svg?style=for-the-badge
-[forks-url]: https://github.com/polytomic/on-premises/network/members
-[stars-shield]: https://img.shields.io/github/contributors/polytomic/on-premises.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/polytomic/on-premises.svg?style=for-the-badge
 [stars-url]: https://github.com/polytomic/on-premises/stargazers
-[issues-shield]: https://img.shields.io/github/contributors/polytomic/on-premises.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/polytomic/on-premises.svg?style=for-the-badge
 [issues-url]: https://github.com/polytomic/on-premises/issues
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/polytomic/on-premises.svg?style=for-the-badge
 [license-url]: https://github.com/polytomic/on-premises/blob/master/LICENSE.md
 
