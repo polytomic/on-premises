@@ -7,7 +7,7 @@ module "s3_bucket" {
     stats      = local.polytomic_stats_bucket
   }
 
-  bucket = "${var.prefix}-${var.bucket_prefix}-${each.key}"
+  bucket = "${var.prefix}-${var.bucket_prefix}${each.key}"
   acl    = "private"
 
   block_public_acls       = true
