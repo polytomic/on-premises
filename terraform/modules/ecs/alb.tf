@@ -45,8 +45,23 @@ resource "aws_alb_listener" "http" {
   tags              = var.tags
 
 
-  default_action {
-    target_group_arn = aws_alb_target_group.polytomic.id
-    type             = "forward"
+  dynamic "default_action" {
+    for_each = var.load_balancer_redirect_https ? [1] : []
+    content {
+      type = "redirect"
+      redirect {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
+    }
+  }
+
+  dynamic "default_action" {
+    for_each = var.load_balancer_redirect_https ? [] : [1]
+    content {
+      type             = "forward"
+      target_group_arn = aws_alb_target_group.polytomic.arn
+    }
   }
 }

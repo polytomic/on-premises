@@ -255,6 +255,7 @@ module "polytomic-ecs" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_additional_ecs_security_groups"></a> [additional\_ecs\_security\_groups](#input\_additional\_ecs\_security\_groups) | ECS security group ids | `list` | `[]` | no |
 | <a name="input_alert_emails"></a> [alert\_emails](#input\_alert\_emails) | Email addresses to send alerts to | `list(string)` | `[]` | no |
 | <a name="input_aws_profile"></a> [aws\_profile](#input\_aws\_profile) | AWS profile to use | `string` | `"default"` | no |
 | <a name="input_bucket_prefix"></a> [bucket\_prefix](#input\_bucket\_prefix) | Bucket prefix | `string` | `""` | no |
@@ -289,6 +290,7 @@ module "polytomic-ecs" {
 | <a name="input_enable_stats"></a> [enable\_stats](#input\_enable\_stats) | enable automatic stats reporting | `bool` | `false` | no |
 | <a name="input_extra_environment"></a> [extra\_environment](#input\_extra\_environment) | Extra environment variables to pass to the containers | `map(string)` | `{}` | no |
 | <a name="input_load_balancer_internal"></a> [load\_balancer\_internal](#input\_load\_balancer\_internal) | use internal load balancer | `bool` | `false` | no |
+| <a name="input_load_balancer_redirect_https"></a> [load\_balancer\_redirect\_https](#input\_load\_balancer\_redirect\_https) | enable https listener on load balancer | `bool` | `false` | no |
 | <a name="input_load_balancer_security_groups"></a> [load\_balancer\_security\_groups](#input\_load\_balancer\_security\_groups) | security groups for load balancer | `list(string)` | `[]` | no |
 | <a name="input_polytomic_bootstrap"></a> [polytomic\_bootstrap](#input\_polytomic\_bootstrap) | Whether to bootstrap Polytomic | `bool` | `false` | no |
 | <a name="input_polytomic_data_path"></a> [polytomic\_data\_path](#input\_polytomic\_data\_path) | Filesystem path to local data cache | `string` | `"/var/polytomic"` | no |
@@ -307,7 +309,7 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_managed_logs"></a> [polytomic\_managed\_logs](#input\_polytomic\_managed\_logs) | Use managed logs | `bool` | `false` | no |
 | <a name="input_polytomic_mssql_tx_isolation"></a> [polytomic\_mssql\_tx\_isolation](#input\_polytomic\_mssql\_tx\_isolation) | Transaction isolation level for MSSQL connections | `string` | `""` | no |
 | <a name="input_polytomic_port"></a> [polytomic\_port](#input\_polytomic\_port) | Port on which Polytomic is listening | `string` | `"80"` | no |
-| <a name="input_polytomic_preflight_check"></a> [polytomic\_preflight\_check](#input\_polytomic\_preflight\_check) | Whether to run a preflight check | `bool` | `true` | no |
+| <a name="input_polytomic_preflight_check"></a> [polytomic\_preflight\_check](#input\_polytomic\_preflight\_check) | Whether to run a preflight check | `bool` | `false` | no |
 | <a name="input_polytomic_query_runner_exclude_dbs"></a> [polytomic\_query\_runner\_exclude\_dbs](#input\_polytomic\_query\_runner\_exclude\_dbs) | List of databases to exclude from query runner | `list` | `[]` | no |
 | <a name="input_polytomic_query_worker_count"></a> [polytomic\_query\_worker\_count](#input\_polytomic\_query\_worker\_count) | Number of query workers to use | `number` | `20` | no |
 | <a name="input_polytomic_record_log_disabled"></a> [polytomic\_record\_log\_disabled](#input\_polytomic\_record\_log\_disabled) | Globally disable record logging for this deployment | `bool` | `false` | no |

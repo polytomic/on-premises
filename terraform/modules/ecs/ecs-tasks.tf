@@ -120,7 +120,8 @@ resource "aws_ecs_service" "web" {
   network_configuration {
     subnets          = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
     assign_public_ip = false
-    security_groups  = [module.fargate_sg.security_group_id]
+    security_groups  = concat(var.additional_ecs_security_groups, [module.fargate_sg.security_group_id])
+
   }
 
   load_balancer {
@@ -146,7 +147,7 @@ resource "aws_ecs_service" "worker" {
   network_configuration {
     subnets          = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
     assign_public_ip = false
-    security_groups  = [module.fargate_sg.security_group_id]
+    security_groups  = concat(var.additional_ecs_security_groups, [module.fargate_sg.security_group_id])
   }
 }
 
@@ -166,7 +167,7 @@ resource "aws_ecs_service" "sync" {
   network_configuration {
     subnets          = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
     assign_public_ip = false
-    security_groups  = [module.fargate_sg.security_group_id]
+    security_groups  = concat(var.additional_ecs_security_groups, [module.fargate_sg.security_group_id])
   }
 }
 

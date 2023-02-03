@@ -7,7 +7,7 @@ module "efs" {
   region  = var.region
 
 
-  allowed_security_group_ids = [module.efs_sg.security_group_id, module.fargate_sg.security_group_id]
+  allowed_security_group_ids = concat(var.additional_ecs_security_groups, [module.efs_sg.security_group_id, module.fargate_sg.security_group_id])
 
   tags = var.tags
 }
