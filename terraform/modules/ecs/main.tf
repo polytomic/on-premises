@@ -42,7 +42,7 @@ locals {
     TASK_EXECUTOR_CPU                   = var.polytomic_resource_sync_cpu,
     TASK_EXECUTOR_MEMORY_RESERVATION    = var.polytomic_resource_sync_memory,
     FARGATE_EXECUTOR_SUBNETS            = join(",", var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids),
-    FARGATE_EXECUTOR_SECURITY_GROUPS    = module.fargate_sg.security_group_id,
+    FARGATE_EXECUTOR_SECURITY_GROUPS    = join(",", concat(var.additional_ecs_security_groups, [module.fargate_sg.security_group_id]))
     SINGLE_PLAYER                       = var.polytomic_single_player,
     WORKOS_API_KEY                      = var.polytomic_workos_api_key,
     WORKOS_CLIENT_ID                    = var.polytomic_workos_client_id,

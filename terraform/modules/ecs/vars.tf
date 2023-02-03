@@ -51,7 +51,7 @@ variable "polytomic_data_path" {
 
 variable "polytomic_preflight_check" {
   description = "Whether to run a preflight check"
-  default     = true
+  default     = false
 }
 
 variable "polytomic_deployment" {
@@ -435,6 +435,10 @@ variable "ecs_enable_container_insights" {
   default     = true
 }
 
+variable "additional_ecs_security_groups" {
+  description = "ECS security group ids"
+  default     = []
+}
 
 variable "tags" {
   description = "A map of tags to add to all resources"
@@ -496,4 +500,10 @@ variable "extra_environment" {
   description = "Extra environment variables to pass to the containers"
   type        = map(string)
   default     = {}
+}
+
+
+variable "load_balancer_redirect_https" {
+  description = "enable https listener on load balancer"
+  default     = false
 }
