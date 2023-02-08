@@ -4,6 +4,18 @@ resource "random_password" "deployment_api_key" {
 }
 
 locals {
+
+  # We (unfortuantely) need to manually escape the double quotes in the JSON
+  # string
+  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition#argument-reference
+  #
+  # This first bit will create a list of strings, each of which is escaped JSON
+  raw_links = [for v in var.polytomic_deployment_links :
+    format("{\\\"name\\\": \\\"%s\\\", \\\"url\\\": \\\"%s\\\"}", v.name, v.url)
+  ]
+  # This will join the list of strings into a single string
+  links = "[ ${join(", ", [for s in local.raw_links : format("%s", s)])} ]"
+
   private_subnet_cidrs       = var.vpc_id == "" ? module.vpc[0].private_subnets_cidr_blocks : [for s in data.aws_subnet.subnet : s.cidr_block]
   polytomic_export_bucket    = "exports"
   polytomic_execution_bucket = "executions"
@@ -26,7 +38,7 @@ locals {
     DEPLOYMENT                          = var.polytomic_deployment,
     DEPLOYMENT_KEY                      = var.polytomic_deployment_key,
     DEPLOYMENT_API_KEY                  = var.polytomic_deployment_api_key == "" ? random_password.deployment_api_key[0].result : var.polytomic_deployment_api_key,
-    DEPLOYMENT_LINKS                    = jsonencode(var.polytomic_deployment_links),
+    DEPLOYMENT_LINKS                    = local.links,
     DATABASE_URL                        = local.database_url,
     REDIS_URL                           = local.redis_url,
     POLYTOMIC_URL                       = var.polytomic_url == "" ? "http://${aws_alb.main.dns_name}/" : local.parsed_polytomic_url.scheme == null ? "https://${var.polytomic_url}" : "${var.polytomic_url}",
