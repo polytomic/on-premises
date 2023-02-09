@@ -3,7 +3,7 @@ module "log_group" {
   version = "~> 3.0"
 
   name              = "${var.prefix}-polytomic-logs"
-  retention_in_days = 120
+  retention_in_days = var.log_retention_days
 
   tags = var.tags
 }

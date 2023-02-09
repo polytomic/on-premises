@@ -440,6 +440,11 @@ variable "additional_ecs_security_groups" {
   default     = []
 }
 
+variable "log_retention_days" {
+  description = "Cloudwatch log retention days"
+  default     = 120
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
