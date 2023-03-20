@@ -21,7 +21,7 @@
     },
     "dependsOn": [
       {
-        "containerName": "vector", 
+        "containerName": "vector",
         "condition": "HEALTHY"
         }
     ],
@@ -35,7 +35,7 @@
         %{ endfor ~}
         {
             "name": "ROLE",
-            "value": "worker"
+            "value": "worker,scheduler"
         }
     ],
     "mountPoints": [
@@ -83,7 +83,7 @@
     ],
     "healthCheck": {
       "command": [
-        "CMD-SHELL", 
+        "CMD-SHELL",
         "wget --no-verbose --tries=1 --spider http://localhost:8000/services/collector/health > /dev/null || exit 1"
         ],
         "interval":30,
@@ -91,6 +91,6 @@
         "startPeriod":100,
         "timeout":5
     }
-  } 
+  }
   %{ endif }
 ]
