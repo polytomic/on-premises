@@ -172,6 +172,16 @@ variable "polytomic_logger_image" {
   default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest"
 }
 
+variable "polytomic_use_dd_agent" {
+  description = "Use Datadog agent"
+  default     = false
+}
+
+variable "polytomic_dd_agent_image" {
+  description = "Docker image to use for the Datadog agent"
+  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-dd-agent:latest"
+}
+
 variable "polytomic_tx_buffer_size" {
   description = "Transaction buffer size for datalite cache"
   default     = 50000

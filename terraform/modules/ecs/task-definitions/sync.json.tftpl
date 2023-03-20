@@ -33,6 +33,16 @@
             "value": "${value}"
         },
         %{ endfor ~}
+        %{~ if polytomic_dd_agent }
+        {
+            "name": "DD_AGENT_HOST",
+            "value": "localhost"
+        },
+        {
+            "name": "TRACING",
+            "value": "true"
+        },
+        %{ endif ~}
         {
             "name": "ROLE",
             "value": "sync"
@@ -45,6 +55,12 @@
     }],
     "memoryReservation": ${sync_memory},
     "image": "${image}",
+    "portMappings": [
+        {
+            "containerPort": 8126,
+            "hostPort": 8126
+        }
+    ],
     "name": "sync",
      "ulimits": [
       {
@@ -93,4 +109,43 @@
     }
   } 
   %{ endif }
+  %{~ if polytomic_dd_agent },
+   {
+          "name": "datadog-agent",
+          "image": "${polytomic_dd_agent_image}",
+          "essential": true,
+          "environment": [
+              %{ for key, value in env ~}
+              {
+                "name": "${key}",
+                "value": "${value}"
+              },
+              %{ endfor ~}
+              {
+                  "name": "DD_API_KEY",
+                  "value": "ENC[DD_API_KEY]"
+              },
+              {
+                "name": "DD_SECRET_BACKEND_COMMAND",
+                "value": "/bin/ptctl"
+              },
+              {
+                "name": "DD_SECRET_BACKEND_ARGUMENTS",
+                "value": "config get -f vector -"
+              },
+              {
+                "name": "DD_DOCKER_ENV_AS_TAGS",
+                "value": "{\\\"role\\\": \\\"polytomic.role\\\"}"
+              },
+              {
+                "name": "DD_APM_ENABLED",
+                "value": "true"
+              },
+              {
+                "name": "ECS_FARGATE",
+                "value": "true"
+              }
+          ]
+      }
+ %{ endif }
 ]
