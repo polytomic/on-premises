@@ -5,7 +5,7 @@ provider "aws" {
 module "polytomic-ecs" {
   source = "github.com/polytomic/on-premises/terraform/modules/ecs"
 
-  prefix = "polytomic-2"
+  prefix = "polytomic"
   region = "us-east-1"
 
   ####### Polytomic settings #######

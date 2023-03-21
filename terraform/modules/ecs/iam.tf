@@ -23,6 +23,7 @@ data "aws_iam_policy_document" "polytomic_task" {
       "ssmmessages:CreateDataChannel",
       "ssmmessages:OpenControlChannel",
       "ssmmessages:OpenDataChannel",
+      "ecs:ListContainerInstances",
       "ecs:DescribeContainerInstances",
       "ecs:DescribeTasks",
       "ecs:ListTasks",

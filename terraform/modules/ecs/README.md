@@ -164,7 +164,7 @@ provider "aws" {
 module "polytomic-ecs" {
   source = "github.com/polytomic/on-premises/terraform/modules/ecs"
 
-  prefix = "polytomic-2"
+  prefix = "polytomic"
   region = "us-east-1"
 
   ####### Polytomic settings #######
@@ -191,9 +191,9 @@ module "polytomic-ecs" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.6 |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.22.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.1.1 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.3.2 |
 
 ## Resources
 
@@ -295,6 +295,7 @@ module "polytomic-ecs" {
 | <a name="input_log_retention_days"></a> [log\_retention\_days](#input\_log\_retention\_days) | Cloudwatch log retention days | `number` | `120` | no |
 | <a name="input_polytomic_bootstrap"></a> [polytomic\_bootstrap](#input\_polytomic\_bootstrap) | Whether to bootstrap Polytomic | `bool` | `false` | no |
 | <a name="input_polytomic_data_path"></a> [polytomic\_data\_path](#input\_polytomic\_data\_path) | Filesystem path to local data cache | `string` | `"/var/polytomic"` | no |
+| <a name="input_polytomic_dd_agent_image"></a> [polytomic\_dd\_agent\_image](#input\_polytomic\_dd\_agent\_image) | Docker image to use for the Datadog agent | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-dd-agent:latest"` | no |
 | <a name="input_polytomic_deployment"></a> [polytomic\_deployment](#input\_polytomic\_deployment) | A unique identifier for your on premises deploy, provided by Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_deployment_api_key"></a> [polytomic\_deployment\_api\_key](#input\_polytomic\_deployment\_api\_key) | API key used to authenticate with the Polytomic management API | `string` | `""` | no |
 | <a name="input_polytomic_deployment_key"></a> [polytomic\_deployment\_key](#input\_polytomic\_deployment\_key) | The license key for your deployment, provided by Polytomic | `string` | `""` | no |
@@ -326,6 +327,7 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_sync_logging_enabled"></a> [polytomic\_sync\_logging\_enabled](#input\_polytomic\_sync\_logging\_enabled) | Record execution logs for syncs performed via Polytomic | `bool` | `true` | no |
 | <a name="input_polytomic_tx_buffer_size"></a> [polytomic\_tx\_buffer\_size](#input\_polytomic\_tx\_buffer\_size) | Transaction buffer size for datalite cache | `number` | `50000` | no |
 | <a name="input_polytomic_url"></a> [polytomic\_url](#input\_polytomic\_url) | Base URL for accessing Polytomic. This will be used when redirecting back from Google and other integrations after authenticating with OAuth. | `string` | `""` | no |
+| <a name="input_polytomic_use_dd_agent"></a> [polytomic\_use\_dd\_agent](#input\_polytomic\_use\_dd\_agent) | Use Datadog agent | `bool` | `false` | no |
 | <a name="input_polytomic_use_logger"></a> [polytomic\_use\_logger](#input\_polytomic\_use\_logger) | Use polytomic log aggregator | `bool` | `true` | no |
 | <a name="input_polytomic_workos_api_key"></a> [polytomic\_workos\_api\_key](#input\_polytomic\_workos\_api\_key) | The API key for the WorkOS account to use for Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_workos_client_id"></a> [polytomic\_workos\_client\_id](#input\_polytomic\_workos\_client\_id) | The WorkOS client ID | `string` | `""` | no |

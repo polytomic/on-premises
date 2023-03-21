@@ -70,6 +70,7 @@ locals {
     QUERY_RUNNER_EXCLUDE                = join(",", var.polytomic_query_runner_exclude_dbs)
     LEGACY_CONFIG                       = var.polytomic_legacy_config
     SEND_LOGS                           = var.polytomic_managed_logs && var.polytomic_use_logger
+    ENV                                 = var.polytomic_deployment
   }
 
   environment = {
@@ -82,6 +83,9 @@ locals {
     mount_path             = var.polytomic_data_path,
     polytomic_logger       = var.polytomic_use_logger,
     polytomic_logger_image = var.polytomic_logger_image,
+
+    polytomic_dd_agent       = var.polytomic_use_dd_agent,
+    polytomic_dd_agent_image = var.polytomic_dd_agent_image,
 
     env = merge(local.standard_env_vars, var.extra_environment)
   }
