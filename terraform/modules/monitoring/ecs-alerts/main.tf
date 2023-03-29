@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 locals {
   thresholds = {
     CPUUtilizationHighThreshold    = min(max(var.cpu_utilization_high_threshold, 0), 100)
@@ -100,13 +102,13 @@ resource "aws_cloudwatch_event_target" "sns" {
       taskArn = "$.detail.taskArn",
     }
     input_template = <<EOF
-Task '<taskArn>' has been stopped due to OutOfMemory
+"Task \"<taskArn>\" has been stopped due to OutOfMemory"
 EOF
   }
 }
 
 resource "aws_sns_topic_policy" "oom" {
-  arn = aws_sns_topic.test.arn
+  arn = var.sns_topic_arns[0]
 
   policy = data.aws_iam_policy_document.oom_topic_policy.json
 }
@@ -141,7 +143,7 @@ data "aws_iam_policy_document" "oom_topic_policy" {
       variable = "AWS:SourceOwner"
 
       values = [
-        var.account-id,
+        data.aws_caller_identity.current.account_id,
       ]
     }
 
