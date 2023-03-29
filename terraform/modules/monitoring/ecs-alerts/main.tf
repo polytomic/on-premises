@@ -64,3 +64,96 @@ resource "aws_cloudwatch_metric_alarm" "running_tasks_low" {
   dimensions = local.dimensions_map[var.service_name == "" ? "cluster" : "service"]
 }
 
+resource "aws_cloudwatch_event_rule" "oom" {
+  name        = "capture-oom"
+  description = "Capture Out of Memory contains events"
+
+  event_pattern = jsonencode({
+    source = [
+      "aws.ecs"
+    ]
+    detail-type = [
+      "ECS Task State Change"
+    ]
+    detail = {
+      desiredStatus = [
+        "STOPPED"
+      ]
+      lastStatus = [
+        "STOPPED"
+      ]
+      containers = {
+        reason = [
+          { prefix = "OutOfMemory" }
+        ]
+      }
+    }
+  })
+}
+
+resource "aws_cloudwatch_event_target" "sns" {
+  arn       = var.sns_topic_arns[0]
+  rule      = aws_cloudwatch_event_rule.oom.name
+
+  input_transformer {
+    input_paths = {
+      taskArn = "$.detail.taskArn",
+    }
+    input_template = <<EOF
+Task '<taskArn>' has been stopped due to OutOfMemory
+EOF
+  }
+}
+
+resource "aws_sns_topic_policy" "oom" {
+  arn = aws_sns_topic.test.arn
+
+  policy = data.aws_iam_policy_document.oom_topic_policy.json
+}
+
+data "aws_iam_policy_document" "oom_topic_policy" {
+  statement {
+    sid       = "SnsOOMTopicPolicy"
+    effect    = "Allow"
+    actions   = ["sns:Publish"]
+    resources = var.sns_topic_arns
+    principals {
+      type        = "Service"
+      identifiers = ["events.amazonaws.com"]
+    }
+  }
+
+  statement {
+    actions = [
+      "sns:GetTopicAttributes",
+      "sns:SetTopicAttributes",
+      "sns:AddPermission",
+      "sns:RemovePermission",
+      "sns:DeleteTopic",
+      "sns:Subscribe",
+      "sns:ListSubscriptionsByTopic",
+      "sns:Publish",
+      "sns:Receive",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceOwner"
+
+      values = [
+        var.account-id,
+      ]
+    }
+
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    resources = var.sns_topic_arns
+
+    sid = "__default_statement_ID"
+  }
+}
