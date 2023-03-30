@@ -1,3 +1,6 @@
+data "aws_caller_identity" "current" {}
+
+
 resource "random_password" "deployment_api_key" {
   count  = var.polytomic_deployment_api_key == "" ? 1 : 0
   length = 64

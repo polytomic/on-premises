@@ -52,3 +52,104 @@ module "ecs-alerts-worker" {
   sns_topic_arns = [aws_sns_topic.alerts[0].arn]
 
 }
+
+
+resource "aws_cloudwatch_event_rule" "oom" {
+  count       = var.enable_monitoring ? 1 : 0
+  name        = "capture-oom"
+  description = "Capture Out of Memory contains events"
+
+  event_pattern = jsonencode({
+    source = [
+      "aws.ecs"
+    ]
+    detail-type = [
+      "ECS Task State Change"
+    ]
+    detail = {
+      desiredStatus = [
+        "STOPPED"
+      ]
+      lastStatus = [
+        "STOPPED"
+      ]
+      containers = {
+        reason = [
+          { prefix = "OutOfMemory" }
+        ]
+      }
+    }
+  })
+}
+
+resource "aws_cloudwatch_event_target" "sns" {
+  count = var.enable_monitoring ? 1 : 0
+
+  arn  = aws_sns_topic.alerts[0].arn
+  rule = aws_cloudwatch_event_rule.oom[0].name
+
+  input_transformer {
+    input_paths = {
+      taskArn = "$.detail.taskArn",
+    }
+    input_template = <<EOF
+"Task \"<taskArn>\" has been stopped due to OutOfMemory"
+EOF
+  }
+}
+
+resource "aws_sns_topic_policy" "oom" {
+  count = var.enable_monitoring ? 1 : 0
+
+  arn    = aws_sns_topic.alerts[0].arn
+  policy = data.aws_iam_policy_document.oom_topic_policy[0].json
+}
+
+data "aws_iam_policy_document" "oom_topic_policy" {
+  count = var.enable_monitoring ? 1 : 0
+
+  statement {
+    sid       = "SnsOOMTopicPolicy"
+    effect    = "Allow"
+    actions   = ["sns:Publish"]
+    resources = [aws_sns_topic.alerts[0].arn]
+    principals {
+      type        = "Service"
+      identifiers = ["events.amazonaws.com"]
+    }
+  }
+
+  statement {
+    actions = [
+      "sns:GetTopicAttributes",
+      "sns:SetTopicAttributes",
+      "sns:AddPermission",
+      "sns:RemovePermission",
+      "sns:DeleteTopic",
+      "sns:Subscribe",
+      "sns:ListSubscriptionsByTopic",
+      "sns:Publish",
+      "sns:Receive",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceOwner"
+
+      values = [
+        data.aws_caller_identity.current.account_id,
+      ]
+    }
+
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    resources = [aws_sns_topic.alerts[0].arn]
+
+    sid = "__default_statement_ID"
+  }
+}
