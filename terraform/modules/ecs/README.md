@@ -242,7 +242,7 @@ module "polytomic-ecs" {
 |------|--------|---------|
 | <a name="module_database"></a> [database](#module\_database) | terraform-aws-modules/rds/aws | n/a |
 | <a name="module_database_sg"></a> [database\_sg](#module\_database\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
-| <a name="module_ecs"></a> [ecs](#module\_ecs) | terraform-aws-modules/ecs/aws | n/a |
+| <a name="module_ecs"></a> [ecs](#module\_ecs) | terraform-aws-modules/ecs/aws | <5.0.0 |
 | <a name="module_ecs-alerts-worker"></a> [ecs-alerts-worker](#module\_ecs-alerts-worker) | ../monitoring/ecs-alerts | n/a |
 | <a name="module_efs"></a> [efs](#module\_efs) | cloudposse/efs/aws | n/a |
 | <a name="module_efs_sg"></a> [efs\_sg](#module\_efs\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
