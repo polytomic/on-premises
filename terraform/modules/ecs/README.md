@@ -162,7 +162,7 @@ provider "aws" {
 }
 
 module "polytomic-ecs" {
-  source = "github.com/polytomic/on-premises/terraform/modules/ecs"
+  source = "github.com/polytomic/on-premises//terraform/modules/ecs?ref=v1.0.0"
 
   prefix = "polytomic"
   region = "us-east-1"
@@ -312,7 +312,6 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_image"></a> [polytomic\_image](#input\_polytomic\_image) | Docker image to use for the Polytomic ECS cluster | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"` | no |
 | <a name="input_polytomic_legacy_config"></a> [polytomic\_legacy\_config](#input\_polytomic\_legacy\_config) | Use legacy configuration | `bool` | `false` | no |
 | <a name="input_polytomic_log_level"></a> [polytomic\_log\_level](#input\_polytomic\_log\_level) | The log level to use for Polytomic | `string` | `"info"` | no |
-| <a name="input_polytomic_logger_image"></a> [polytomic\_logger\_image](#input\_polytomic\_logger\_image) | Docker image to use for the Polytomic log aggregator | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest"` | no |
 | <a name="input_polytomic_managed_logs"></a> [polytomic\_managed\_logs](#input\_polytomic\_managed\_logs) | Use managed logs | `bool` | `false` | no |
 | <a name="input_polytomic_mssql_tx_isolation"></a> [polytomic\_mssql\_tx\_isolation](#input\_polytomic\_mssql\_tx\_isolation) | Transaction isolation level for MSSQL connections | `string` | `""` | no |
 | <a name="input_polytomic_port"></a> [polytomic\_port](#input\_polytomic\_port) | Port on which Polytomic is listening | `string` | `"80"` | no |

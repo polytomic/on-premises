@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 module "polytomic-ecs" {
-  source = "github.com/polytomic/on-premises/terraform/modules/ecs"
+  source = "github.com/polytomic/on-premises//terraform/modules/ecs?ref=v1.0.0"
 
   prefix = "polytomic"
   region = "us-east-1"

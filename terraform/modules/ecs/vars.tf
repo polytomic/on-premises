@@ -167,10 +167,6 @@ variable "polytomic_use_logger" {
   default     = true
 }
 
-variable "polytomic_logger_image" {
-  description = "Docker image to use for the Polytomic log aggregator"
-  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest"
-}
 
 variable "polytomic_use_dd_agent" {
   description = "Use Datadog agent"

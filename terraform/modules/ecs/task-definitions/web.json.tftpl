@@ -1,5 +1,4 @@
 [{
-    %{ if !polytomic_logger }
     "logConfiguration": {
         "logDriver": "awslogs",
         "secretOptions": null,
@@ -10,22 +9,6 @@
             "awslogs-create-group": "true"
         }
     },
-    %{ else }
-    "logConfiguration": {
-        "logDriver": "splunk",
-        "options": {
-            "splunk-token": "test",
-            "splunk-url": "http://localhost:8000",
-            "splunk-verify-connection": "false"
-        }
-    },
-    "dependsOn": [
-      {
-        "containerName": "vector", 
-        "condition": "HEALTHY"
-        }
-    ],
-    %{ endif }
     "essential": true,
     "portMappings": [
         {
@@ -77,45 +60,6 @@
     "privileged": false,
     "name": "web"
 }
-%{~ if polytomic_logger },
-{
-    "image": "${polytomic_logger_image}",
-     "logConfiguration": {
-        "logDriver": "awslogs",
-        "secretOptions": null,
-        "options": {
-            "awslogs-group": "polytomic-worker",
-            "awslogs-region": "${region}",
-            "awslogs-stream-prefix": "service",
-            "awslogs-create-group": "true"
-        }
-    },
-    "name": "vector",
-    "essential": true,
-    "environment": [
-        %{ for key, value in env ~}
-        {
-            "name": "${key}",
-            "value": "${value}"
-        },
-        %{ endfor ~}
-        {
-            "name": "ROLE",
-            "value": "logger"
-        }
-    ],
-    "healthCheck": {
-      "command": [
-        "CMD-SHELL", 
-        "wget --no-verbose --tries=1 --spider http://localhost:8000/services/collector/health > /dev/null || exit 1"
-        ],
-        "interval":30,
-        "retries":3,
-        "startPeriod":100,
-        "timeout":5
-    }
-  } 
-  %{ endif }
   %{~ if polytomic_dd_agent },
    {
           "name": "datadog-agent",
