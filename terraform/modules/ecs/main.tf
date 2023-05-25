@@ -76,6 +76,7 @@ locals {
     ENV                                 = var.polytomic_deployment
     RECORD_LOG_BUCKET                   = "${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}"
     RECORD_LOG_REGION                   = var.region
+    VECTOR_INTERNAL                     = true
   }
 
   environment = {
