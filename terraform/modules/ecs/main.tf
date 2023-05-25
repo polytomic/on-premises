@@ -50,6 +50,7 @@ locals {
     EXPORT_QUERY_BUCKET                 = "${var.prefix}-${var.bucket_prefix}${local.polytomic_export_bucket}",
     EXPORT_QUERY_REGION                 = var.region,
     RECORD_LOG_DISABLED                 = var.polytomic_record_log_disabled,
+    DEFAULT_OPERATIONAL_BUCKET          = "${var.prefix}-${var.bucket_prefix}${local.polytomic_artifact_bucket}",
     LOG_LEVEL                           = var.polytomic_log_level,
     GOOGLE_CLIENT_ID                    = var.polytomic_google_client_id,
     GOOGLE_CLIENT_SECRET                = var.polytomic_google_client_secret,
@@ -74,7 +75,7 @@ locals {
     LEGACY_CONFIG                       = var.polytomic_legacy_config
     SEND_LOGS                           = var.polytomic_managed_logs && var.polytomic_use_logger
     ENV                                 = var.polytomic_deployment
-    RECORD_LOG_BUCKET                   = "${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}"
+    RECORD_LOG_BUCKET                   = "${var.prefix}-${var.bucket_prefix}${local.polytomic_artifact_bucket}",
     RECORD_LOG_REGION                   = var.region
     VECTOR_INTERNAL                     = true
   }
