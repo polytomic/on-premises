@@ -37,5 +37,8 @@ module "s3_bucket" {
     }
   }
 
+  control_object_ownership = true
+  object_ownership         = "BucketOwnerPreferred"
+
   tags = var.tags
 }
