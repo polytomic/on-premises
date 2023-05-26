@@ -81,13 +81,15 @@ locals {
   }
 
   environment = {
-    web_memory     = var.polytomic_resource_web_memory
-    sync_memory    = var.polytomic_resource_sync_memory
-    worker_memory  = var.polytomic_resource_worker_memory
-    image          = var.polytomic_image,
-    region         = var.region,
-    polytomic_port = var.polytomic_port,
-    mount_path     = var.polytomic_data_path,
+    web_memory             = var.polytomic_resource_web_memory
+    sync_memory            = var.polytomic_resource_sync_memory
+    worker_memory          = var.polytomic_resource_worker_memory
+    image                  = var.polytomic_image,
+    region                 = var.region,
+    polytomic_port         = var.polytomic_port,
+    mount_path             = var.polytomic_data_path,
+    polytomic_logger       = var.polytomic_use_logger,
+    polytomic_logger_image = var.polytomic_logger_image,
 
     polytomic_dd_agent       = var.polytomic_use_dd_agent,
     polytomic_dd_agent_image = var.polytomic_dd_agent_image,
