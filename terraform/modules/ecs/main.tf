@@ -88,7 +88,7 @@ locals {
     region                 = var.region,
     polytomic_port         = var.polytomic_port,
     mount_path             = var.polytomic_data_path,
-    polytomic_logger       = var.polytomic_use_logger,
+    polytomic_logger       = false
     polytomic_logger_image = var.polytomic_logger_image,
 
     polytomic_dd_agent       = var.polytomic_use_dd_agent,
