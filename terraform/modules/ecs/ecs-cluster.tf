@@ -1,6 +1,5 @@
 module "ecs" {
-  source  = "terraform-aws-modules/ecs/aws"
-  version = "<5.0.0"
+  source = "terraform-aws-modules/ecs/aws"
 
 
   count = var.ecs_cluster_name == "" ? 1 : 0
