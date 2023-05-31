@@ -254,7 +254,7 @@ module "polytomic-ecs" {
 | <a name="module_redis"></a> [redis](#module\_redis) | umotif-public/elasticache-redis/aws | n/a |
 | <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | n/a |
 | <a name="module_scheduled_task"></a> [scheduled\_task](#module\_scheduled\_task) | cn-terraform/ecs-fargate-scheduled-task/aws | 1.0.22 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | n/a |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | <5.0.0 |
 
 ## Inputs
 
