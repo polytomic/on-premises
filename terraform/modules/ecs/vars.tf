@@ -147,6 +147,16 @@ variable "polytomic_resource_worker_memory" {
   default     = 4096 // 4 GB
 }
 
+variable "polytomic_resource_scheduler_cpu" {
+  description = "CPU units for the scheduler container"
+  default     = 1024 // 1 vCPU
+}
+
+variable "polytomic_resource_scheduler_memory" {
+  description = "Memory units for the scheduler container"
+  default     = 2048 // 2 GB
+}
+
 variable "polytomic_resource_sync_cpu" {
   description = "CPU units for the sync container"
   default     = 4096 // 4 vCPU

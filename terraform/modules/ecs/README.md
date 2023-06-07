@@ -204,9 +204,11 @@ module "polytomic-ecs" {
 | [aws_alb_target_group.polytomic](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/alb_target_group) | resource |
 | [aws_cloudwatch_event_rule.oom](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_target.sns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
+| [aws_ecs_service.scheduler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_service.sync](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_service.web](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_service.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
+| [aws_ecs_task_definition.scheduler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
 | [aws_ecs_task_definition.stats_reporter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
 | [aws_ecs_task_definition.sync](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
 | [aws_ecs_task_definition.web](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
@@ -320,6 +322,8 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_query_runner_exclude_dbs"></a> [polytomic\_query\_runner\_exclude\_dbs](#input\_polytomic\_query\_runner\_exclude\_dbs) | List of databases to exclude from query runner | `list` | `[]` | no |
 | <a name="input_polytomic_query_worker_count"></a> [polytomic\_query\_worker\_count](#input\_polytomic\_query\_worker\_count) | Number of query workers to use | `number` | `20` | no |
 | <a name="input_polytomic_record_log_disabled"></a> [polytomic\_record\_log\_disabled](#input\_polytomic\_record\_log\_disabled) | Globally disable record logging for this deployment | `bool` | `false` | no |
+| <a name="input_polytomic_resource_scheduler_cpu"></a> [polytomic\_resource\_scheduler\_cpu](#input\_polytomic\_resource\_scheduler\_cpu) | CPU units for the scheduler container | `number` | `1024` | no |
+| <a name="input_polytomic_resource_scheduler_memory"></a> [polytomic\_resource\_scheduler\_memory](#input\_polytomic\_resource\_scheduler\_memory) | Memory units for the scheduler container | `number` | `2048` | no |
 | <a name="input_polytomic_resource_sync_cpu"></a> [polytomic\_resource\_sync\_cpu](#input\_polytomic\_resource\_sync\_cpu) | CPU units for the sync container | `number` | `4096` | no |
 | <a name="input_polytomic_resource_sync_memory"></a> [polytomic\_resource\_sync\_memory](#input\_polytomic\_resource\_sync\_memory) | Memory units for the sync container | `number` | `8192` | no |
 | <a name="input_polytomic_resource_web_cpu"></a> [polytomic\_resource\_web\_cpu](#input\_polytomic\_resource\_web\_cpu) | CPU units for the web container | `number` | `2048` | no |

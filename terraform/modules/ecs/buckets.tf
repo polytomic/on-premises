@@ -15,6 +15,9 @@ module "s3_bucket" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 
+  control_object_ownership = true
+  object_ownership         = "BucketOwnerPreferred"
+
   lifecycle_rule = each.key == "exports" || each.key == "executions" ? [
     {
       id      = each.key
