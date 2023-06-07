@@ -4,7 +4,7 @@
         "logDriver": "awslogs",
         "secretOptions": null,
         "options": {
-            "awslogs-group": "polytomic-worker",
+            "awslogs-group": "polytomic-scheduler",
             "awslogs-region": "${region}",
             "awslogs-stream-prefix": "service",
             "awslogs-create-group": "true"
@@ -49,7 +49,7 @@
         %{ endif ~}
         {
             "name": "ROLE",
-            "value": "worker"
+            "value": "scheduler"
         }
     ],
     "mountPoints": [
@@ -57,7 +57,7 @@
         "containerPath": "${mount_path}",
         "sourceVolume": "polytomic"
     }],
-    "memoryReservation": ${worker_memory},
+    "memoryReservation": ${scheduler_memory},
     "image": "${image}",
     "portMappings": [
         {
@@ -65,7 +65,7 @@
             "hostPort": 8126
         }
     ],
-    "name": "worker",
+    "name": "scheduler",
     "ulimits": [
       {
         "name": "nofile",
@@ -81,7 +81,7 @@
         "logDriver": "awslogs",
         "secretOptions": null,
         "options": {
-            "awslogs-group": "polytomic-worker",
+            "awslogs-group": "polytomic-scheduler",
             "awslogs-region": "${region}",
             "awslogs-stream-prefix": "service",
             "awslogs-create-group": "true"
