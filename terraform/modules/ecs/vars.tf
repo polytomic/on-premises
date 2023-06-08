@@ -157,6 +157,11 @@ variable "polytomic_resource_scheduler_memory" {
   default     = 2048 // 2 GB
 }
 
+variable "polytomic_resource_sync_count" {
+  description = "Number of sync containers to run"
+  default     = 2
+}
+
 variable "polytomic_resource_sync_cpu" {
   description = "CPU units for the sync container"
   default     = 4096 // 4 vCPU

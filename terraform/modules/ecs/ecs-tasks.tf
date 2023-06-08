@@ -190,7 +190,7 @@ resource "aws_ecs_service" "sync" {
   name            = "${var.prefix}-sync"
   cluster         = var.ecs_cluster_name == "" ? module.ecs[0].cluster_arn : data.aws_ecs_cluster.cluster[0].arn
   task_definition = aws_ecs_task_definition.sync.arn
-  desired_count   = 2
+  desired_count   = ${var.polytomic_resource_sync_count}
 
   enable_execute_command = true
   platform_version       = "1.4.0"
