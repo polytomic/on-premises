@@ -324,6 +324,7 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_record_log_disabled"></a> [polytomic\_record\_log\_disabled](#input\_polytomic\_record\_log\_disabled) | Globally disable record logging for this deployment | `bool` | `false` | no |
 | <a name="input_polytomic_resource_scheduler_cpu"></a> [polytomic\_resource\_scheduler\_cpu](#input\_polytomic\_resource\_scheduler\_cpu) | CPU units for the scheduler container | `number` | `1024` | no |
 | <a name="input_polytomic_resource_scheduler_memory"></a> [polytomic\_resource\_scheduler\_memory](#input\_polytomic\_resource\_scheduler\_memory) | Memory units for the scheduler container | `number` | `2048` | no |
+| <a name="input_polytomic_resource_sync_count"></a> [polytomic\_resource\_sync\_count](#input\_polytomic\_resource\_sync\_count) | Number of sync containers to run | `number` | `2` | no |
 | <a name="input_polytomic_resource_sync_cpu"></a> [polytomic\_resource\_sync\_cpu](#input\_polytomic\_resource\_sync\_cpu) | CPU units for the sync container | `number` | `4096` | no |
 | <a name="input_polytomic_resource_sync_memory"></a> [polytomic\_resource\_sync\_memory](#input\_polytomic\_resource\_sync\_memory) | Memory units for the sync container | `number` | `8192` | no |
 | <a name="input_polytomic_resource_web_cpu"></a> [polytomic\_resource\_web\_cpu](#input\_polytomic\_resource\_web\_cpu) | CPU units for the web container | `number` | `2048` | no |
