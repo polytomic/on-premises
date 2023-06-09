@@ -376,7 +376,7 @@ variable "database_auto_minor_version_upgrade" {
 
 variable "database_engine_version" {
   description = "Database engine version"
-  default     = "14.1"
+  default     = "14.3"
 }
 
 variable "database_family" {
