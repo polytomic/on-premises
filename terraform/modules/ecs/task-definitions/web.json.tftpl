@@ -21,7 +21,7 @@
     },
     "dependsOn": [
       {
-        "containerName": "vector", 
+        "containerName": "vector",
         "condition": "HEALTHY"
         }
     ],
@@ -55,6 +55,10 @@
         },
         {
             "name": "PROFILING",
+            "value": "true"
+        },
+        {
+            "name": "METRICS",
             "value": "true"
         },
         %{ endif ~}
@@ -106,7 +110,7 @@
     ],
     "healthCheck": {
       "command": [
-        "CMD-SHELL", 
+        "CMD-SHELL",
         "wget --no-verbose --tries=1 --spider http://localhost:8000/services/collector/health > /dev/null || exit 1"
         ],
         "interval":30,
@@ -114,7 +118,7 @@
         "startPeriod":100,
         "timeout":5
     }
-  } 
+  }
   %{ endif }
   %{~ if polytomic_dd_agent },
    {
