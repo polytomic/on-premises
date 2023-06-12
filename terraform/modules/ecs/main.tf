@@ -78,6 +78,7 @@ locals {
     RECORD_LOG_BUCKET                   = "${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}",
     RECORD_LOG_REGION                   = var.region
     VECTOR_INTERNAL                     = true
+    TASK_EXECUTOR_TAGS                  = var.tags
   }
 
   environment = {
