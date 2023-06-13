@@ -19,7 +19,7 @@ locals {
   # This will join the list of strings into a single string
   links = "[ ${join(", ", [for s in local.raw_links : format("%s", s)])} ]"
 
-  # tags is var.tags converted to a string of key=value pairs
+  # tags is var.task_tags converted to a string of key=value pairs
   tags = join(",", [for key, value in var.task_tags : "${key}=${value}"])
 
 
