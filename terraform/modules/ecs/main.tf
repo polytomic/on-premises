@@ -19,8 +19,8 @@ locals {
   # This will join the list of strings into a single string
   links = "[ ${join(", ", [for s in local.raw_links : format("%s", s)])} ]"
 
-  # tags is var.tags converted to a string of key=value pairs
-  tags = join(",", [for key, value in var.tags : "${key}=${value}"])
+  # tags is var.task_tags converted to a string of key=value pairs
+  tags = join(",", [for key, value in var.task_tags : "${key}=${value}"])
 
 
   private_subnet_cidrs       = var.vpc_id == "" ? module.vpc[0].private_subnets_cidr_blocks : [for s in data.aws_subnet.subnet : s.cidr_block]

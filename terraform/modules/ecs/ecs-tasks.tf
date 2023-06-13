@@ -151,6 +151,9 @@ resource "aws_ecs_service" "web" {
   launch_type = "FARGATE"
   tags        = var.tags
 
+  propagate_tags = "TASK_DEFINITION"
+
+
 
   network_configuration {
     subnets          = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
@@ -179,6 +182,8 @@ resource "aws_ecs_service" "worker" {
   tags        = var.tags
 
 
+  propagate_tags = "TASK_DEFINITION"
+
   network_configuration {
     subnets          = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
     assign_public_ip = false
@@ -198,6 +203,7 @@ resource "aws_ecs_service" "sync" {
   launch_type = "FARGATE"
   tags        = var.tags
 
+  propagate_tags = "TASK_DEFINITION"
 
   network_configuration {
     subnets          = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
@@ -219,6 +225,8 @@ resource "aws_ecs_service" "scheduler" {
 
   launch_type = "FARGATE"
   tags        = var.tags
+
+  propagate_tags = "TASK_DEFINITION"
 
 
   network_configuration {

@@ -537,3 +537,9 @@ variable "load_balancer_redirect_https" {
   description = "enable https listener on load balancer"
   default     = false
 }
+
+variable "task_tags" {
+  description = "A map of tags to add to application-launched tasks"
+  type        = map(string)
+  default     = {}
+}

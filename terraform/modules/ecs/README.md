@@ -362,6 +362,7 @@ module "polytomic-ecs" {
 | <a name="input_stats_cron"></a> [stats\_cron](#input\_stats\_cron) | Stats cron | `string` | `"cron(0 0 * * ? *)"` | no |
 | <a name="input_stats_format"></a> [stats\_format](#input\_stats\_format) | Output format for stats reporter | `string` | `"json"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |
+| <a name="input_task_tags"></a> [task\_tags](#input\_task\_tags) | A map of tags to add to application-launched tasks | `map(string)` | `{}` | no |
 | <a name="input_vpc_azs"></a> [vpc\_azs](#input\_vpc\_azs) | VPC availability zones | `list` | <pre>[<br>  "us-east-1a",<br>  "us-east-1b",<br>  "us-east-1c"<br>]</pre> | no |
 | <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | VPC CIDR | `string` | `"10.0.0.0/16"` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | `""` | no |
