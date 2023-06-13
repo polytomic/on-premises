@@ -19,6 +19,10 @@ locals {
   # This will join the list of strings into a single string
   links = "[ ${join(", ", [for s in local.raw_links : format("%s", s)])} ]"
 
+  # tags is var.tags converted to a string of key=value pairs
+  tags = join(",", [for key, value in var.tags : "${key}=${value}"])
+
+
   private_subnet_cidrs       = var.vpc_id == "" ? module.vpc[0].private_subnets_cidr_blocks : [for s in data.aws_subnet.subnet : s.cidr_block]
   polytomic_export_bucket    = "exports"
   polytomic_execution_bucket = "executions"
@@ -78,6 +82,7 @@ locals {
     RECORD_LOG_BUCKET                   = "${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}",
     RECORD_LOG_REGION                   = var.region
     VECTOR_INTERNAL                     = true
+    TASK_EXECUTOR_TAGS                  = local.tags
   }
 
   environment = {
