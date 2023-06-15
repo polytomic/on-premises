@@ -81,7 +81,6 @@ locals {
     ENV                                 = var.polytomic_deployment
     RECORD_LOG_BUCKET                   = "${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}",
     RECORD_LOG_REGION                   = var.region
-    VECTOR_INTERNAL                     = true
     TASK_EXECUTOR_TAGS                  = local.tags
   }
 
@@ -94,7 +93,7 @@ locals {
     region                 = var.region,
     polytomic_port         = var.polytomic_port,
     mount_path             = var.polytomic_data_path,
-    polytomic_logger       = false
+    polytomic_logger       = var.polytomic_use_logger
     polytomic_logger_image = var.polytomic_logger_image,
 
     polytomic_dd_agent       = var.polytomic_use_dd_agent,
