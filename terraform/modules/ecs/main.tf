@@ -37,52 +37,52 @@ locals {
 
 
   standard_env_vars = {
-    ERROR_REPLAY                        = true
-    ROOT_USER                           = var.polytomic_root_user,
-    LOCAL_DATA                          = var.polytomic_data_path != "",
-    LOCAL_DATA_PATH                     = "${var.polytomic_data_path}/models",
-    JOB_PAYLOAD_PATH                    = "${var.polytomic_data_path}/jobs",
     AWS_REGION                          = var.region,
-    DEPLOYMENT                          = var.polytomic_deployment,
-    DEPLOYMENT_KEY                      = var.polytomic_deployment_key,
-    DEPLOYMENT_API_KEY                  = var.polytomic_deployment_api_key == "" ? random_password.deployment_api_key[0].result : var.polytomic_deployment_api_key,
-    DEPLOYMENT_LINKS                    = local.links,
+    CAPTURE_SYNC_LOGS                   = var.polytomic_sync_logging_enabled
     DATABASE_URL                        = local.database_url,
-    REDIS_URL                           = local.redis_url,
-    POLYTOMIC_URL                       = var.polytomic_url == "" ? "http://${aws_alb.main.dns_name}/" : local.parsed_polytomic_url.scheme == null ? "https://${var.polytomic_url}" : "${var.polytomic_url}",
+    DEFAULT_OPERATIONAL_BUCKET          = "s3://${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}?region=${var.region}"
+    DEPLOYMENT                          = var.polytomic_deployment,
+    DEPLOYMENT_API_KEY                  = var.polytomic_deployment_api_key == "" ? random_password.deployment_api_key[0].result : var.polytomic_deployment_api_key,
+    DEPLOYMENT_KEY                      = var.polytomic_deployment_key,
+    DEPLOYMENT_LINKS                    = local.links,
+    ENABLED_BACKENDS                    = join(",", var.polytomic_enabled_backends)
+    ENV                                 = var.polytomic_deployment
+    ERROR_REPLAY                        = true
     EXECUTION_LOG_BUCKET                = "${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}",
     EXECUTION_LOG_REGION                = var.region,
+    EXECUTION_LOGS_V2                   = var.polytomic_use_logger
     EXPORT_QUERY_BUCKET                 = "${var.prefix}-${var.bucket_prefix}${local.polytomic_export_bucket}",
     EXPORT_QUERY_REGION                 = var.region,
-    RECORD_LOG_DISABLED                 = var.polytomic_record_log_disabled,
-    DEFAULT_OPERATIONAL_BUCKET          = "s3://${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}?region=${var.region}"
-    LOG_LEVEL                           = var.polytomic_log_level,
+    FARGATE_EXECUTOR_SECURITY_GROUPS    = join(",", concat(var.additional_ecs_security_groups, [module.fargate_sg.security_group_id]))
+    FARGATE_EXECUTOR_SUBNETS            = join(",", var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids),
+    GA_MEASUREMENT_ID                   = var.polytomic_ga_measurement_id,
     GOOGLE_CLIENT_ID                    = var.polytomic_google_client_id,
     GOOGLE_CLIENT_SECRET                = var.polytomic_google_client_secret,
-    TASK_EXECUTOR_ENABLED               = true,
-    TASK_EXECUTOR_CPU                   = var.polytomic_resource_sync_cpu,
-    TASK_EXECUTOR_MEMORY_RESERVATION    = var.polytomic_resource_sync_memory,
-    FARGATE_EXECUTOR_SUBNETS            = join(",", var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids),
-    FARGATE_EXECUTOR_SECURITY_GROUPS    = join(",", concat(var.additional_ecs_security_groups, [module.fargate_sg.security_group_id]))
+    JOB_PAYLOAD_PATH                    = "${var.polytomic_data_path}/jobs",
+    LEGACY_CONFIG                       = var.polytomic_legacy_config
+    LOCAL_DATA                          = var.polytomic_data_path != "",
+    LOCAL_DATA_PATH                     = "${var.polytomic_data_path}/models",
+    LOG_LEVEL                           = var.polytomic_log_level,
+    MSSQL_TX_ISOLATION                  = var.polytomic_mssql_tx_isolation
+    POLYTOMIC_URL                       = var.polytomic_url == "" ? "http://${aws_alb.main.dns_name}/" : local.parsed_polytomic_url.scheme == null ? "https://${var.polytomic_url}" : "${var.polytomic_url}",
+    QUERY_RUNNER_EXCLUDE                = join(",", var.polytomic_query_runner_exclude_dbs)
+    QUERY_WORKERS                       = var.polytomic_query_worker_count
+    RECORD_LOG_BUCKET                   = "${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}",
+    RECORD_LOG_DISABLED                 = var.polytomic_record_log_disabled,
+    RECORD_LOG_REGION                   = var.region
+    REDIS_URL                           = local.redis_url,
+    RETAIN_CACHE_DIR                    = "/var/polytomic/retained"
+    ROOT_USER                           = var.polytomic_root_user,
+    SEND_LOGS                           = var.polytomic_managed_logs && var.polytomic_use_logger
     SINGLE_PLAYER                       = var.polytomic_single_player,
+    TASK_EXECUTOR_CLEANUP_DELAY_SECONDS = 30
+    TASK_EXECUTOR_CPU                   = var.polytomic_resource_sync_cpu,
+    TASK_EXECUTOR_ENABLED               = true,
+    TASK_EXECUTOR_MEMORY_RESERVATION    = var.polytomic_resource_sync_memory,
+    TASK_EXECUTOR_TAGS                  = local.tags
+    TX_BUFFER_SIZE                      = var.polytomic_tx_buffer_size
     WORKOS_API_KEY                      = var.polytomic_workos_api_key,
     WORKOS_CLIENT_ID                    = var.polytomic_workos_client_id,
-    GA_MEASUREMENT_ID                   = var.polytomic_ga_measurement_id,
-    ENABLED_BACKENDS                    = join(",", var.polytomic_enabled_backends)
-    CAPTURE_SYNC_LOGS                   = var.polytomic_sync_logging_enabled
-    MSSQL_TX_ISOLATION                  = var.polytomic_mssql_tx_isolation
-    EXECUTION_LOGS_V2                   = var.polytomic_use_logger
-    TASK_EXECUTOR_CLEANUP_DELAY_SECONDS = 30
-    RETAIN_CACHE_DIR                    = "/var/polytomic/retained"
-    TX_BUFFER_SIZE                      = var.polytomic_tx_buffer_size
-    QUERY_WORKERS                       = var.polytomic_query_worker_count
-    QUERY_RUNNER_EXCLUDE                = join(",", var.polytomic_query_runner_exclude_dbs)
-    LEGACY_CONFIG                       = var.polytomic_legacy_config
-    SEND_LOGS                           = var.polytomic_managed_logs && var.polytomic_use_logger
-    ENV                                 = var.polytomic_deployment
-    RECORD_LOG_BUCKET                   = "${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}",
-    RECORD_LOG_REGION                   = var.region
-    TASK_EXECUTOR_TAGS                  = local.tags
   }
 
   environment = {
