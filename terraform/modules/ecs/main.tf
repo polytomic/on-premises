@@ -37,6 +37,7 @@ locals {
 
 
   standard_env_vars = {
+    ERROR_REPLAY                        = true
     ROOT_USER                           = var.polytomic_root_user,
     LOCAL_DATA                          = var.polytomic_data_path != "",
     LOCAL_DATA_PATH                     = "${var.polytomic_data_path}/models",
