@@ -42,7 +42,10 @@ spec:
             value: sync
           volumeMounts:
           - mountPath: /var/polytomic
-            name: cache-volume      
+            name: cache-volume
+            {{ if .Values.polytomic.cache.sub_path }}
+            subPath: {{ .Values.polytomic.cache.sub_path }}
+            {{- end }}
           resources:
             {{- toYaml .Values.sync.resources | nindent 12 }}
       {{- with .Values.sync.nodeSelector }}

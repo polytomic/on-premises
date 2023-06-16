@@ -41,11 +41,23 @@ polytomic:
   # valid values are debug, info, warn, error; the default is info
   log_level: info
 
+  env: ""
+
   deployment:
     # -- A unique identifier for your on premises deploy, provided by Polytomic.
     name: ""
     # -- The license key for your deployment, provided by Polytomic.
     key: ""
+
+  # List of features to enable for all organizations by default
+  default_org_features: []
+
+  field_change_tracking: true
+  query_workers: 10
+  sync_retry_errors: true
+  sync_workers: 10
+  task_executor_cleanup_delay_seconds: 10
+  tx_buffer_size: 1000
 
   auth:
     #  -- The email address to use when starting for the first time;
@@ -66,6 +78,12 @@ polytomic:
     # If true, no authentication will be required
     single_player: true
 
+    # list of allowed authentication methods
+    methods: []
+
+    workos_api_key: ""
+    workos_client_id: ""
+
   # Postgres connection settings
   postgres:
     # -- Postgres user name
@@ -81,6 +99,8 @@ polytomic:
     # -- enable/disable SSL
     ssl: false
 
+    auto_migrate: true
+
   # Redis connection settings
   redis:
     username:
@@ -94,6 +114,7 @@ polytomic:
   # Credentials for AWS are pulled through the AWS-SDK's credential chain and the user/role must have permissions for the bucket.
   # We recommend setting a bucket lifecycle rule to automatically expire objects.
   s3:
+    operational_bucket: operations
     # -- The bucket stores log files containing records involved in a sync execution
     log_bucket: executions
     # -- The bucket is used to store query exports from Polytomic's SQL Runner.
@@ -113,9 +134,59 @@ polytomic:
     storage_class: ""
 
   jobs:
-    image: "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"
     volume_name: polytomic-cache
     secret: polytomic-config
+
+  # Integrations
+  airtable_client_secret: ""
+  asana_client_id: ""
+  asana_client_secret: ""
+  bingads_client_id: ""
+  bingads_client_secret: ""
+  bingads_developer_token: ""
+  ccloud_api_key: ""
+  ccloud_api_secret: ""
+  fbaudience_client_id: ""
+  fbaudience_client_secret: ""
+  fb_login_configuration_id: ""
+  front_client_id: ""
+  front_client_secret: ""
+  github_client_id: ""
+  github_client_secret: ""
+  github_deploy_key: ""
+  googleads_client_id: ""
+  googleads_client_secret: ""
+  googleads_developer_token: ""
+  googlesearchconsole_client_id: ""
+  googlesearchconsole_client_secret: ""
+  googleworkspace_client_id: ""
+  googleworkspace_client_secret: ""
+  gsheets_api_key: ""
+  gsheets_app_id: ""
+  gsheets_client_id: ""
+  gsheets_client_secret: ""
+  hubspot_client_id: ""
+  hubspot_client_secret: ""
+  intercom_client_id: ""
+  intercom_client_secret: ""
+  linkedinads_client_id: ""
+  linkedinads_client_secret: ""
+  outreach_client_id: ""
+  outreach_client_secret: ""
+  pardot_client_id: ""
+  pardot_client_secret: ""
+  salesforce_client_id: ""
+  salesforce_client_secret: ""
+  shipbob_client_id: ""
+  shipbob_client_secret: ""
+  shopify_client_id: ""
+  shopify_client_secret: ""
+  smartsheet_client_id: ""
+  smartsheet_client_secret: ""
+  stripe_secret_key: ""
+  zendesk_client_id: ""
+  zendesk_client_secret: ""
+
 
 #############################################################################################
 # Convience subcharts for dependencies
