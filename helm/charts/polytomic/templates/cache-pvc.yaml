@@ -1,4 +1,36 @@
 {{- if .Values.polytomic.cache.enabled -}}
+{{ if eq .Values.polytomic.cache.storage_class "efs-sc" }}
+{{ if eq .Values.polytomic.cache.type "static" }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.polytomic.cache.volume_name }}
+spec:
+  capacity:
+    storage: {{ .Values.polytomic.cache.size }}
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  csi:
+    driver: efs.csi.aws.com
+    volumeHandle: {{ .Values.polytomic.cache.efs_id }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.polytomic.cache.volume_name }}
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.polytomic.cache.size }}
+{{- else }}
+{{- end }}
+{{- else }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -14,4 +46,5 @@ spec:
   resources:
     requests:
       storage: {{ .Values.polytomic.cache.size }}
-  {{- end -}}
+{{- end }}
+{{- end -}}

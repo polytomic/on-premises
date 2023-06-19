@@ -40,6 +40,12 @@ spec:
           env:          
           - name: ROLE
             value: web
+          volumeMounts:
+          - mountPath: /var/polytomic
+            name: cache-volume
+            {{ if .Values.polytomic.cache.sub_path }}
+            subPath: {{ .Values.polytomic.cache.sub_path }}
+            {{- end }}
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}
       {{- with .Values.worker.nodeSelector }}
@@ -54,4 +60,13 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+      {{ if and (index .Values "nfs-server-provisioner" "enabled") (.Values.polytomic.cache.enabled) }}
+      - name: cache-volume
+        persistentVolumeClaim:
+          claimName: {{ .Values.polytomic.cache.volume_name }}
+      {{ else }}
+      - name: cache-volume
+        emptyDir: {}
+      {{- end -}}
 {{- end }}
