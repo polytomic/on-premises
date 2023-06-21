@@ -47,7 +47,6 @@ locals {
     DEPLOYMENT_LINKS                    = local.links,
     ENABLED_BACKENDS                    = join(",", var.polytomic_enabled_backends)
     ENV                                 = var.polytomic_deployment
-    ERROR_REPLAY                        = true
     EXECUTION_LOG_BUCKET                = "${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}",
     EXECUTION_LOG_REGION                = var.region,
     EXECUTION_LOGS_V2                   = var.polytomic_use_logger
@@ -75,6 +74,7 @@ locals {
     ROOT_USER                           = var.polytomic_root_user,
     SEND_LOGS                           = var.polytomic_managed_logs && var.polytomic_use_logger
     SINGLE_PLAYER                       = var.polytomic_single_player,
+    SYNC_RETRY_ERRORS                   = true
     TASK_EXECUTOR_CLEANUP_DELAY_SECONDS = 30
     TASK_EXECUTOR_CPU                   = var.polytomic_resource_sync_cpu,
     TASK_EXECUTOR_ENABLED               = true,
