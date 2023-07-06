@@ -18,7 +18,12 @@ module "database_sg" {
     },
   ]
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-database-sg"
+    }
+  )
 }
 
 
@@ -49,7 +54,12 @@ module "fargate_sg" {
     },
   ]
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-fargate_task"
+    }
+  )
 }
 
 
@@ -71,7 +81,12 @@ module "efs_sg" {
     },
   ]
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-efs"
+    }
+  )
 }
 
 
@@ -111,6 +126,11 @@ module "lb_sg" {
     },
   ]
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-lb"
+    }
+  )
 }
 

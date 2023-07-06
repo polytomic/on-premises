@@ -44,6 +44,11 @@ module "database" {
   monitoring_interval                   = var.database_monitoring_interval
   monitoring_role_name                  = var.database_monitoring_role_name
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-database"
+    }
+  )
 
 }
