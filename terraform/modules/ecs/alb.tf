@@ -10,7 +10,12 @@ resource "aws_alb" "main" {
   security_groups = local.lb_sgs
   internal        = var.load_balancer_internal
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-alb"
+    }
+  )
 
 }
 
@@ -20,7 +25,12 @@ resource "aws_alb_target_group" "polytomic" {
   protocol    = "HTTP"
   vpc_id      = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
   target_type = "ip"
-  tags        = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-tg"
+    }
+  )
 
   health_check {
     healthy_threshold   = "3"
@@ -43,7 +53,12 @@ resource "aws_alb_listener" "http" {
   load_balancer_arn = aws_alb.main.id
   port              = 80
   protocol          = "HTTP"
-  tags              = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-http-listener"
+    }
+  )
 
 
   dynamic "default_action" {

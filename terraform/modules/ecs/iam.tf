@@ -66,7 +66,11 @@ data "aws_iam_policy_document" "ecs_tasks_assume_role" {
 resource "aws_iam_role" "polytomic_ecs_task_role" {
   name               = "${var.prefix}-ecs-task-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role.json
-  tags               = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-ecs-task-role"
+  })
 }
 
 
@@ -99,7 +103,11 @@ data "aws_iam_policy_document" "polytomic_execution" {
 resource "aws_iam_role" "polytomic_ecs_execution_role" {
   name               = "${var.prefix}-ecs-execution-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role.json
-  tags               = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-ecs-execution-role"
+  })
 }
 
 
@@ -140,7 +148,11 @@ resource "aws_iam_role" "polytomic_stats_reporter_role" {
   count              = var.enable_stats ? 1 : 0
   name               = "${var.prefix}-stats-reporter-role"
   assume_role_policy = data.aws_iam_policy_document.events_assume_role_policy.json
-  tags               = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-stats-reporter-role"
+  })
 }
 
 

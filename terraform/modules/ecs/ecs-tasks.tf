@@ -8,7 +8,11 @@ resource "aws_ecs_task_definition" "web" {
 
   task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
   execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
-  tags               = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-web"
+  })
 
 
   runtime_platform {
@@ -43,7 +47,11 @@ resource "aws_ecs_task_definition" "worker" {
 
   task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
   execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
-  tags               = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-worker"
+  })
 
 
   runtime_platform {
@@ -78,7 +86,11 @@ resource "aws_ecs_task_definition" "sync" {
 
   task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
   execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
-  tags               = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-sync"
+  })
 
 
   runtime_platform {
@@ -113,7 +125,11 @@ resource "aws_ecs_task_definition" "scheduler" {
 
   task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
   execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
-  tags               = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-scheduler"
+  })
 
 
   runtime_platform {
@@ -149,7 +165,11 @@ resource "aws_ecs_service" "web" {
   platform_version                  = "1.4.0"
 
   launch_type = "FARGATE"
-  tags        = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-web"
+  })
 
   propagate_tags = "TASK_DEFINITION"
 
@@ -179,7 +199,11 @@ resource "aws_ecs_service" "worker" {
   platform_version       = "1.4.0"
 
   launch_type = "FARGATE"
-  tags        = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-worker"
+  })
 
 
   propagate_tags = "TASK_DEFINITION"
@@ -201,7 +225,11 @@ resource "aws_ecs_service" "sync" {
   platform_version       = "1.4.0"
 
   launch_type = "FARGATE"
-  tags        = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-sync"
+  })
 
   propagate_tags = "TASK_DEFINITION"
 
@@ -224,7 +252,11 @@ resource "aws_ecs_service" "scheduler" {
   platform_version       = "1.4.0"
 
   launch_type = "FARGATE"
-  tags        = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-scheduler"
+  })
 
   propagate_tags = "TASK_DEFINITION"
 

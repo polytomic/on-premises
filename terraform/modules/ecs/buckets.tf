@@ -40,5 +40,10 @@ module "s3_bucket" {
     }
   }
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-${var.bucket_prefix}${each.key}"
+    }
+  )
 }

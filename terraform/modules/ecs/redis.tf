@@ -27,7 +27,12 @@ module "redis" {
 
   ingress_cidr_blocks = local.private_subnet_cidrs
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-redis"
+    }
+  )
 }
 
 resource "random_password" "redis" {

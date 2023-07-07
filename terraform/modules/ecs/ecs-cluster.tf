@@ -30,7 +30,12 @@ module "ecs" {
     }
   }
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-cluster"
+    }
+  )
 }
 
 data "aws_ecs_cluster" "cluster" {

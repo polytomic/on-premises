@@ -29,5 +29,10 @@ resource "aws_vpc_endpoint" "s3" {
   vpc_id          = module.vpc[0].vpc_id
   service_name    = "com.amazonaws.${var.region}.s3"
   route_table_ids = module.vpc[0].private_route_table_ids
-  tags            = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-s3-endpoint"
+    }
+  )
 }
