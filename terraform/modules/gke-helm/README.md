@@ -22,6 +22,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_polytomic_bucket"></a> [polytomic\_bucket](#input\_polytomic\_bucket) | The operational bucket for the polytomic deployment | `any` | n/a | yes |
 | <a name="input_polytomic_cert_name"></a> [polytomic\_cert\_name](#input\_polytomic\_cert\_name) | The name of the certificate to use for the polytomic deployment | `any` | n/a | yes |
 | <a name="input_polytomic_deployment"></a> [polytomic\_deployment](#input\_polytomic\_deployment) | The name of the polytomic deployment | `any` | n/a | yes |
 | <a name="input_polytomic_deployment_key"></a> [polytomic\_deployment\_key](#input\_polytomic\_deployment\_key) | The key for the polytomic deployment | `any` | n/a | yes |

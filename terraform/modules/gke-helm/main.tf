@@ -50,6 +50,10 @@ polytomic:
     username: polytomic
     password: ${var.postgres_password}
     host: ${var.postgres_host}
+
+  s3:
+    operational_bucket: gs://${var.polytomic_bucket}
+    record_log_bucket: ${var.polytomic_bucket}
   
   jobs:
     image: ${var.polytomic_image}
