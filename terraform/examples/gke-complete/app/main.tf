@@ -7,6 +7,7 @@ locals {
   polytomic_image          = "us.gcr.io/polytomic-container-distro/polytomic-onprem"
   polytomic_image_tag      = "latest"
   polytomic_root_user      = "user@example.com"
+  polytomic_bucket         = "polytomic-bucket"
 }
 
 
@@ -60,7 +61,7 @@ module "gke_helm" {
   redis_password           = data.terraform_remote_state.gke.outputs.redis_auth_string
   postgres_host            = data.terraform_remote_state.gke.outputs.postgres_ip
   postgres_password        = data.terraform_remote_state.gke.outputs.postgres_password
-
+  polytomic_bucket         = local.polytomic_bucket
 }
 
 resource "google_compute_managed_ssl_certificate" "cert" {

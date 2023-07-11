@@ -52,7 +52,8 @@ resource "google_compute_global_address" "load_balancer" {
 module "memorystore" {
   count = var.create_redis ? 1 : 0
 
-  source = "terraform-google-modules/memorystore/google"
+  source  = "terraform-google-modules/memorystore/google"
+  version = "7.0.0"
 
   name         = "polytomic-redis"
   project      = var.project_id
@@ -65,6 +66,9 @@ module "memorystore" {
   authorized_network = module.gcp_network.network_id
 
   transit_encryption_mode = "DISABLED"
+
+  depends_on = [google_service_networking_connection.default]
+
 }
 
 
@@ -75,8 +79,9 @@ data "google_compute_zones" "available" {
 }
 
 module "postgres" {
-  count  = var.create_postgres ? 1 : 0
-  source = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
+  count   = var.create_postgres ? 1 : 0
+  source  = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
+  version = "13.0.1"
 
   name                 = "polytomic-postgresql"
   zone                 = data.google_compute_zones.available.names[0]
@@ -116,6 +121,8 @@ module "postgres" {
 
   db_name   = "polytomic"
   user_name = "polytomic"
+
+  depends_on = [google_service_networking_connection.default]
 }
 
 

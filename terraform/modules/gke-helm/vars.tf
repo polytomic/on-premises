@@ -59,3 +59,7 @@ variable "postgres_password" {
 variable "postgres_host" {
   description = "The host for the postgres deployment"
 }
+
+variable "polytomic_bucket" {
+  description = "The operational bucket for the polytomic deployment"
+}
