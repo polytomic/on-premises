@@ -14,6 +14,11 @@ variable "polytomic_deployment_key" {
   description = "The key for the polytomic deployment"
 }
 
+variable "polytomic_api_key" {
+  default     = ""
+  description = "The api key for the polytomic deployment"
+}
+
 variable "polytomic_url" {
   description = "The url for the polytomic deployment"
 }
@@ -32,10 +37,12 @@ variable "polytomic_root_user" {
 }
 
 variable "polytomic_google_client_id" {
+  default     = ""
   description = "The google client id for the polytomic deployment"
 }
 
 variable "polytomic_google_client_secret" {
+  default     = ""
   description = "The google client secret for the polytomic deployment"
 }
 
@@ -62,4 +69,7 @@ variable "postgres_host" {
 
 variable "polytomic_bucket" {
   description = "The operational bucket for the polytomic deployment"
+}
+variable "polytomic_service_account" {
+  description = "Workload identity service account for the polytomic deployment"
 }

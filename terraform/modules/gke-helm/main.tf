@@ -27,13 +27,19 @@ image:
   repository: ${var.polytomic_image}
   tag: ${var.polytomic_image_tag}
 
+serviceAccount.Annotations:
+  iam.gke.io/gcp-service-account: ${var.polytomic_service_account}
 
 polytomic:
   deployment:
     name: ${var.polytomic_deployment}
     key: ${var.polytomic_deployment_key}
+    api_key: ${var.polytomic_api_key}
+
   
   auth:
+    methods:
+      - google
     root_user: ${var.polytomic_root_user}
     url: https://${var.polytomic_url}
     single_player: false
@@ -54,6 +60,7 @@ polytomic:
   s3:
     operational_bucket: gs://${var.polytomic_bucket}
     record_log_bucket: ${var.polytomic_bucket}
+    gcs: true
   
   jobs:
     image: ${var.polytomic_image}
