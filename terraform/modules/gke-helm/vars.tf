@@ -37,10 +37,12 @@ variable "polytomic_root_user" {
 }
 
 variable "polytomic_google_client_id" {
+  default     = ""
   description = "The google client id for the polytomic deployment"
 }
 
 variable "polytomic_google_client_secret" {
+  default     = ""
   description = "The google client secret for the polytomic deployment"
 }
 
