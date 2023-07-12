@@ -41,5 +41,7 @@ resource "google_project_iam_member" "storage-role" {
 resource "google_project_iam_member" "workload-identity-role" {
   project = var.project_id
   role    = "roles/iam.workloadIdentityUser"
-  member  = "serviceAccount:${var.project_id}.svc.id.goog[polytomic/polytomic]"
+  # ${var.project_id}].svc.id.goog  == kubernetes cluster idenity namespace
+  # [polytomic/polytomic] == [kubernetes namespace/service account name]
+  member = "serviceAccount:${var.project_id}.svc.id.goog[polytomic/polytomic]"
 }
