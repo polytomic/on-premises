@@ -22,6 +22,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_polytomic_api_key"></a> [polytomic\_api\_key](#input\_polytomic\_api\_key) | The api key for the polytomic deployment | `string` | `""` | no |
 | <a name="input_polytomic_bucket"></a> [polytomic\_bucket](#input\_polytomic\_bucket) | The operational bucket for the polytomic deployment | `any` | n/a | yes |
 | <a name="input_polytomic_cert_name"></a> [polytomic\_cert\_name](#input\_polytomic\_cert\_name) | The name of the certificate to use for the polytomic deployment | `any` | n/a | yes |
 | <a name="input_polytomic_deployment"></a> [polytomic\_deployment](#input\_polytomic\_deployment) | The name of the polytomic deployment | `any` | n/a | yes |
@@ -32,6 +33,7 @@ No modules.
 | <a name="input_polytomic_image_tag"></a> [polytomic\_image\_tag](#input\_polytomic\_image\_tag) | The tag to use for the polytomic container | `any` | n/a | yes |
 | <a name="input_polytomic_ip_name"></a> [polytomic\_ip\_name](#input\_polytomic\_ip\_name) | The name of the ip to use for the polytomic deployment | `any` | n/a | yes |
 | <a name="input_polytomic_root_user"></a> [polytomic\_root\_user](#input\_polytomic\_root\_user) | The root user for the polytomic deployment | `string` | `"root"` | no |
+| <a name="input_polytomic_service_account"></a> [polytomic\_service\_account](#input\_polytomic\_service\_account) | Workload identity service account for the polytomic deployment | `any` | n/a | yes |
 | <a name="input_polytomic_url"></a> [polytomic\_url](#input\_polytomic\_url) | The url for the polytomic deployment | `any` | n/a | yes |
 | <a name="input_postgres_host"></a> [postgres\_host](#input\_postgres\_host) | The host for the postgres deployment | `any` | n/a | yes |
 | <a name="input_postgres_password"></a> [postgres\_password](#input\_postgres\_password) | The password for the postgres deployment | `any` | n/a | yes |

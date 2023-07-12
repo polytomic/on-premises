@@ -109,6 +109,7 @@ Construct Polytomic Configuration
 ROOT_USER: {{ .Values.polytomic.auth.root_user | quote }}
 DEPLOYMENT: {{ .Values.polytomic.deployment.name | quote }}
 DEPLOYMENT_KEY: {{ .Values.polytomic.deployment.key | quote }}
+DEPLOYMENT_API_KEY: {{ .Values.polytomic.deployment.api_key | quote }}
 {{ if .Values.polytomic.postgres.ssl -}}
 DATABASE_URL: postgres://{{ .Values.polytomic.postgres.username }}{{- if .Values.polytomic.postgres.password}}:{{ .Values.polytomic.postgres.password }}{{- end}}@{{ .Values.polytomic.postgres.host }}:{{ .Values.polytomic.postgres.port }}/{{ .Values.polytomic.postgres.database }}
 {{- else}}
@@ -209,5 +210,10 @@ WORKOS_CLIENT_ID: {{ .Values.polytomic.auth.workos_client_id | quote }}
 ZENDESK_CLIENT_ID: {{ .Values.polytomic.zendesk_client_id | quote }}
 ZENDESK_CLIENT_SECRET: {{ .Values.polytomic.zendesk_client_secret | quote }}
 hubspot_scopes_v2: "true"
+
+{{- if .Values.polytomic.s3.gcs }}
+POLYTOMIC_USE_GCS: "true"
+{{- end }}
+
 
 {{- end }}

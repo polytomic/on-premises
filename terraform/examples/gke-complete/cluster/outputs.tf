@@ -23,6 +23,11 @@ output "cluster_sa" {
   value       = module.gke_cluster_service_account.email
 }
 
+output "workload_identity_user_sa" {
+  description = "Workload identity user service account"
+  value       = module.gke_cluster_service_account.workload_identity_user_sa_email
+}
+
 output "redis_auth_string" {
   value     = module.gke.redis_auth_string
   sensitive = true

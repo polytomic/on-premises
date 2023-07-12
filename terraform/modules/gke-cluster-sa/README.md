@@ -20,7 +20,10 @@ No modules.
 | [google_project_iam_member.cluster_service_account-metric_writer](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_member) | resource |
 | [google_project_iam_member.cluster_service_account-monitoring_viewer](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_member) | resource |
 | [google_project_iam_member.cluster_service_account-resourceMetadata-writer](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_member) | resource |
+| [google_project_iam_member.storage-role](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_member) | resource |
+| [google_project_iam_member.workload-identity-role](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_member) | resource |
 | [google_service_account.cluster_service_account](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account) | resource |
+| [google_service_account.workload-identity-user-sa](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account) | resource |
 
 ## Inputs
 
@@ -33,3 +36,4 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_email"></a> [email](#output\_email) | Service account email |
+| <a name="output_workload_identity_user_sa_email"></a> [workload\_identity\_user\_sa\_email](#output\_workload\_identity\_user\_sa\_email) | Workload identity user service account email |
