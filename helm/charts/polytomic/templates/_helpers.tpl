@@ -215,5 +215,9 @@ hubspot_scopes_v2: "true"
 POLYTOMIC_USE_GCS: "true"
 {{- end }}
 
+{{- if .Values.polytomic.local }}
+LOCAL: "true"
+{{- end }}
+
 
 {{- end }}

@@ -48,6 +48,8 @@ polytomic:
     name: ""
     # -- The license key for your deployment, provided by Polytomic.
     key: ""
+    # -- The global api key for your deployment, user provided.
+    api_key: ""
 
   # List of features to enable for all organizations by default
   default_org_features: []
@@ -114,11 +116,23 @@ polytomic:
   # Credentials for AWS are pulled through the AWS-SDK's credential chain and the user/role must have permissions for the bucket.
   # We recommend setting a bucket lifecycle rule to automatically expire objects.
   s3:
-    operational_bucket: operations
+    operational_bucket: "s3://operations"
+
+    # -- Holds record logs for syncs
+    record_log_bucket: "records"
+
+
+    # -- DEPRECATED!!
+    #
+    # use operational_bucket instead of log_bucket and query_bucket
+    # 
     # -- The bucket stores log files containing records involved in a sync execution
-    log_bucket: executions
+    log_bucket: "" 
     # -- The bucket is used to store query exports from Polytomic's SQL Runner.
-    query_bucket: queries
+    query_bucket: ""
+    #
+    #
+
 
     # -- Access key ID
     access_key_id: ""
@@ -187,6 +201,10 @@ polytomic:
   zendesk_client_id: ""
   zendesk_client_secret: ""
 
+
+  # -- Telemetry
+  metrics: false
+  tracing: false
 
 #############################################################################################
 # Convience subcharts for dependencies
@@ -280,6 +298,8 @@ worker:
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
     # runAsUser: 1000
+  sidecarContainers: []
+
 
 web:
   replicaCount: 1
@@ -303,7 +323,17 @@ web:
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
-
+  sidecarContainers:
+  # - image: busybox
+  #   name: sidecar-example
+  #   args:
+  #    - /bin/sh
+  #    - -c
+  #    - >
+  #     while true; do
+  #       echo "$(date) INFO hello";
+  #       sleep 1;
+  #     done
 sync:
   replicaCount: 1
   resources: {}
@@ -328,6 +358,7 @@ sync:
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
     # runAsUser: 1000
+  sidecarContainers: []
 
 dev:
   resources: {}
