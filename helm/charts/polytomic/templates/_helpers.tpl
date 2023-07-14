@@ -144,7 +144,11 @@ KUBERNETES: "true"
 KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
 KUBERNETES_IMAGE: {{ .Values.image.repository }}:{{ .Values.image.tag }}
 KUBERNETES_VOLUME: {{ .Values.polytomic.cache.volume_name }}
+{{- if .Values.secret.name }}
+KUBERNETES_SECRET: {{ .Values.secret.name }}
+{{- else }}
 KUBERNETES_SECRET: {{ include "polytomic.fullname" . }}-config
+{{- end }}
 KUBERNETES_SERVICE_ACCOUNT: {{ include "polytomic.serviceAccountName" . | quote }}
 AIRTABLE_CLIENT_SECRET: {{ .Values.polytomic.airtable_client_secret | quote }}
 ASANA_CLIENT_ID: {{ .Values.polytomic.asana_client_id | quote }}
