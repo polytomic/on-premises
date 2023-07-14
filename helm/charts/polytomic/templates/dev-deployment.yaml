@@ -37,7 +37,7 @@ spec:
               name: {{ include "polytomic.fullname" . }}-config
           env:          
           - name: ROLE
-            value: web,worker,sync
+            value: web,worker,sync,scheduler
           - name: DEPLOYMENT
             value: local
           - name: NAMESPACE

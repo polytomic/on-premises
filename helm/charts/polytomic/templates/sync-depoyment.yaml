@@ -48,6 +48,9 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.sync.resources | nindent 12 }}
+      {{- if .Values.sync.sidecarContainers }}
+      {{- toYaml .Values.sync.sidecarContainers | nindent 8 }}
+      {{- end }}
       {{- with .Values.sync.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

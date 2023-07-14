@@ -54,6 +54,9 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.web.resources | nindent 12 }}
+      {{- if .Values.web.sidecarContainers }}
+      {{- toYaml .Values.web.sidecarContainers | nindent 8 }}
+      {{- end }}
       {{- with .Values.web.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -39,7 +39,7 @@ spec:
               name: {{ include "polytomic.fullname" . }}-config
           env:          
           - name: ROLE
-            value: web
+            value: worker
           volumeMounts:
           - mountPath: /var/polytomic
             name: cache-volume
@@ -48,6 +48,9 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}
+      {{- if .Values.worker.sidecarContainers }}
+      {{- toYaml .Values.worker.sidecarContainers | nindent 8 }}
+      {{- end }}
       {{- with .Values.worker.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
