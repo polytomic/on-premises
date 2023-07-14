@@ -125,9 +125,9 @@ polytomic:
     # -- DEPRECATED!!
     #
     # use operational_bucket instead of log_bucket and query_bucket
-    # 
+    #
     # -- The bucket stores log files containing records involved in a sync execution
-    log_bucket: "" 
+    log_bucket: ""
     # -- The bucket is used to store query exports from Polytomic's SQL Runner.
     query_bucket: ""
     #
