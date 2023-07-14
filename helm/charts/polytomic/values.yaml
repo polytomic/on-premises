@@ -147,10 +147,6 @@ polytomic:
     size: 20Mi
     storage_class: ""
 
-  jobs:
-    volume_name: polytomic-cache
-    secret: polytomic-config
-
   # Integrations
   airtable_client_secret: ""
   asana_client_id: ""
@@ -266,6 +262,10 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+secret:
+  # The name of the secret to use instead of generating one
   name: ""
 
 worker:

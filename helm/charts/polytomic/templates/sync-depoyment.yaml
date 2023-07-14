@@ -36,7 +36,11 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
           - secretRef:
+              {{- if .Values.secret.name }}
+              name: {{ .Values.secret.name }}
+              {{- else }}
               name: {{ include "polytomic.fullname" . }}-config
+              {{- end }}
           env:          
           - name: ROLE
             value: sync
