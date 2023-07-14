@@ -39,7 +39,7 @@ spec:
               name: {{ include "polytomic.fullname" . }}-config
           env:          
           - name: ROLE
-            value: web
+            value: worker
           volumeMounts:
           - mountPath: /var/polytomic
             name: cache-volume
