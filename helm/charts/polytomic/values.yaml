@@ -133,7 +133,6 @@ polytomic:
     #
     #
 
-
     # -- Access key ID
     access_key_id: ""
     # -- Secret access key
@@ -223,7 +222,7 @@ redis:
   architecture: standalone
 
 minio:
-  enabled: true
+  enabled: false
   rootUser: polytomic
   rootPassword: polytomic
   persistence:

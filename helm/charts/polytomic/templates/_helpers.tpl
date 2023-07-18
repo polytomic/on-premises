@@ -126,7 +126,7 @@ GOOGLE_CLIENT_ID: {{ .Values.polytomic.auth.google_client_id | quote }}
 GOOGLE_CLIENT_SECRET: {{ .Values.polytomic.auth.google_client_secret | quote }}
 EXECUTION_LOG_BUCKET: {{ .Values.polytomic.s3.log_bucket | quote }}
 EXECUTION_LOG_REGION: {{ .Values.polytomic.s3.region| quote }}
-DEFAULT_OPERATIONAL_BUCKET: {{ .Values.polytomic.s3.operational_bucket | quote }}
+DEFAULT_OPERATIONAL_BUCKET: {{ .Values.polytomic.s3.operational_bucket }}{{- if .Values.polytomic.s3.region }}?region={{ .Values.polytomic.s3.region }}{{- end}}
 RECORD_LOG_BUCKET: {{ .Values.polytomic.s3.record_log_bucket | quote }}
 RECORD_LOG_REGION: {{ .Values.polytomic.s3.region | quote }}
 EXPORT_QUERY_BUCKET: {{ .Values.polytomic.s3.query_bucket | quote }}
