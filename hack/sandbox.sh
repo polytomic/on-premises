@@ -48,21 +48,3 @@ kubectl wait --namespace ingress-nginx \
   --timeout=120s
 echo "NGINX ingress controller installed 🎉"
 echo
-echo
-echo
-echo "Loading polytomic image creds 📦 ..."
-TOKEN=`aws ecr get-login-password | cut -d' ' -f6`
-kubectl create secret docker-registry regcred \
-  --docker-server=$POLYTOMIC_IMAGE_REPO \
-  --docker-username=AWS \
-  --docker-password=$TOKEN \
-  -n default
-echo "Image creds setup 🎉"
-echo
-echo
-echo "Installing Polytomic 🚀 ..."
-pushd helm/charts/polytomic
-helm dep up
-helm install polytomic --set development=true --set "imagePullSecrets[0].name=regcred" .
-popd
-echo "Polytomic installed 🎉"

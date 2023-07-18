@@ -160,7 +160,7 @@ Follow the steps in the [EKS terraform module](terraform/examples/eks-complete) 
 
 To get a sandbox kubernetes environment set up, run the sandbox script located at `hack/sandbox.sh`
 
-It will setup a local kind cluster and install the polytomic helm chart.
+It will setup a local kind cluster. Then, install the helm chart.
 
 ```
 ./hack/sandbox.sh
