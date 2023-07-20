@@ -45,6 +45,7 @@
         <li><a href="#gke">GKE</a></li>
         <li><a href="#eks">EKS</a></li>
         <li><a href="#kind">KIND</a></li>
+        <li><a href="#helm">Helm</a></li>
       </ul>
     </li>
     <li><a href="#contributing">Contributing</a></li>
@@ -160,10 +161,31 @@ Follow the steps in the [EKS terraform module](terraform/examples/eks-complete) 
 
 To get a sandbox kubernetes environment set up, run the sandbox script located at `hack/sandbox.sh`
 
-It will setup a local kind cluster. Then, install the helm chart.
+It will setup a local kind cluster. Then, [install the helm chart](#helm).
 
 ```
 ./hack/sandbox.sh
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+### Helm
+
+Add the polytomic chart repo
+```
+helm repo add polytomic https://charts.polytomic.com
+helm repo update
+```
+
+Download and edit a values.yaml file if desired.
+```
+curl https://raw.githubusercontent.com/polytomic/on-premises/master/helm/charts/polytomic/values.yaml -o values.yaml
+```
+
+Install the chart (detailed information about the chart can be found [here](helm/charts/polytomic/README.md))
+```
+helm install polytomic polytomic/polytomic -f values.yaml
 ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
