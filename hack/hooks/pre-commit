@@ -54,4 +54,26 @@ else
 fi
 
 
+echo "Helm docs:"
+SRC_PATTERN="helm/charts/"
+if git diff --cached --name-only | grep --quiet "$SRC_PATTERN"
+then
+  # Ensure helm-docs is installed
+  if ! command -v helm-docs >/dev/null; then
+    echo "helm-docs is not installed 😥. Please install helm-docs: [helm-docs](https://github.com/norwoodj/helm-docs)"
+    exit 1
+  fi
+
+  # Keep chart docs up to date
+  for d in helm/charts/*; do
+    if pushd "$d" && helm-docs && popd; then
+      echo "Documentation for chart $d written... 🤠"
+      git add "$d/README.md"
+    fi
+  done
+  echo
+else
+  echo "No helm files changed. Not writing docs 😴"
+  echo
+fi
 
