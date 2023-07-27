@@ -45,6 +45,8 @@ spec:
           - name: ROLE
             value: sync
           volumeMounts:
+          - mountPath: /etc/podinfo
+            name: podinfo
           - mountPath: /var/polytomic
             name: cache-volume
             {{ if .Values.polytomic.cache.sub_path }}
@@ -76,4 +78,12 @@ spec:
       - name: cache-volume
         emptyDir: {}
       {{- end -}}
+      - downwardAPI:
+          defaultMode: 420
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.annotations
+            path: annotations
+        name: podinfo
 {{- end }}

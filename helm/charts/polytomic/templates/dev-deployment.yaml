@@ -35,6 +35,9 @@ spec:
           envFrom:
           - secretRef:
               name: {{ include "polytomic.fullname" . }}-config
+          volumeMounts:
+          - mountPath: /etc/podinfo
+            name: podinfo
           env:          
           - name: ROLE
             value: web,worker,sync,scheduler
@@ -64,4 +67,13 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+      - downwardAPI:
+          defaultMode: 420
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.annotations
+            path: annotations
+        name: podinfo
 {{- end }}
