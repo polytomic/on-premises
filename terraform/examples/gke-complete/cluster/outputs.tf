@@ -53,3 +53,8 @@ output "postgres_host" {
 output "postgres_ip" {
   value = module.gke.postgres_ip
 }
+
+
+output "bucket" {
+  value = module.gke.bucket
+}

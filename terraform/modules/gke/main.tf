@@ -146,3 +146,16 @@ resource "google_compute_network_peering_routes_config" "peering_routes" {
   import_custom_routes = true
   export_custom_routes = true
 }
+
+resource "google_storage_bucket" "polytomic" {
+  name          = var.bucket_name
+  location      = var.region
+  force_destroy = true
+}
+
+
+resource "google_storage_bucket_iam_member" "polytomic" {
+  bucket = google_storage_bucket.polytomic.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${var.workload_identity_sa}"
+}

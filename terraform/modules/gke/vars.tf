@@ -42,3 +42,14 @@ variable "postgres_instance_tier" {
   description = "The tier of the postgres instance"
   default     = "db-f1-micro"
 }
+
+variable "bucket_name" {
+  description = "The name of the bucket to create"
+  default     = "polytomic-bucket"
+}
+
+
+variable "workload_identity_sa" {
+  description = "The name of the workload identity user service account"
+  default     = ""
+}
