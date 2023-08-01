@@ -1,14 +1,15 @@
 locals {
-  project_id               = "project"
-  region                   = "us-east1"
-  url                      = "polytomic.example.com"
-  polytomic_deployment     = "deployment"
-  polytomic_deployment_key = "key"
-  polytomic_image          = "us.gcr.io/polytomic-container-distro/polytomic-onprem"
-  polytomic_image_tag      = "latest"
-  polytomic_root_user      = "user@example.com"
-  polytomic_bucket         = "polytomic-bucket"
-
+  project_id                     = "project"
+  region                         = "us-east1"
+  url                            = "polytomic.example.com"
+  polytomic_deployment           = "deployment"
+  polytomic_deployment_key       = "key"
+  polytomic_image                = "us.gcr.io/polytomic-container-distro/polytomic-onprem"
+  polytomic_image_tag            = "latest"
+  polytomic_root_user            = "user@example.com"
+  polytomic_bucket               = "polytomic-bucket"
+  polytomic_google_client_id     = "google-client-id"
+  polytomic_google_client_secret = "google-client-secret"
 }
 
 
@@ -49,21 +50,23 @@ data "google_container_cluster" "my_cluster" {
 module "gke_helm" {
   source = "github.com/polytomic/on-premises/terraform/modules/gke-helm"
 
-  polytomic_cert_name       = google_compute_managed_ssl_certificate.cert.name
-  polytomic_ip_name         = data.terraform_remote_state.gke.outputs.load_balancer_name
-  polytomic_url             = local.url
-  polytomic_deployment      = local.polytomic_deployment
-  polytomic_deployment_key  = local.polytomic_deployment_key
-  polytomic_image           = local.polytomic_image
-  polytomic_image_tag       = local.polytomic_image_tag
-  polytomic_root_user       = local.polytomic_root_user
-  redis_host                = data.terraform_remote_state.gke.outputs.redis_host
-  redis_port                = data.terraform_remote_state.gke.outputs.redis_port
-  redis_password            = data.terraform_remote_state.gke.outputs.redis_auth_string
-  postgres_host             = data.terraform_remote_state.gke.outputs.postgres_ip
-  postgres_password         = data.terraform_remote_state.gke.outputs.postgres_password
-  polytomic_bucket          = local.polytomic_bucket
-  polytomic_service_account = data.terraform_remote_state.gke.outputs.workload_identity_user_sa
+  polytomic_cert_name            = google_compute_managed_ssl_certificate.cert.name
+  polytomic_ip_name              = data.terraform_remote_state.gke.outputs.load_balancer_name
+  polytomic_url                  = local.url
+  polytomic_deployment           = local.polytomic_deployment
+  polytomic_deployment_key       = local.polytomic_deployment_key
+  polytomic_image                = local.polytomic_image
+  polytomic_image_tag            = local.polytomic_image_tag
+  polytomic_root_user            = local.polytomic_root_user
+  redis_host                     = data.terraform_remote_state.gke.outputs.redis_host
+  redis_port                     = data.terraform_remote_state.gke.outputs.redis_port
+  redis_password                 = data.terraform_remote_state.gke.outputs.redis_auth_string
+  postgres_host                  = data.terraform_remote_state.gke.outputs.postgres_ip
+  postgres_password              = data.terraform_remote_state.gke.outputs.postgres_password
+  polytomic_bucket               = data.terraform_remote_state.gke.outputs.bucket
+  polytomic_service_account      = data.terraform_remote_state.gke.outputs.workload_identity_user_sa
+  polytomic_google_client_id     = local.polytomic_google_client_id
+  polytomic_google_client_secret = local.polytomic_google_client_secret
 }
 
 resource "google_compute_managed_ssl_certificate" "cert" {

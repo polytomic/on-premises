@@ -27,8 +27,9 @@ image:
   repository: ${var.polytomic_image}
   tag: ${var.polytomic_image_tag}
 
-serviceAccount.Annotations:
-  iam.gke.io/gcp-service-account: ${var.polytomic_service_account}
+serviceAccount:
+  annotations:
+    iam.gke.io/gcp-service-account: ${var.polytomic_service_account}
 
 polytomic:
   deployment:
@@ -40,6 +41,8 @@ polytomic:
   auth:
     methods:
       - google
+      - microsoft
+      - sso
     root_user: ${var.polytomic_root_user}
     url: https://${var.polytomic_url}
     single_player: false
@@ -60,6 +63,7 @@ polytomic:
   s3:
     operational_bucket: gs://${var.polytomic_bucket}
     record_log_bucket: ${var.polytomic_bucket}
+    region: ""
     gcs: true
   
   jobs:
@@ -69,6 +73,9 @@ redis:
   enabled: false
 
 postgresql:
+  enabled: false
+
+minio:
   enabled: false
 
 EOF

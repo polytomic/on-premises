@@ -41,3 +41,7 @@ output "postgres_host" {
 output "postgres_ip" {
   value = module.postgres[0].private_ip_address
 }
+
+output "bucket" {
+  value = google_storage_bucket.polytomic.name
+}
