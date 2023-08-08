@@ -3,6 +3,32 @@ entries:
   polytomic:
   - apiVersion: v2
     appVersion: 0.0.1
+    created: "2023-08-08T13:57:47.710731503Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.1.9
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.4.3
+    - condition: nfs-server-provisioner.enabled
+      name: nfs-server-provisioner
+      repository: https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
+      version: 1.6.0
+    description: Polytomic helm chart for kubernetes
+    digest: e8cf8a4a5b504aba41087b1aca04497b8d6df3b2d23f07452d905f4197095cab
+    maintainers:
+    - email: jake@polyotmic.com
+      name: Polytomic
+    name: polytomic
+    type: application
+    urls:
+    - https://github.com/polytomic/on-premises/releases/download/polytomic-0.0.12/polytomic-0.0.12.tgz
+    version: 0.0.12
+  - apiVersion: v2
+    appVersion: 0.0.1
     created: "2023-07-28T19:40:57.706493928Z"
     dependencies:
     - condition: postgresql.enabled
@@ -235,4 +261,4 @@ entries:
     urls:
     - https://github.com/polytomic/on-premises/releases/download/polytomic-0.0.3/polytomic-0.0.3.tgz
     version: 0.0.3
-generated: "2023-07-28T19:40:57.706529729Z"
+generated: "2023-08-08T13:57:47.710783106Z"
