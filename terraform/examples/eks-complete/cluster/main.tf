@@ -1,7 +1,8 @@
 locals {
-  region  = "us-west-2"
-  prefix  = "polytomic"
-  vpc_azs = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  region           = "us-west-2"
+  prefix           = "polytomic"
+  vpc_azs          = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  polytomic_bucket = "polytomic"
 }
 
 provider "aws" {
@@ -12,8 +13,9 @@ provider "aws" {
 module "eks" {
   source = "github.com/polytomic/on-premises/terraform/modules/eks"
 
-  prefix  = local.prefix
-  region  = local.region
-  vpc_azs = local.vpc_azs
+  prefix      = local.prefix
+  region      = local.region
+  vpc_azs     = local.vpc_azs
+  bucket_name = local.polytomic_bucket
 }
 

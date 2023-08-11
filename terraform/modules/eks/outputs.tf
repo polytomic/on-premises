@@ -47,3 +47,7 @@ output "postgres_host" {
 output "filesystem_id" {
   value = module.efs[0].id
 }
+
+output "bucket" {
+  value = module.s3_bucket.s3_bucket_id
+}

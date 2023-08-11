@@ -48,3 +48,7 @@ output "postgres_host" {
 output "filesystem_id" {
   value = module.eks.filesystem_id
 }
+
+output "bucket" {
+  value = module.eks.bucket
+}
