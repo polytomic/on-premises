@@ -1,13 +1,16 @@
 locals {
-  region                   = "us-west-2"
-  prefix                   = "polytomic"
-  url                      = "polytomic.${local.domain}"
-  domain                   = "example.com"
-  polytomic_deployment     = "deployment"
-  polytomic_deployment_key = "key"
-  polytomic_image          = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"
-  polytomic_image_tag      = "latest"
-  polytomic_root_user      = "user@example.com"
+  region                         = "us-west-2"
+  prefix                         = "polytomic"
+  url                            = "polytomic.${local.domain}"
+  domain                         = "example.com"
+  polytomic_deployment           = "deployment"
+  polytomic_deployment_key       = "key"
+  polytomic_image                = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"
+  polytomic_image_tag            = "latest"
+  polytomic_root_user            = "user@example.com"
+  polytomic_bucket               = "polytomic-bucket"
+  polytomic_google_client_id     = "google-client-id"
+  polytomic_google_client_secret = "google-client-secret"
 }
 
 
@@ -62,18 +65,24 @@ module "addons" {
 module "eks_helm" {
   source = "github.com/polytomic/on-premises/terraform/modules/eks-helm"
 
-  certificate_arn          = aws_acm_certificate.cert.arn
-  subnets                  = join(",", data.terraform_remote_state.eks.outputs.public_subnets)
-  polytomic_url            = local.url
-  polytomic_deployment     = local.polytomic_deployment
-  polytomic_deployment_key = local.polytomic_deployment_key
-  polytomic_image          = local.polytomic_image
-  polytomic_image_tag      = local.polytomic_image_tag
-  polytomic_root_user      = local.polytomic_root_user
-  redis_host               = data.terraform_remote_state.eks.outputs.redis_host
-  redis_port               = data.terraform_remote_state.eks.outputs.redis_port
-  postgres_host            = data.terraform_remote_state.eks.outputs.postgres_host
-  postgres_password        = data.terraform_remote_state.eks.outputs.postgres_password
+  certificate_arn                    = aws_acm_certificate.cert.arn
+  subnets                            = join(",", data.terraform_remote_state.eks.outputs.public_subnets)
+  polytomic_url                      = local.url
+  polytomic_deployment               = local.polytomic_deployment
+  polytomic_deployment_key           = local.polytomic_deployment_key
+  polytomic_image                    = local.polytomic_image
+  polytomic_image_tag                = local.polytomic_image_tag
+  polytomic_root_user                = local.polytomic_root_user
+  redis_host                         = data.terraform_remote_state.eks.outputs.redis_host
+  redis_port                         = data.terraform_remote_state.eks.outputs.redis_port
+  postgres_host                      = data.terraform_remote_state.eks.outputs.postgres_host
+  postgres_password                  = data.terraform_remote_state.eks.outputs.postgres_password
+  polytomic_google_client_id         = local.polytomic_google_client_id
+  polytomic_google_client_secret     = local.polytomic_google_client_secret
+  polytomic_bucket                   = data.terraform_remote_state.eks.outputs.bucket
+  polytomic_bucket_region            = local.region
+  efs_id                             = data.terraform_remote_state.eks.outputs.filesystem_id
+  polytomic_service_account_role_arn = module.addons.polytomic_role_arn
 
   depends_on = [
     module.addons

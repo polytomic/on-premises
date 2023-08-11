@@ -1,6 +1,7 @@
 locals {
-  project_id = ""
-  region     = "us-east1"
+  project_id       = ""
+  region           = "us-east1"
+  polytomic_bucket = "polytomic"
 }
 
 provider "google" {

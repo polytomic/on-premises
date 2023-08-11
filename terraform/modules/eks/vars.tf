@@ -179,7 +179,7 @@ variable "database_auto_minor_version_upgrade" {
 
 variable "database_engine_version" {
   description = "Database engine version"
-  default     = "14.1"
+  default     = "14.3"
 }
 
 variable "database_family" {
@@ -267,4 +267,10 @@ variable "create_postgres" {
 variable "create_efs" {
   description = "Whether to create an EFS instance"
   default     = true
+}
+
+
+variable "bucket_name" {
+  description = "The name of the bucket to create"
+  default     = "polytomic-bucket"
 }

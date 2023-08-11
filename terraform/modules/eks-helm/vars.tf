@@ -61,3 +61,25 @@ variable "subnets" {
   description = "The subnets to use for the polytomic deployment"
   type        = string
 }
+
+
+variable "polytomic_bucket" {
+  description = "The operational bucket for the polytomic deployment"
+}
+
+variable "polytomic_bucket_region" {
+  description = "The operational bucket regoin for the polytomic deployment"
+}
+
+variable "efs_id" {
+  description = "ID of the EFS volume to use for the polytomic deployment"
+}
+
+variable "polytomic_service_account_role_arn" {
+  description = "ARN of the role to use for the polytomic deployment service account"
+}
+
+variable "polytomic_api_key" {
+  default     = ""
+  description = "The api key for the polytomic deployment"
+}

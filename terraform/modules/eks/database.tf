@@ -1,5 +1,6 @@
 module "database" {
-  source = "terraform-aws-modules/rds/aws"
+  source  = "terraform-aws-modules/rds/aws"
+  version = "5.9.0"
 
   count = var.create_postgres ? 1 : 0
 
