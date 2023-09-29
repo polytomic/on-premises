@@ -45,8 +45,9 @@ resource "aws_ecs_task_definition" "stats_reporter" {
     "${path.module}/task-definitions/stats-reporter.json.tftpl",
     merge(local.environment,
       {
-        bucket = "${var.prefix}-${var.bucket_prefix}${local.polytomic_stats_bucket}",
-        format = var.stats_format,
+        bucket                   = "${var.prefix}-${var.bucket_prefix}${local.polytomic_stats_bucket}",
+        format                   = var.stats_format,
+        stats_reporter_log_group = module.ecs_log_groups["stats-reporter"].cloudwatch_log_group_name
       }
   ))
 

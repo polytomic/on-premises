@@ -21,8 +21,14 @@ resource "aws_ecs_task_definition" "web" {
   }
 
   container_definitions = templatefile(
-    "${path.module}/task-definitions/web.json.tftpl", local.environment
+    "${path.module}/task-definitions/web.json.tftpl",
+    merge(local.environment,
+      {
+        web_log_group = module.ecs_log_groups["web"].cloudwatch_log_group_name
+      }
+    )
   )
+
 
   volume {
     name = "polytomic"
@@ -60,7 +66,12 @@ resource "aws_ecs_task_definition" "worker" {
   }
 
   container_definitions = templatefile(
-    "${path.module}/task-definitions/worker.json.tftpl", local.environment
+    "${path.module}/task-definitions/worker.json.tftpl",
+    merge(local.environment,
+      {
+        worker_log_group = module.ecs_log_groups["worker"].cloudwatch_log_group_name
+      }
+    )
   )
 
   volume {
@@ -99,7 +110,12 @@ resource "aws_ecs_task_definition" "sync" {
   }
 
   container_definitions = templatefile(
-    "${path.module}/task-definitions/sync.json.tftpl", local.environment
+    "${path.module}/task-definitions/sync.json.tftpl",
+    merge(local.environment,
+      {
+        sync_log_group = module.ecs_log_groups["sync"].cloudwatch_log_group_name
+      }
+    )
   )
 
   volume {
@@ -138,7 +154,12 @@ resource "aws_ecs_task_definition" "scheduler" {
   }
 
   container_definitions = templatefile(
-    "${path.module}/task-definitions/scheduler.json.tftpl", local.environment
+    "${path.module}/task-definitions/scheduler.json.tftpl",
+    merge(local.environment,
+      {
+        scheduler_log_group = module.ecs_log_groups["scheduler"].cloudwatch_log_group_name
+      }
+    )
   )
 
   volume {

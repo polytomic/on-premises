@@ -4,10 +4,9 @@
         "logDriver": "awslogs",
         "secretOptions": null,
         "options": {
-            "awslogs-group": "polytomic-web",
+            "awslogs-group": "${web_log_group}",
             "awslogs-region": "${region}",
-            "awslogs-stream-prefix": "service",
-            "awslogs-create-group": "true"
+            "awslogs-stream-prefix": "service"
         }
     },
     %{ else }
@@ -88,10 +87,9 @@
         "logDriver": "awslogs",
         "secretOptions": null,
         "options": {
-            "awslogs-group": "polytomic-web",
+            "awslogs-group": "${web_log_group}",
             "awslogs-region": "${region}",
-            "awslogs-stream-prefix": "service",
-            "awslogs-create-group": "true"
+            "awslogs-stream-prefix": "service"
         }
     },
     "name": "vector",

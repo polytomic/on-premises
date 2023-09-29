@@ -3,10 +3,9 @@
         "logDriver": "awslogs",
         "secretOptions": null,
         "options": {
-            "awslogs-group": "polytomic-stats-reporter",
+            "awslogs-group": "${stats_reporter_log_group}",
             "awslogs-region": "${region}",
-            "awslogs-stream-prefix": "service",
-            "awslogs-create-group": "true"
+            "awslogs-stream-prefix": "service"
         }
     },
     "environment": [
