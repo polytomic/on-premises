@@ -12,3 +12,22 @@ module "log_group" {
     }
   )
 }
+
+
+module "ecs_log_groups" {
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/log-group"
+  version = "~> 3.0"
+
+  for_each = toset(["sync", "scheduler", "stats-reporter", "web", "worker"])
+
+  name              = "${var.prefix}-${each.key}-logs"
+  retention_in_days = var.log_retention_days
+
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-${each.key}-logs"
+    }
+  )
+}
