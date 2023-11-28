@@ -83,6 +83,11 @@ locals {
     TX_BUFFER_SIZE                      = var.polytomic_tx_buffer_size
     WORKOS_API_KEY                      = var.polytomic_workos_api_key,
     WORKOS_CLIENT_ID                    = var.polytomic_workos_client_id,
+
+    POLYTOMIC_DD_AGENT       = var.polytomic_use_dd_agent,
+    POLYTOMIC_DD_AGENT_IMAGE = var.polytomic_dd_agent_image
+    POLYTOMIC_LOGGER         = var.polytomic_use_logger,
+    POLYTOMIC_LOGGER_IMAGE   = var.polytomic_logger_image,
   }
 
   environment = {
