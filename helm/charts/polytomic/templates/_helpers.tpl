@@ -214,6 +214,7 @@ WORKOS_CLIENT_ID: {{ .Values.polytomic.auth.workos_client_id | quote }}
 ZENDESK_CLIENT_ID: {{ .Values.polytomic.zendesk_client_id | quote }}
 ZENDESK_CLIENT_SECRET: {{ .Values.polytomic.zendesk_client_secret | quote }}
 hubspot_scopes_v2: "true"
+VERNEUIL_CONFIG: "{\"replication_spooling_dir\":\"/tmp/verneuil\",\"replication_targets\":[{\"s3\":{\"region\":\"{{ .Values.polytomic.s3.region }}\",\"chunk_bucket\":\"{{ .Values.polytomic.s3.operational_bucket }}/chunks\",\"manifest_bucket\":\"{{ .Values.polytomic.s3.operational_bucket }}/manifests\",\"create_buckets_on_demand\":false,\"domain_addressing\":false}}]}"
 
 {{- if .Values.polytomic.s3.gcs }}
 POLYTOMIC_USE_GCS: "true"
