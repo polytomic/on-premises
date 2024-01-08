@@ -22,6 +22,7 @@ locals {
   # tags is var.task_tags converted to a string of key=value pairs
   tags = join(",", [for key, value in var.task_tags : "${key}=${value}"])
 
+  verneuil_config = "{\\\"replication_spooling_dir\\\":\\\"/tmp/verneuil\\\",\\\"replication_targets\\\":[{\\\"s3\\\":{\\\"region\\\":\\\"${var.region}\\\",\\\"chunk_bucket\\\":\\\"${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}/chunks\\\",\\\"manifest_bucket\\\":\\\"${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}/manifests\\\",\\\"create_buckets_on_demand\\\":false,\\\"domain_addressing\\\":false}}]}"
 
   private_subnet_cidrs       = var.vpc_id == "" ? module.vpc[0].private_subnets_cidr_blocks : [for s in data.aws_subnet.subnet : s.cidr_block]
   polytomic_export_bucket    = "exports"
@@ -88,6 +89,8 @@ locals {
     POLYTOMIC_DD_AGENT_IMAGE = var.polytomic_dd_agent_image
     POLYTOMIC_LOGGER         = var.polytomic_use_logger,
     POLYTOMIC_LOGGER_IMAGE   = var.polytomic_logger_image,
+
+    VERNEUIL_CONFIG = local.verneuil_config
   }
 
   environment = {
