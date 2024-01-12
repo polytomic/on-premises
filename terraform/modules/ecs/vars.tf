@@ -137,8 +137,6 @@ variable "polytomic_resource_web_memory" {
   default     = 4096 // 4 GB
 }
 
-
-
 variable "polytomic_resource_worker_cpu" {
   description = "CPU units for the worker container"
   default     = 2048
@@ -148,7 +146,6 @@ variable "polytomic_resource_worker_memory" {
   description = "Memory units for the worker container"
   default     = 4096 // 4 GB
 }
-
 
 variable "polytomic_resource_scheduler_cpu" {
   description = "CPU units for the scheduler container"
@@ -179,7 +176,6 @@ variable "polytomic_resource_sync_storage" {
   description = "Ephemeral storage for the sync container"
   default     = 21
 }
-
 
 variable "polytomic_mssql_tx_isolation" {
   description = "Transaction isolation level for MSSQL connections"

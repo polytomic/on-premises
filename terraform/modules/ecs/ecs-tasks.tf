@@ -74,7 +74,6 @@ resource "aws_ecs_task_definition" "worker" {
     )
   )
 
-
   volume {
     name = "polytomic"
 
