@@ -328,6 +328,7 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_resource_sync_count"></a> [polytomic\_resource\_sync\_count](#input\_polytomic\_resource\_sync\_count) | Number of sync containers to run | `number` | `2` | no |
 | <a name="input_polytomic_resource_sync_cpu"></a> [polytomic\_resource\_sync\_cpu](#input\_polytomic\_resource\_sync\_cpu) | CPU units for the sync container | `number` | `4096` | no |
 | <a name="input_polytomic_resource_sync_memory"></a> [polytomic\_resource\_sync\_memory](#input\_polytomic\_resource\_sync\_memory) | Memory units for the sync container | `number` | `8192` | no |
+| <a name="input_polytomic_resource_sync_storage"></a> [polytomic\_resource\_sync\_storage](#input\_polytomic\_resource\_sync\_storage) | Ephemeral storage for the sync container | `number` | `21` | no |
 | <a name="input_polytomic_resource_web_cpu"></a> [polytomic\_resource\_web\_cpu](#input\_polytomic\_resource\_web\_cpu) | CPU units for the web container | `number` | `2048` | no |
 | <a name="input_polytomic_resource_web_memory"></a> [polytomic\_resource\_web\_memory](#input\_polytomic\_resource\_web\_memory) | Memory units for the web container | `number` | `4096` | no |
 | <a name="input_polytomic_resource_worker_cpu"></a> [polytomic\_resource\_worker\_cpu](#input\_polytomic\_resource\_worker\_cpu) | CPU units for the worker container | `number` | `2048` | no |

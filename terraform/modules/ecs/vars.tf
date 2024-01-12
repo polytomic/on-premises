@@ -172,6 +172,11 @@ variable "polytomic_resource_sync_memory" {
   default     = 8192 // 8 GB
 }
 
+variable "polytomic_resource_sync_storage" {
+  description = "Ephemeral storage for the sync container"
+  default     = 21
+}
+
 variable "polytomic_mssql_tx_isolation" {
   description = "Transaction isolation level for MSSQL connections"
   default     = ""

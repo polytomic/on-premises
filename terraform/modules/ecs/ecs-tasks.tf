@@ -118,6 +118,10 @@ resource "aws_ecs_task_definition" "sync" {
     )
   )
 
+  ephemeral_storage {
+    size_in_gib = var.polytomic_resource_sync_storage
+  }
+
   volume {
     name = "polytomic"
 
