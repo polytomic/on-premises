@@ -137,10 +137,7 @@ variable "polytomic_resource_web_memory" {
   default     = 4096 // 4 GB
 }
 
-variable "polytomic_resource_web_storage" {
-  description = "Ephemeral storage for the web container"
-  default     = 21
-}
+
 
 variable "polytomic_resource_worker_cpu" {
   description = "CPU units for the worker container"
@@ -152,10 +149,6 @@ variable "polytomic_resource_worker_memory" {
   default     = 4096 // 4 GB
 }
 
-variable "polytomic_resource_worker_storage" {
-  description = "Ephemeral storage for the worker container"
-  default     = 21
-}
 
 variable "polytomic_resource_scheduler_cpu" {
   description = "CPU units for the scheduler container"
@@ -165,11 +158,6 @@ variable "polytomic_resource_scheduler_cpu" {
 variable "polytomic_resource_scheduler_memory" {
   description = "Memory units for the scheduler container"
   default     = 2048 // 2 GB
-}
-
-variable "polytomic_resource_scheduler_storage" {
-  description = "Ephemeral storage for the scheduler container"
-  default     = 21
 }
 
 variable "polytomic_resource_sync_count" {

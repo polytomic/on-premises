@@ -29,10 +29,6 @@ resource "aws_ecs_task_definition" "web" {
     )
   )
 
-  ephemeral_storage {
-    size_in_gib = var.polytomic_resource_web_storage
-  }
-
 
   volume {
     name = "polytomic"
@@ -78,9 +74,6 @@ resource "aws_ecs_task_definition" "worker" {
     )
   )
 
-  ephemeral_storage {
-    size_in_gib = var.polytomic_resource_worker_storage
-  }
 
   volume {
     name = "polytomic"
@@ -173,10 +166,6 @@ resource "aws_ecs_task_definition" "scheduler" {
       }
     )
   )
-
-  ephemeral_storage {
-    size_in_gib = var.polytomic_resource_scheduler_storage
-  }
 
   volume {
     name = "polytomic"
