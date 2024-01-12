@@ -325,13 +325,17 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_record_log_disabled"></a> [polytomic\_record\_log\_disabled](#input\_polytomic\_record\_log\_disabled) | Globally disable record logging for this deployment | `bool` | `false` | no |
 | <a name="input_polytomic_resource_scheduler_cpu"></a> [polytomic\_resource\_scheduler\_cpu](#input\_polytomic\_resource\_scheduler\_cpu) | CPU units for the scheduler container | `number` | `1024` | no |
 | <a name="input_polytomic_resource_scheduler_memory"></a> [polytomic\_resource\_scheduler\_memory](#input\_polytomic\_resource\_scheduler\_memory) | Memory units for the scheduler container | `number` | `2048` | no |
+| <a name="input_polytomic_resource_scheduler_storage"></a> [polytomic\_resource\_scheduler\_storage](#input\_polytomic\_resource\_scheduler\_storage) | Ephemeral storage for the scheduler container | `number` | `21` | no |
 | <a name="input_polytomic_resource_sync_count"></a> [polytomic\_resource\_sync\_count](#input\_polytomic\_resource\_sync\_count) | Number of sync containers to run | `number` | `2` | no |
 | <a name="input_polytomic_resource_sync_cpu"></a> [polytomic\_resource\_sync\_cpu](#input\_polytomic\_resource\_sync\_cpu) | CPU units for the sync container | `number` | `4096` | no |
 | <a name="input_polytomic_resource_sync_memory"></a> [polytomic\_resource\_sync\_memory](#input\_polytomic\_resource\_sync\_memory) | Memory units for the sync container | `number` | `8192` | no |
+| <a name="input_polytomic_resource_sync_storage"></a> [polytomic\_resource\_sync\_storage](#input\_polytomic\_resource\_sync\_storage) | Ephemeral storage for the sync container | `number` | `21` | no |
 | <a name="input_polytomic_resource_web_cpu"></a> [polytomic\_resource\_web\_cpu](#input\_polytomic\_resource\_web\_cpu) | CPU units for the web container | `number` | `2048` | no |
 | <a name="input_polytomic_resource_web_memory"></a> [polytomic\_resource\_web\_memory](#input\_polytomic\_resource\_web\_memory) | Memory units for the web container | `number` | `4096` | no |
+| <a name="input_polytomic_resource_web_storage"></a> [polytomic\_resource\_web\_storage](#input\_polytomic\_resource\_web\_storage) | Ephemeral storage for the web container | `number` | `21` | no |
 | <a name="input_polytomic_resource_worker_cpu"></a> [polytomic\_resource\_worker\_cpu](#input\_polytomic\_resource\_worker\_cpu) | CPU units for the worker container | `number` | `2048` | no |
 | <a name="input_polytomic_resource_worker_memory"></a> [polytomic\_resource\_worker\_memory](#input\_polytomic\_resource\_worker\_memory) | Memory units for the worker container | `number` | `4096` | no |
+| <a name="input_polytomic_resource_worker_storage"></a> [polytomic\_resource\_worker\_storage](#input\_polytomic\_resource\_worker\_storage) | Ephemeral storage for the worker container | `number` | `21` | no |
 | <a name="input_polytomic_root_user"></a> [polytomic\_root\_user](#input\_polytomic\_root\_user) | The email address to use when starting for the first time; this user will be able to add additional users and configure Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_single_player"></a> [polytomic\_single\_player](#input\_polytomic\_single\_player) | Whether to use the single player mode | `bool` | `false` | no |
 | <a name="input_polytomic_sso_domain"></a> [polytomic\_sso\_domain](#input\_polytomic\_sso\_domain) | Domain for SSO users of first Polytomic workspace; ie, example.com. | `string` | `""` | no |
