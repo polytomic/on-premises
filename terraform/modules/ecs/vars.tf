@@ -548,3 +548,9 @@ variable "task_tags" {
   type        = map(string)
   default     = {}
 }
+
+
+variable "polyotmic_efs_caching" {
+  description = "Enable EFS caching"
+  default     = false
+}
