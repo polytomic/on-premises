@@ -183,7 +183,7 @@ resource "aws_ecs_service" "web" {
   name            = "${var.prefix}-web"
   cluster         = var.ecs_cluster_name == "" ? module.ecs[0].cluster_arn : data.aws_ecs_cluster.cluster[0].arn
   task_definition = aws_ecs_task_definition.web.arn
-  desired_count   = 1
+  desired_count   = 2
 
   enable_execute_command            = true
   health_check_grace_period_seconds = 60
