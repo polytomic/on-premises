@@ -1,3 +1,7 @@
+## 2.2.12 (29 Jan 2024)
+
+- Add redundancy for web service.
+
 ## 2.2.8 (28 Nov 2023)
 
 - Expose Datadog Agent & Logging settings to Polytomic containers.
