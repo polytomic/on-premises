@@ -110,6 +110,7 @@ helm install helm/charts/polytomic polytomic
 | polytomic.hubspot_client_secret | string | `""` |  |
 | polytomic.intercom_client_id | string | `""` |  |
 | polytomic.intercom_client_secret | string | `""` |  |
+| polytomic.internal_execution_logs | bool | `false` |  |
 | polytomic.linkedinads_client_id | string | `""` |  |
 | polytomic.linkedinads_client_secret | string | `""` |  |
 | polytomic.log_level | string | `"info"` |  |
