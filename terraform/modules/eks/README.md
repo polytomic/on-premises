@@ -47,7 +47,7 @@ No requirements.
 | <a name="input_database_deletion_protection"></a> [database\_deletion\_protection](#input\_database\_deletion\_protection) | Database deletion protection | `bool` | `true` | no |
 | <a name="input_database_enabled_cloudwatch_logs_exports"></a> [database\_enabled\_cloudwatch\_logs\_exports](#input\_database\_enabled\_cloudwatch\_logs\_exports) | Database enabled cloudwatch logs exports | `list` | <pre>[<br>  "postgresql",<br>  "upgrade"<br>]</pre> | no |
 | <a name="input_database_engine"></a> [database\_engine](#input\_database\_engine) | Database engine | `string` | `"postgres"` | no |
-| <a name="input_database_engine_version"></a> [database\_engine\_version](#input\_database\_engine\_version) | Database engine version | `string` | `"14.3"` | no |
+| <a name="input_database_engine_version"></a> [database\_engine\_version](#input\_database\_engine\_version) | Database engine version | `string` | `"14.7"` | no |
 | <a name="input_database_family"></a> [database\_family](#input\_database\_family) | Database family | `string` | `"postgres14"` | no |
 | <a name="input_database_instance_class"></a> [database\_instance\_class](#input\_database\_instance\_class) | Database instance class | `string` | `"db.t3.small"` | no |
 | <a name="input_database_maintenance_window"></a> [database\_maintenance\_window](#input\_database\_maintenance\_window) | Database maintenance window | `string` | `"Mon:00:00-Mon:03:00"` | no |
