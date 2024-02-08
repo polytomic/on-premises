@@ -146,6 +146,8 @@ polytomic:
     size: 20Mi
     storage_class: ""
 
+  internal_execution_logs: false
+
   # Integrations
   airtable_client_secret: ""
   asana_client_id: ""

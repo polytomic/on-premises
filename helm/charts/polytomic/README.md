@@ -2,7 +2,7 @@
 
 Polytomic helm chart for kubernetes
 
-![Version: 0.0.15](https://img.shields.io/badge/Version-0.0.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
+![Version: 0.0.16](https://img.shields.io/badge/Version-0.0.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
 
 ## Installing the Chart
 
@@ -110,6 +110,7 @@ helm install helm/charts/polytomic polytomic
 | polytomic.hubspot_client_secret | string | `""` |  |
 | polytomic.intercom_client_id | string | `""` |  |
 | polytomic.intercom_client_secret | string | `""` |  |
+| polytomic.internal_execution_logs | bool | `false` |  |
 | polytomic.linkedinads_client_id | string | `""` |  |
 | polytomic.linkedinads_client_secret | string | `""` |  |
 | polytomic.log_level | string | `"info"` |  |
