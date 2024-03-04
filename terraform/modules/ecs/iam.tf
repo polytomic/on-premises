@@ -124,7 +124,7 @@ data "aws_iam_policy_document" "polytomic_stats_reporter" {
 
   statement {
     actions = [
-      "ecs:RunTask"
+      "ecs:RunTask",
       "ecs:TagResource",
     ]
     resources = [
