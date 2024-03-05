@@ -31,6 +31,7 @@ data "aws_iam_policy_document" "polytomic_task" {
       "ecs:StartTask",
       "ecs:StopTask",
       "ecs:RunTask",
+      "ecs:TagResource",
       "tag:GetResources",
       "tag:GetTagKeys",
       "tag:GetTagValues",
@@ -123,7 +124,8 @@ data "aws_iam_policy_document" "polytomic_stats_reporter" {
 
   statement {
     actions = [
-      "ecs:RunTask"
+      "ecs:RunTask",
+      "ecs:TagResource",
     ]
     resources = [
       "${aws_ecs_task_definition.stats_reporter[0].arn}"
