@@ -1,3 +1,7 @@
+## 2.3.0 (5 Mar 2024)
+
+- Explicitly allow tagging of ECS resources by Polytomic containers.
+
 ## 2.2.12 (29 Jan 2024)
 
 - Add redundancy for web service.
