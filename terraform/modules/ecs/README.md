@@ -191,9 +191,9 @@ module "polytomic-ecs" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.27.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | 3.2.2 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.22.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.1.1 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.3.2 |
 
 ## Resources
 
@@ -247,7 +247,7 @@ module "polytomic-ecs" {
 | <a name="module_ecs"></a> [ecs](#module\_ecs) | terraform-aws-modules/ecs/aws | <5.0.0 |
 | <a name="module_ecs-alerts-worker"></a> [ecs-alerts-worker](#module\_ecs-alerts-worker) | ../monitoring/ecs-alerts | n/a |
 | <a name="module_ecs_log_groups"></a> [ecs\_log\_groups](#module\_ecs\_log\_groups) | terraform-aws-modules/cloudwatch/aws//modules/log-group | ~> 3.0 |
-| <a name="module_efs"></a> [efs](#module\_efs) | cloudposse/efs/aws | n/a |
+| <a name="module_efs"></a> [efs](#module\_efs) | cloudposse/efs/aws | ~> 0.35.0 |
 | <a name="module_efs_sg"></a> [efs\_sg](#module\_efs\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
 | <a name="module_elasticache-alerts"></a> [elasticache-alerts](#module\_elasticache-alerts) | ../monitoring/elasticache-alerts | n/a |
 | <a name="module_fargate_sg"></a> [fargate\_sg](#module\_fargate\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
