@@ -1,3 +1,7 @@
+## 2.3.1 (8 Mar 2024)
+
+- Version lock EFS module
+
 ## 2.3.0 (5 Mar 2024)
 
 - Explicitly allow tagging of ECS resources by Polytomic containers.
