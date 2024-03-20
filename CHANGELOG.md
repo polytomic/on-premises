@@ -1,3 +1,7 @@
+## 2.3.2 (20 Mar 2024)
+
+- Explicitly allow sync execution tasks to use sts:AssumeRole.
+
 ## 2.3.1 (8 Mar 2024)
 
 - Version lock EFS module
