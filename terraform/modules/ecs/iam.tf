@@ -45,6 +45,7 @@ data "aws_iam_policy_document" "polytomic_task" {
     sid = "PolytomicPassRole"
     actions = [
       "iam:PassRole",
+      "sts:AssumeRole",
 
     ]
     resources = ["*"]
