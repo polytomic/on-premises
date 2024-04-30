@@ -44,6 +44,8 @@ module "database" {
   monitoring_interval                   = var.database_monitoring_interval
   monitoring_role_name                  = var.database_monitoring_role_name
 
+  ca_cert_identifier = "rds-ca-rsa2048-g1"
+
   tags = var.tags
 
 }
