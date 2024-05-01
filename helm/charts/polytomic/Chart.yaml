@@ -25,7 +25,7 @@ appVersion: "0.0.1"
 
 maintainers:
   - name: "Polytomic"
-    email: "jake@polyotmic.com"
+    email: "nathan@polyotmic.com"
 
 dependencies:
   - name: postgresql
