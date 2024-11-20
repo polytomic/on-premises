@@ -1,3 +1,11 @@
+## 2.3.4 (20 Nov 2024)
+
+- Remove hard-coded profiling, tracing settings from ECS task definitions.
+
+## 2.3.3 (30 Apr 2024)
+
+- Updated RDS CA Cert Identifier to `rds-ca-rsa2048-g1`.
+
 ## 2.3.2 (20 Mar 2024)
 
 - Explicitly allow sync execution tasks to use sts:AssumeRole.
