@@ -191,9 +191,9 @@ module "polytomic-ecs" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.22.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | 3.1.1 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.3.2 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.27.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.2.2 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
 
 ## Resources
 
@@ -274,7 +274,7 @@ module "polytomic-ecs" {
 | <a name="input_database_create_cloudwatch_log_group"></a> [database\_create\_cloudwatch\_log\_group](#input\_database\_create\_cloudwatch\_log\_group) | Database create cloudwatch log group | `bool` | `true` | no |
 | <a name="input_database_create_monitoring_role"></a> [database\_create\_monitoring\_role](#input\_database\_create\_monitoring\_role) | Database create monitoring role | `bool` | `true` | no |
 | <a name="input_database_deletion_protection"></a> [database\_deletion\_protection](#input\_database\_deletion\_protection) | Database deletion protection | `bool` | `true` | no |
-| <a name="input_database_enabled_cloudwatch_logs_exports"></a> [database\_enabled\_cloudwatch\_logs\_exports](#input\_database\_enabled\_cloudwatch\_logs\_exports) | Database enabled cloudwatch logs exports | `list` | <pre>[<br>  "postgresql",<br>  "upgrade"<br>]</pre> | no |
+| <a name="input_database_enabled_cloudwatch_logs_exports"></a> [database\_enabled\_cloudwatch\_logs\_exports](#input\_database\_enabled\_cloudwatch\_logs\_exports) | Database enabled cloudwatch logs exports | `list` | <pre>[<br/>  "postgresql",<br/>  "upgrade"<br/>]</pre> | no |
 | <a name="input_database_endpoint"></a> [database\_endpoint](#input\_database\_endpoint) | Database Endpoint | `string` | `""` | no |
 | <a name="input_database_engine"></a> [database\_engine](#input\_database\_engine) | Database engine | `string` | `"postgres"` | no |
 | <a name="input_database_engine_version"></a> [database\_engine\_version](#input\_database\_engine\_version) | Database engine version | `string` | `"14.7"` | no |
@@ -308,7 +308,7 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_deployment"></a> [polytomic\_deployment](#input\_polytomic\_deployment) | A unique identifier for your on premises deploy, provided by Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_deployment_api_key"></a> [polytomic\_deployment\_api\_key](#input\_polytomic\_deployment\_api\_key) | API key used to authenticate with the Polytomic management API | `string` | `""` | no |
 | <a name="input_polytomic_deployment_key"></a> [polytomic\_deployment\_key](#input\_polytomic\_deployment\_key) | The license key for your deployment, provided by Polytomic | `string` | `""` | no |
-| <a name="input_polytomic_deployment_links"></a> [polytomic\_deployment\_links](#input\_polytomic\_deployment\_links) | Additional links to display in the Polytomic navigation | <pre>list(object({<br>    name = string<br>    url  = string<br>  }))</pre> | `[]` | no |
+| <a name="input_polytomic_deployment_links"></a> [polytomic\_deployment\_links](#input\_polytomic\_deployment\_links) | Additional links to display in the Polytomic navigation | <pre>list(object({<br/>    name = string<br/>    url  = string<br/>  }))</pre> | `[]` | no |
 | <a name="input_polytomic_enabled_backends"></a> [polytomic\_enabled\_backends](#input\_polytomic\_enabled\_backends) | List of backends to enable | `list` | `[]` | no |
 | <a name="input_polytomic_ga_measurement_id"></a> [polytomic\_ga\_measurement\_id](#input\_polytomic\_ga\_measurement\_id) | Google Analytics Measurement ID | `string` | `""` | no |
 | <a name="input_polytomic_google_client_id"></a> [polytomic\_google\_client\_id](#input\_polytomic\_google\_client\_id) | Google OAuth Client ID, obtained by creating a OAuth 2.0 Client ID | `string` | `""` | no |
@@ -366,11 +366,11 @@ module "polytomic-ecs" {
 | <a name="input_stats_format"></a> [stats\_format](#input\_stats\_format) | Output format for stats reporter | `string` | `"json"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |
 | <a name="input_task_tags"></a> [task\_tags](#input\_task\_tags) | A map of tags to add to application-launched tasks | `map(string)` | `{}` | no |
-| <a name="input_vpc_azs"></a> [vpc\_azs](#input\_vpc\_azs) | VPC availability zones | `list` | <pre>[<br>  "us-east-1a",<br>  "us-east-1b",<br>  "us-east-1c"<br>]</pre> | no |
+| <a name="input_vpc_azs"></a> [vpc\_azs](#input\_vpc\_azs) | VPC availability zones | `list` | <pre>[<br/>  "us-east-1a",<br/>  "us-east-1b",<br/>  "us-east-1c"<br/>]</pre> | no |
 | <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | VPC CIDR | `string` | `"10.0.0.0/16"` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | `""` | no |
-| <a name="input_vpc_private_subnets"></a> [vpc\_private\_subnets](#input\_vpc\_private\_subnets) | VPC private subnets | `list` | <pre>[<br>  "10.0.1.0/24",<br>  "10.0.2.0/24",<br>  "10.0.3.0/24"<br>]</pre> | no |
-| <a name="input_vpc_public_subnets"></a> [vpc\_public\_subnets](#input\_vpc\_public\_subnets) | VPC public subnets | `list` | <pre>[<br>  "10.0.101.0/24",<br>  "10.0.102.0/24",<br>  "10.0.103.0/24"<br>]</pre> | no |
+| <a name="input_vpc_private_subnets"></a> [vpc\_private\_subnets](#input\_vpc\_private\_subnets) | VPC private subnets | `list` | <pre>[<br/>  "10.0.1.0/24",<br/>  "10.0.2.0/24",<br/>  "10.0.3.0/24"<br/>]</pre> | no |
+| <a name="input_vpc_public_subnets"></a> [vpc\_public\_subnets](#input\_vpc\_public\_subnets) | VPC public subnets | `list` | <pre>[<br/>  "10.0.101.0/24",<br/>  "10.0.102.0/24",<br/>  "10.0.103.0/24"<br/>]</pre> | no |
 
 ## Outputs
 
