@@ -15,7 +15,8 @@ output "target_group_arn" {
 }
 
 output "deploy_api_key" {
-  value       = local.environment.env.DEPLOYMENT_API_KEY
+  value       = local.standard_secrets.DEPLOYMENT_API_KEY
+  sensitive   = true
   description = "API key used to authenticate with the Polytomic management API."
 }
 

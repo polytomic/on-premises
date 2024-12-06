@@ -40,11 +40,8 @@ locals {
   standard_env_vars = {
     AWS_REGION                          = var.region,
     CAPTURE_SYNC_LOGS                   = var.polytomic_sync_logging_enabled
-    DATABASE_URL                        = local.database_url,
     DEFAULT_OPERATIONAL_BUCKET          = "s3://${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}?region=${var.region}"
     DEPLOYMENT                          = var.polytomic_deployment,
-    DEPLOYMENT_API_KEY                  = var.polytomic_deployment_api_key == "" ? random_password.deployment_api_key[0].result : var.polytomic_deployment_api_key,
-    DEPLOYMENT_KEY                      = var.polytomic_deployment_key,
     DEPLOYMENT_LINKS                    = local.links,
     ENABLED_BACKENDS                    = join(",", var.polytomic_enabled_backends)
     ENV                                 = var.polytomic_deployment
@@ -57,7 +54,6 @@ locals {
     FARGATE_EXECUTOR_SUBNETS            = join(",", var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids),
     GA_MEASUREMENT_ID                   = var.polytomic_ga_measurement_id,
     GOOGLE_CLIENT_ID                    = var.polytomic_google_client_id,
-    GOOGLE_CLIENT_SECRET                = var.polytomic_google_client_secret,
     JOB_PAYLOAD_PATH                    = "${var.polytomic_data_path}/jobs",
     LEGACY_CONFIG                       = var.polytomic_legacy_config
     LOCAL_DATA                          = var.polytomic_data_path != "",
@@ -82,7 +78,6 @@ locals {
     TASK_EXECUTOR_MEMORY_RESERVATION    = var.polytomic_resource_sync_memory,
     TASK_EXECUTOR_TAGS                  = local.tags
     TX_BUFFER_SIZE                      = var.polytomic_tx_buffer_size
-    WORKOS_API_KEY                      = var.polytomic_workos_api_key,
     WORKOS_CLIENT_ID                    = var.polytomic_workos_client_id,
 
     POLYTOMIC_DD_AGENT       = var.polytomic_use_dd_agent,
@@ -109,7 +104,17 @@ locals {
     polytomic_dd_agent       = var.polytomic_use_dd_agent,
     polytomic_dd_agent_image = var.polytomic_dd_agent_image,
 
-    env = merge(local.standard_env_vars, var.extra_environment)
+    env             = merge(local.standard_env_vars, var.extra_environment)
+    secrets         = merge(local.standard_secrets, var.extra_secrets)
+    task_secret_arn = aws_secretsmanager_secret.task_secrets.arn
+  }
+
+  standard_secrets = {
+    DATABASE_URL         = local.database_url,
+    DEPLOYMENT_API_KEY   = var.polytomic_deployment_api_key == "" ? random_password.deployment_api_key[0].result : var.polytomic_deployment_api_key,
+    DEPLOYMENT_KEY       = var.polytomic_deployment_key,
+    GOOGLE_CLIENT_SECRET = var.polytomic_google_client_secret,
+    WORKOS_API_KEY       = var.polytomic_workos_api_key,
   }
 
 }

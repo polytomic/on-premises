@@ -62,6 +62,14 @@
             "value": "${polytomic_port}"
         }
     ],
+    "secrets": [
+        %{ for key in secrets ~}
+        {
+            "name": "${key}",
+            "valueFrom": "${task_secret_arn}:${key}::"
+        }%{ if key != keys(secrets)[length(secrets)-1] ~},%{ endif ~}
+        %{ endfor ~}
+    ],
     "mountPoints": [
     {
         "containerPath": "${mount_path}",
