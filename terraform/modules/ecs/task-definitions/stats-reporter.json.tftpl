@@ -21,12 +21,12 @@
         }
     ],
     "secrets": [
-        %{ for key in secrets ~}
+%{ for key, _ in secrets ~}
         {
             "name": "${key}",
             "valueFrom": "${task_secret_arn}:${key}::"
-        }%{ if key != keys(secrets)[length(secrets)-1] ~},%{ endif ~}
-        %{ endfor ~}
+        }%{ if key != keys(secrets)[length(keys(secrets)) - 1] },%{ endif }
+%{ endfor ~}
     ],
     "memoryReservation": 2048,
     "image": "${image}",

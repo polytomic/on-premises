@@ -25,7 +25,6 @@ resource "aws_ecs_task_definition" "web" {
     merge(local.environment,
       {
         web_log_group = module.ecs_log_groups["web"].cloudwatch_log_group_name
-        # task_secret_arn = aws_secretsmanager_secret.task_secrets.arn
       }
     )
   )
