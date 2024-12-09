@@ -185,15 +185,17 @@ module "polytomic-ecs" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.6 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.27.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | 3.2.2 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 3.0 |
 
 ## Resources
 
@@ -220,6 +222,8 @@ module "polytomic-ecs" {
 | [aws_iam_role_policy.polytomic_ecs_task_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.polytomic_stats_reporter_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_kms_key.alerts](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
+| [aws_secretsmanager_secret.task_secrets](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
+| [aws_secretsmanager_secret_version.task_secrets_version](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
 | [aws_sns_topic.alerts](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
 | [aws_sns_topic_policy.oom](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_policy) | resource |
 | [aws_sns_topic_subscription.alert_emails](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_subscription) | resource |
@@ -297,6 +301,7 @@ module "polytomic-ecs" {
 | <a name="input_enable_monitoring"></a> [enable\_monitoring](#input\_enable\_monitoring) | enable automatic monitoring | `bool` | `false` | no |
 | <a name="input_enable_stats"></a> [enable\_stats](#input\_enable\_stats) | enable automatic stats reporting | `bool` | `false` | no |
 | <a name="input_extra_environment"></a> [extra\_environment](#input\_extra\_environment) | Extra environment variables to pass to the containers | `map(string)` | `{}` | no |
+| <a name="input_extra_secrets"></a> [extra\_secrets](#input\_extra\_secrets) | Extra secrets that make it into the managed aws secret manager that get passed to the containers securely | `map(string)` | `{}` | no |
 | <a name="input_load_balancer_internal"></a> [load\_balancer\_internal](#input\_load\_balancer\_internal) | use internal load balancer | `bool` | `false` | no |
 | <a name="input_load_balancer_redirect_https"></a> [load\_balancer\_redirect\_https](#input\_load\_balancer\_redirect\_https) | enable https listener on load balancer | `bool` | `false` | no |
 | <a name="input_load_balancer_security_groups"></a> [load\_balancer\_security\_groups](#input\_load\_balancer\_security\_groups) | security groups for load balancer | `list(string)` | `[]` | no |
