@@ -100,6 +100,13 @@ data "aws_iam_policy_document" "polytomic_execution" {
 
     resources = ["*"]
   }
+
+  statement {
+    sid = "PolytomicAccessSecrets"
+
+    actions   = ["secretsmanager:GetSecretValue"]
+    resources = [aws_secretsmanager_secret.task_secrets.arn]
+  }
 }
 
 resource "aws_iam_role" "polytomic_ecs_execution_role" {

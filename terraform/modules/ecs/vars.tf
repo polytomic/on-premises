@@ -537,6 +537,12 @@ variable "extra_environment" {
   default     = {}
 }
 
+variable "extra_secrets" {
+  description = "Extra secrets that make it into the managed aws secret manager that get passed to the containers securely"
+  type        = map(string)
+  sensitive   = true
+  default     = {}
+}
 
 variable "load_balancer_redirect_https" {
   description = "enable https listener on load balancer"
