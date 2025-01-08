@@ -40,7 +40,6 @@ resource "aws_ecs_task_definition" "web" {
       transit_encryption_port = 2999
     }
   }
-
 }
 
 resource "aws_ecs_task_definition" "worker" {
@@ -84,7 +83,6 @@ resource "aws_ecs_task_definition" "worker" {
       transit_encryption_port = 2999
     }
   }
-
 }
 
 resource "aws_ecs_task_definition" "sync" {
@@ -132,7 +130,6 @@ resource "aws_ecs_task_definition" "sync" {
       transit_encryption_port = 2999
     }
   }
-
 }
 
 resource "aws_ecs_task_definition" "scheduler" {
@@ -176,7 +173,6 @@ resource "aws_ecs_task_definition" "scheduler" {
       transit_encryption_port = 2999
     }
   }
-
 }
 
 resource "aws_ecs_service" "web" {

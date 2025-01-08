@@ -116,5 +116,4 @@ locals {
     GOOGLE_CLIENT_SECRET = var.polytomic_google_client_secret,
     WORKOS_API_KEY       = var.polytomic_workos_api_key,
   }
-
 }
