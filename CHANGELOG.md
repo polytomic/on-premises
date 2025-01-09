@@ -1,3 +1,9 @@
+## 2.4.0 (9 Jan 2025)
+
+- Secrets are stored in AWS SSM, rather than directly in the environment.
+- Removed container-specific memory reservations. These were redundant and
+  prevented overriding tasks to use a smaller memory footprint than the default.
+
 ## 2.3.4 (20 Nov 2024)
 
 - Remove hard-coded profiling, tracing settings from ECS task definitions.
