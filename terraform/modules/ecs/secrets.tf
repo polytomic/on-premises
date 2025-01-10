@@ -6,5 +6,5 @@ resource "aws_secretsmanager_secret" "task_secrets" {
 
 resource "aws_secretsmanager_secret_version" "task_secrets_version" {
   secret_id     = aws_secretsmanager_secret.task_secrets.id
-  secret_string = jsonencode(merge(local.standard_secrets, var.extra_secrets))
+  secret_string = jsonencode(merge(local.deployment_secrets, local.standard_secrets, var.extra_secrets))
 }

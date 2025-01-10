@@ -104,16 +104,23 @@ locals {
     polytomic_dd_agent       = var.polytomic_use_dd_agent,
     polytomic_dd_agent_image = var.polytomic_dd_agent_image,
 
-    env             = merge(local.standard_env_vars, var.extra_environment)
-    secrets         = merge(local.standard_secrets, var.extra_secrets)
+    env     = merge(local.standard_env_vars, var.extra_environment)
+    secrets = merge(local.deployment_secrets, local.standard_secrets, var.extra_secrets)
+    // support_secrets are exposed to supporting containers (logger, DD Agent,
+    // etc) in Polytomic tasks
+    support_secrets = merge(local.deployment_secrets, var.extra_secrets)
+
     task_secret_arn = aws_secretsmanager_secret.task_secrets.arn
   }
 
   standard_secrets = {
     DATABASE_URL         = local.database_url,
-    DEPLOYMENT_API_KEY   = var.polytomic_deployment_api_key == "" ? random_password.deployment_api_key[0].result : var.polytomic_deployment_api_key,
-    DEPLOYMENT_KEY       = var.polytomic_deployment_key,
     GOOGLE_CLIENT_SECRET = var.polytomic_google_client_secret,
     WORKOS_API_KEY       = var.polytomic_workos_api_key,
+    DEPLOYMENT_API_KEY   = var.polytomic_deployment_api_key == "" ? random_password.deployment_api_key[0].result : var.polytomic_deployment_api_key,
+  }
+
+  deployment_secrets = {
+    DEPLOYMENT_KEY = var.polytomic_deployment_key,
   }
 }

@@ -105,6 +105,14 @@
             "value": "logger"
         }
     ],
+    "secrets": [
+%{ for key, _ in support_secrets ~}
+        {
+            "name": "${key}",
+            "valueFrom": "${task_secret_arn}:${key}::"
+        }%{ if key != keys(support_secrets)[length(keys(support_secrets)) - 1] },%{ endif }
+%{ endfor ~}
+    ],
     "healthCheck": {
       "command": [
         "CMD-SHELL",
@@ -115,46 +123,53 @@
         "startPeriod":100,
         "timeout":5
     }
-  }
+}
   %{ endif }
   %{~ if polytomic_dd_agent },
-   {
-          "name": "datadog-agent",
-          "image": "${polytomic_dd_agent_image}",
-          "essential": true,
-          "environment": [
-              %{ for key, value in env ~}
-              {
-                "name": "${key}",
-                "value": "${value}"
-              },
-              %{ endfor ~}
-              {
-                  "name": "DD_API_KEY",
-                  "value": "ENC[DD_API_KEY]"
-              },
-              {
-                "name": "DD_SECRET_BACKEND_COMMAND",
-                "value": "/bin/ptctl"
-              },
-              {
-                "name": "DD_SECRET_BACKEND_ARGUMENTS",
-                "value": "config get -f vector -"
-              },
-              {
-                "name": "DD_DOCKER_ENV_AS_TAGS",
-                "value": "{\\\"role\\\": \\\"polytomic.role\\\"}"
-              },
-              {
-                "name": "DD_APM_ENABLED",
-                "value": "true"
-              },
-              {
-                "name": "ECS_FARGATE",
-                "value": "true"
-              }
-          ]
-      }
+{
+    "name": "datadog-agent",
+    "image": "${polytomic_dd_agent_image}",
+    "essential": true,
+    "environment": [
+        %{ for key, value in env ~}
+        {
+        "name": "${key}",
+        "value": "${value}"
+        },
+        %{ endfor ~}
+        {
+            "name": "DD_API_KEY",
+            "value": "ENC[DD_API_KEY]"
+        },
+        {
+        "name": "DD_SECRET_BACKEND_COMMAND",
+        "value": "/bin/ptctl"
+        },
+        {
+        "name": "DD_SECRET_BACKEND_ARGUMENTS",
+        "value": "config get -f vector -"
+        },
+        {
+        "name": "DD_DOCKER_ENV_AS_TAGS",
+        "value": "{\\\"role\\\": \\\"polytomic.role\\\"}"
+        },
+        {
+        "name": "DD_APM_ENABLED",
+        "value": "true"
+        },
+        {
+            "name": "ECS_FARGATE",
+            "value": "true"
+        }
+    ],
+    "secrets": [
+%{ for key, _ in support_secrets ~}
+        {
+            "name": "${key}",
+            "valueFrom": "${task_secret_arn}:${key}::"
+        }%{ if key != keys(support_secrets)[length(keys(support_secrets)) - 1] },%{ endif }
+%{ endfor ~}
+    ]
+}
  %{ endif }
-
 ]
