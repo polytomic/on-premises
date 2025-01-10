@@ -1,4 +1,11 @@
-## 2.4.0 (9 Jan 2025)
+## 2.4.1 (10 Jan 2025)
+
+- Expose deployment key secret into supporting containers in ECS tasks.
+
+## ~~2.4.0 (9 Jan 2025)~~
+
+**This release did not work correctly when managed logging is enabled; 2.4.1
+should be used instead.**
 
 - Secrets are stored in AWS SSM, rather than directly in the environment.
 - Removed container-specific memory reservations. These were redundant and
