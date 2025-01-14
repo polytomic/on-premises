@@ -39,7 +39,7 @@ locals {
 
   standard_env_vars = {
     AWS_REGION                          = var.region,
-    VPC_ID                              = var.vpc_id == "" ? module.vpc[0].id : var.vpc_id,
+    VPC_ID                              = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id,
     CAPTURE_SYNC_LOGS                   = var.polytomic_sync_logging_enabled
     DEFAULT_OPERATIONAL_BUCKET          = "s3://${var.prefix}-${var.bucket_prefix}${local.polytomic_execution_bucket}?region=${var.region}"
     DEPLOYMENT                          = var.polytomic_deployment,
