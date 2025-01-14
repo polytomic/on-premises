@@ -1,3 +1,7 @@
+## 2.4.2 (13 Jan 2025)
+
+- Expose VPC ID to Fargate sync tasks.
+
 ## 2.4.1 (10 Jan 2025)
 
 - Expose deployment key secret into supporting containers in ECS tasks.
