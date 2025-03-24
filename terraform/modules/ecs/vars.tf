@@ -157,6 +157,16 @@ variable "polytomic_resource_scheduler_memory" {
   default     = 2048 // 2 GB
 }
 
+variable "polytomic_resource_schemacache_cpu" {
+  description = "CPU units for the schemacache container"
+  default     = 2048
+}
+
+variable "polytomic_resource_schemacache_memory" {
+  description = "Memory units for the schemacache container"
+  default     = 4096 // 4 GB
+}
+
 variable "polytomic_resource_sync_count" {
   description = "Number of sync containers to run"
   default     = 2
@@ -174,7 +184,7 @@ variable "polytomic_resource_sync_memory" {
 
 variable "polytomic_resource_sync_storage" {
   description = "Ephemeral storage for the sync container"
-  default     = 21
+  default     = 100 // 100 GB
 }
 
 variable "polytomic_mssql_tx_isolation" {

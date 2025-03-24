@@ -95,6 +95,7 @@ locals {
     sync_memory            = var.polytomic_resource_sync_memory
     worker_memory          = var.polytomic_resource_worker_memory
     scheduler_memory       = var.polytomic_resource_scheduler_memory
+    schemacache_memory     = var.polytomic_resource_schemacache_memory
     image                  = var.polytomic_image,
     region                 = var.region,
     polytomic_port         = var.polytomic_port,

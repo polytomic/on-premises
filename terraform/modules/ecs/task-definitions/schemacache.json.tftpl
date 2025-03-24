@@ -4,7 +4,7 @@
         "logDriver": "awslogs",
         "secretOptions": null,
         "options": {
-            "awslogs-group": "${worker_log_group}",
+            "awslogs-group": "${schemacache_log_group}",
             "awslogs-region": "${region}",
             "awslogs-stream-prefix": "service"
         }
@@ -44,7 +44,7 @@
         %{ endif ~}
         {
             "name": "ROLE",
-            "value": "worker"
+            "value": "schemacache"
         }
     ],
     "secrets": [
@@ -67,7 +67,7 @@
             "hostPort": 8126
         }
     ],
-    "name": "worker",
+    "name": "schemacache",
     "ulimits": [
       {
         "name": "nofile",
@@ -83,7 +83,7 @@
         "logDriver": "awslogs",
         "secretOptions": null,
         "options": {
-            "awslogs-group": "${worker_log_group}",
+            "awslogs-group": "${schemacache_log_group}",
             "awslogs-region": "${region}",
             "awslogs-stream-prefix": "service"
         }

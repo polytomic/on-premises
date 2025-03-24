@@ -207,10 +207,12 @@ module "polytomic-ecs" {
 | [aws_cloudwatch_event_rule.oom](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_target.sns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_ecs_service.scheduler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
+| [aws_ecs_service.schemacache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_service.sync](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_service.web](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_service.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_task_definition.scheduler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
+| [aws_ecs_task_definition.schemacache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
 | [aws_ecs_task_definition.stats_reporter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
 | [aws_ecs_task_definition.sync](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
 | [aws_ecs_task_definition.web](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
@@ -331,10 +333,12 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_record_log_disabled"></a> [polytomic\_record\_log\_disabled](#input\_polytomic\_record\_log\_disabled) | Globally disable record logging for this deployment | `bool` | `false` | no |
 | <a name="input_polytomic_resource_scheduler_cpu"></a> [polytomic\_resource\_scheduler\_cpu](#input\_polytomic\_resource\_scheduler\_cpu) | CPU units for the scheduler container | `number` | `1024` | no |
 | <a name="input_polytomic_resource_scheduler_memory"></a> [polytomic\_resource\_scheduler\_memory](#input\_polytomic\_resource\_scheduler\_memory) | Memory units for the scheduler container | `number` | `2048` | no |
+| <a name="input_polytomic_resource_schemacache_cpu"></a> [polytomic\_resource\_schemacache\_cpu](#input\_polytomic\_resource\_schemacache\_cpu) | CPU units for the schemacache container | `number` | `2048` | no |
+| <a name="input_polytomic_resource_schemacache_memory"></a> [polytomic\_resource\_schemacache\_memory](#input\_polytomic\_resource\_schemacache\_memory) | Memory units for the schemacache container | `number` | `4096` | no |
 | <a name="input_polytomic_resource_sync_count"></a> [polytomic\_resource\_sync\_count](#input\_polytomic\_resource\_sync\_count) | Number of sync containers to run | `number` | `2` | no |
 | <a name="input_polytomic_resource_sync_cpu"></a> [polytomic\_resource\_sync\_cpu](#input\_polytomic\_resource\_sync\_cpu) | CPU units for the sync container | `number` | `4096` | no |
 | <a name="input_polytomic_resource_sync_memory"></a> [polytomic\_resource\_sync\_memory](#input\_polytomic\_resource\_sync\_memory) | Memory units for the sync container | `number` | `8192` | no |
-| <a name="input_polytomic_resource_sync_storage"></a> [polytomic\_resource\_sync\_storage](#input\_polytomic\_resource\_sync\_storage) | Ephemeral storage for the sync container | `number` | `21` | no |
+| <a name="input_polytomic_resource_sync_storage"></a> [polytomic\_resource\_sync\_storage](#input\_polytomic\_resource\_sync\_storage) | Ephemeral storage for the sync container | `number` | `100` | no |
 | <a name="input_polytomic_resource_web_cpu"></a> [polytomic\_resource\_web\_cpu](#input\_polytomic\_resource\_web\_cpu) | CPU units for the web container | `number` | `2048` | no |
 | <a name="input_polytomic_resource_web_memory"></a> [polytomic\_resource\_web\_memory](#input\_polytomic\_resource\_web\_memory) | Memory units for the web container | `number` | `4096` | no |
 | <a name="input_polytomic_resource_worker_cpu"></a> [polytomic\_resource\_worker\_cpu](#input\_polytomic\_resource\_worker\_cpu) | CPU units for the worker container | `number` | `2048` | no |

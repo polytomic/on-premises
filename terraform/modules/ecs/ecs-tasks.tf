@@ -85,6 +85,49 @@ resource "aws_ecs_task_definition" "worker" {
   }
 }
 
+resource "aws_ecs_task_definition" "schemacache" {
+  family = "${var.prefix}-schemacache"
+
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = var.polytomic_resource_schemacache_cpu
+  memory                   = var.polytomic_resource_schemacache_memory
+
+  task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
+  execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-schemacache"
+  })
+
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+
+  container_definitions = templatefile(
+    "${path.module}/task-definitions/schemacache.json.tftpl",
+    merge(local.environment,
+      {
+        schemacache_log_group = module.ecs_log_groups["schemacache"].cloudwatch_log_group_name
+      }
+    )
+  )
+
+  volume {
+    name = "polytomic"
+
+    efs_volume_configuration {
+      file_system_id          = module.efs.id
+      root_directory          = "/"
+      transit_encryption      = "ENABLED"
+      transit_encryption_port = 2999
+    }
+  }
+}
+
 resource "aws_ecs_task_definition" "sync" {
   family = "${var.prefix}-sync"
 
@@ -194,8 +237,6 @@ resource "aws_ecs_service" "web" {
 
   propagate_tags = "TASK_DEFINITION"
 
-
-
   network_configuration {
     subnets          = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
     assign_public_ip = false
@@ -207,6 +248,32 @@ resource "aws_ecs_service" "web" {
     target_group_arn = aws_alb_target_group.polytomic.arn
     container_name   = "web"
     container_port   = var.polytomic_port
+  }
+}
+
+resource "aws_ecs_service" "schemacache" {
+  name            = "${var.prefix}-schemacache"
+  cluster         = var.ecs_cluster_name == "" ? module.ecs[0].cluster_arn : data.aws_ecs_cluster.cluster[0].arn
+  task_definition = aws_ecs_task_definition.worker.arn
+  desired_count   = 1
+
+  enable_execute_command = true
+  platform_version       = "1.4.0"
+
+  launch_type = "FARGATE"
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-schemacache"
+  })
+
+
+  propagate_tags = "TASK_DEFINITION"
+
+  network_configuration {
+    subnets          = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
+    assign_public_ip = false
+    security_groups  = concat(var.additional_ecs_security_groups, [module.fargate_sg.security_group_id])
   }
 }
 
@@ -260,8 +327,6 @@ resource "aws_ecs_service" "sync" {
     security_groups  = concat(var.additional_ecs_security_groups, [module.fargate_sg.security_group_id])
   }
 }
-
-
 
 resource "aws_ecs_service" "scheduler" {
   name            = "${var.prefix}-scheduler"
