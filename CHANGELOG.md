@@ -1,3 +1,8 @@
+## 2.5.0 (24 Mar 2025)
+
+- Isolate schema cache activity in dedicated service.
+- Increased default ephemeral storage for sync containers.
+
 ## 2.4.2 (13 Jan 2025)
 
 - Expose VPC ID to Fargate sync tasks.
