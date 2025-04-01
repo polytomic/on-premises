@@ -10,10 +10,11 @@ module "s3_bucket" {
   bucket = "${var.prefix}-${var.bucket_prefix}${each.key}"
   acl    = "private"
 
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+  block_public_acls                     = true
+  block_public_policy                   = true
+  ignore_public_acls                    = true
+  restrict_public_buckets               = true
+  attach_deny_insecure_transport_policy = var.attach_deny_insecure_transport_policy
 
   control_object_ownership = true
   object_ownership         = "BucketOwnerPreferred"
