@@ -492,6 +492,12 @@ variable "tags" {
 }
 
 
+variable "attach_deny_insecure_transport_policy" {
+  type        = bool
+  description = "Attach a deny insecure transport policy to the S3 buckets"
+  default     = false
+}
+
 variable "bucket_prefix" {
   description = "Bucket prefix"
   default     = ""

@@ -271,6 +271,7 @@ module "polytomic-ecs" {
 |------|-------------|------|---------|:--------:|
 | <a name="input_additional_ecs_security_groups"></a> [additional\_ecs\_security\_groups](#input\_additional\_ecs\_security\_groups) | ECS security group ids | `list` | `[]` | no |
 | <a name="input_alert_emails"></a> [alert\_emails](#input\_alert\_emails) | Email addresses to send alerts to | `list(string)` | `[]` | no |
+| <a name="input_attach_deny_insecure_transport_policy"></a> [attach\_deny\_insecure\_transport\_policy](#input\_attach\_deny\_insecure\_transport\_policy) | Attach a deny insecure transport policy to the S3 buckets | `bool` | `false` | no |
 | <a name="input_aws_profile"></a> [aws\_profile](#input\_aws\_profile) | AWS profile to use | `string` | `"default"` | no |
 | <a name="input_bucket_prefix"></a> [bucket\_prefix](#input\_bucket\_prefix) | Bucket prefix | `string` | `""` | no |
 | <a name="input_database_allocated_storage"></a> [database\_allocated\_storage](#input\_database\_allocated\_storage) | Database allocated storage | `number` | `20` | no |
