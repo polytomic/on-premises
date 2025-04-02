@@ -1,3 +1,7 @@
+## 2.5.1 (2 Apr 2025)
+
+- Support for attaching deny insecure transport policy to S3 bucket.
+
 ## 2.5.0 (24 Mar 2025)
 
 - Isolate schema cache activity in dedicated service.
