@@ -1,3 +1,7 @@
+## 2.5.2 (26 Jun 2025)
+
+- Pinned S3 bucket module to last AWS v5-compatible release.
+
 ## 2.5.1 (2 Apr 2025)
 
 - Support for attaching deny insecure transport policy to S3 bucket.
