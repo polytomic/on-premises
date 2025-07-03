@@ -1,3 +1,7 @@
+## 2.5.3 (3 July 2025)
+
+- Pinned AWS module to less than v6 for compatibility with other dependencies.
+
 ## 2.5.2 (26 Jun 2025)
 
 - Pinned S3 bucket module to last AWS v5-compatible release.
