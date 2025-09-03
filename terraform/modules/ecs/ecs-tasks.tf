@@ -254,7 +254,7 @@ resource "aws_ecs_service" "web" {
 resource "aws_ecs_service" "schemacache" {
   name            = "${var.prefix}-schemacache"
   cluster         = var.ecs_cluster_name == "" ? module.ecs[0].cluster_arn : data.aws_ecs_cluster.cluster[0].arn
-  task_definition = aws_ecs_task_definition.worker.arn
+  task_definition = aws_ecs_task_definition.schemacache.arn
   desired_count   = 1
 
   enable_execute_command = true
