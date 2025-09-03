@@ -1,4 +1,8 @@
-## 2.5.3 (3 July 2025)
+## 2.7.0 (3 Sept 2025)
+
+- Updated schema cache ECS service to use the correct task definition.
+
+## 2.6.0 (3 July 2025)
 
 - Pinned AWS module to less than v6 for compatibility with other dependencies.
 
