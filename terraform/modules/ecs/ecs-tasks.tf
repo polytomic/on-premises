@@ -69,6 +69,10 @@ resource "aws_ecs_task_definition" "worker" {
     merge(local.environment,
       {
         worker_log_group = module.ecs_log_groups["worker"].cloudwatch_log_group_name
+        env = merge(local.environment.env, {
+          INGEST_EXECUTOR_TASK_DEFINITION = aws_ecs_task_definition.ingest.arn,
+          INGEST_EXECUTOR_CONTAINER_NAME  = "ingest"
+        })
       }
     )
   )
@@ -155,6 +159,10 @@ resource "aws_ecs_task_definition" "sync" {
     merge(local.environment,
       {
         sync_log_group = module.ecs_log_groups["sync"].cloudwatch_log_group_name
+        env = merge(local.environment.env, {
+          INGEST_EXECUTOR_TASK_DEFINITION = aws_ecs_task_definition.ingest.arn,
+          INGEST_EXECUTOR_CONTAINER_NAME  = "ingest"
+        })
       }
     )
   )
@@ -202,6 +210,53 @@ resource "aws_ecs_task_definition" "scheduler" {
     merge(local.environment,
       {
         scheduler_log_group = module.ecs_log_groups["scheduler"].cloudwatch_log_group_name
+        env = merge(local.environment.env, {
+          INGEST_EXECUTOR_TASK_DEFINITION = aws_ecs_task_definition.ingest.arn,
+          INGEST_EXECUTOR_CONTAINER_NAME  = "ingest"
+        })
+      }
+    )
+  )
+
+  volume {
+    name = "polytomic"
+
+    efs_volume_configuration {
+      file_system_id          = module.efs.id
+      root_directory          = "/"
+      transit_encryption      = "ENABLED"
+      transit_encryption_port = 2999
+    }
+  }
+}
+
+resource "aws_ecs_task_definition" "ingest" {
+  family = "${var.prefix}-ingest"
+
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = var.polytomic_resource_ingest_cpu
+  memory                   = var.polytomic_resource_ingest_memory
+
+  task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
+  execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-ingest"
+  })
+
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+
+  container_definitions = templatefile(
+    "${path.module}/task-definitions/ingest.json.tftpl",
+    merge(local.environment,
+      {
+        ingest_log_group = module.ecs_log_groups["ingest"].cloudwatch_log_group_name
       }
     )
   )

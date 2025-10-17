@@ -187,6 +187,16 @@ variable "polytomic_resource_sync_storage" {
   default     = 100 // 100 GB
 }
 
+variable "polytomic_resource_ingest_cpu" {
+  description = "CPU units for the ingest container"
+  default     = 2048 // 2 vCPU
+}
+
+variable "polytomic_resource_ingest_memory" {
+  description = "Memory units for the ingest container"
+  default     = 8192 // 8 GB
+}
+
 variable "polytomic_mssql_tx_isolation" {
   description = "Transaction isolation level for MSSQL connections"
   default     = ""
