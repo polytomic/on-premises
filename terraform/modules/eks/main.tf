@@ -51,6 +51,7 @@ module "eks" {
 
   cluster_addons = {
     aws-ebs-csi-driver = {}
+    aws-efs-csi-driver = {}
   }
 
   eks_managed_node_groups = {
