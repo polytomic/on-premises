@@ -1,0 +1,104 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "polytomic.fullname" . }}
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "polytomic.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress from ingress controller
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              {{- if .Values.networkPolicy.ingressNamespaceSelector }}
+              {{- toYaml .Values.networkPolicy.ingressNamespaceSelector | nindent 14 }}
+              {{- else }}
+              name: ingress-nginx  # Default for nginx ingress
+              {{- end }}
+      ports:
+        - protocol: TCP
+          port: 5100
+    # Allow traffic within namespace (pod-to-pod)
+    - from:
+        - podSelector: {}
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow egress to PostgreSQL
+    {{- if .Values.networkPolicy.postgresql }}
+    - to:
+        {{- if .Values.networkPolicy.postgresql.podSelector }}
+        - podSelector:
+            matchLabels:
+              {{- toYaml .Values.networkPolicy.postgresql.podSelector | nindent 14 }}
+          {{- if .Values.networkPolicy.postgresql.namespaceSelector }}
+          namespaceSelector:
+            matchLabels:
+              {{- toYaml .Values.networkPolicy.postgresql.namespaceSelector | nindent 14 }}
+          {{- end }}
+        {{- else if .Values.networkPolicy.postgresql.ipBlock }}
+        - ipBlock:
+            cidr: {{ .Values.networkPolicy.postgresql.ipBlock }}
+        {{- end }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.externalPostgresql.port | default .Values.polytomic.postgres.port }}
+    {{- end }}
+    # Allow egress to Redis
+    {{- if .Values.networkPolicy.redis }}
+    - to:
+        {{- if .Values.networkPolicy.redis.podSelector }}
+        - podSelector:
+            matchLabels:
+              {{- toYaml .Values.networkPolicy.redis.podSelector | nindent 14 }}
+          {{- if .Values.networkPolicy.redis.namespaceSelector }}
+          namespaceSelector:
+            matchLabels:
+              {{- toYaml .Values.networkPolicy.redis.namespaceSelector | nindent 14 }}
+          {{- end }}
+        {{- else if .Values.networkPolicy.redis.ipBlock }}
+        - ipBlock:
+            cidr: {{ .Values.networkPolicy.redis.ipBlock }}
+        {{- end }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.externalRedis.port | default .Values.polytomic.redis.port }}
+    {{- end }}
+    # Allow traffic within namespace (pod-to-pod)
+    - to:
+        - podSelector: {}
+    # Allow HTTPS egress for external integrations
+    {{- if .Values.networkPolicy.allowExternalHttps }}
+    {{- if .Values.networkPolicy.externalHttpsCidrs }}
+    {{- range .Values.networkPolicy.externalHttpsCidrs }}
+    - to:
+        - ipBlock:
+            cidr: {{ . }}
+      ports:
+        - protocol: TCP
+          port: 443
+    {{- end }}
+    {{- else }}
+    # Default to all internet for maximum compatibility
+    - to:
+        - ipBlock:
+            cidr: "0.0.0.0/0"
+      ports:
+        - protocol: TCP
+          port: 443
+    {{- end }}
+    {{- end }}
+{{- end }}

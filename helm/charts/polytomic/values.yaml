@@ -15,6 +15,19 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+# -- Global health probe configuration
+healthProbes:
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
 service:
   type: ClusterIP
   port: 80
@@ -230,8 +243,8 @@ minio:
 nfs-server-provisioner:
   enabled: true
   image:
-    repository: k8s.gcr.io/sig-storage/nfs-provisioner
-    tag: v3.0.1
+    repository: registry.k8s.io/sig-storage/nfs-provisioner
+    tag: v4.0.8
 
   persistence:
     enabled: true
@@ -269,6 +282,41 @@ secret:
   # The name of the secret to use instead of generating one
   name: ""
 
+# Production hardening features (disabled by default)
+networkPolicy:
+  enabled: false
+  # Ingress controller namespace selector
+  ingressNamespaceSelector:
+    name: ingress-nginx
+  # PostgreSQL access configuration
+  postgresql:
+    # For in-cluster PostgreSQL (when postgresql.enabled=true)
+    podSelector:
+      app.kubernetes.io/name: postgresql
+    namespaceSelector:
+      kubernetes.io/metadata.name: default
+    # For external PostgreSQL (RDS, etc), uncomment and comment out podSelector above:
+    # ipBlock: "10.0.0.0/16"
+  # Redis access configuration
+  redis:
+    # For in-cluster Redis (when redis.enabled=true)
+    podSelector:
+      app.kubernetes.io/name: redis
+    namespaceSelector:
+      kubernetes.io/metadata.name: default
+    # For external Redis (ElastiCache, etc), uncomment and comment out podSelector above:
+    # ipBlock: "10.0.0.0/16"
+  # Allow HTTPS egress for external integrations
+  allowExternalHttps: true
+  # Optional: Restrict to specific CIDR ranges (empty = 0.0.0.0/0)
+  externalHttpsCidrs: []
+
+# PodDisruptionBudget - ensures minimum availability during disruptions
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  # maxUnavailable: 1  # Use either minAvailable OR maxUnavailable, not both
+
 worker:
   replicaCount: 1
   resources: {}
@@ -289,16 +337,14 @@ worker:
   affinity: {}
   podAnnotations: {}
   podSecurityContext:
-    {}
-    # fsGroup: 2000
+    fsGroup: 2000
   securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
   sidecarContainers: []
 
 
@@ -322,8 +368,15 @@ web:
   tolerations: []
   affinity: {}
   podAnnotations: {}
-  podSecurityContext: {}
-  securityContext: {}
+  podSecurityContext:
+    fsGroup: 2000
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
   sidecarContainers:
   # - image: busybox
   #   name: sidecar-example
@@ -349,16 +402,14 @@ sync:
   affinity: {}
   podAnnotations: {}
   podSecurityContext:
-    {}
-    # fsGroup: 2000
+    fsGroup: 2000
   securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
   sidecarContainers: []
 
 dev:
@@ -368,15 +419,13 @@ dev:
   affinity: {}
   podAnnotations: {}
   podSecurityContext:
-    {}
-    # fsGroup: 2000
+    fsGroup: 2000
   securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
 
 development: false

@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "polytomic": {
+      "type": "object",
+      "properties": {
+        "deployment": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Unique identifier for your deployment, provided by Polytomic"
+            },
+            "key": {
+              "type": "string",
+              "description": "License key for your deployment, provided by Polytomic"
+            },
+            "api_key": {
+              "type": "string",
+              "description": "Global API key for your deployment"
+            }
+          }
+        },
+        "auth": {
+          "type": "object",
+          "properties": {
+            "root_user": {
+              "type": "string",
+              "description": "Email address for the initial admin user"
+            },
+            "url": {
+              "type": "string",
+              "description": "Base URL for accessing Polytomic"
+            },
+            "single_player": {
+              "type": "boolean",
+              "description": "Enable single-player mode (no authentication)"
+            }
+          }
+        },
+        "postgres": {
+          "type": "object",
+          "properties": {
+            "host": {
+              "type": "string",
+              "minLength": 1
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            },
+            "username": {
+              "type": "string",
+              "minLength": 1
+            },
+            "password": {
+              "type": "string"
+            },
+            "database": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "redis": {
+          "type": "object",
+          "properties": {
+            "host": {
+              "type": "string",
+              "minLength": 1
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            }
+          }
+        }
+      }
+    },
+    "postgresql": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "redis": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

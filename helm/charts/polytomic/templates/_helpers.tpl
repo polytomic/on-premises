@@ -57,7 +57,6 @@ Web Selector labels
 {{- define "polytomic.web-selectorLabels" -}}
 app.kubernetes.io/name: {{ include "polytomic.name" . }}-web
 app.kubernetes.io/instance: {{ .Release.Name }}
-vector.dev/include: "true"
 {{- end }}
 
 {{/*
@@ -66,7 +65,6 @@ Sync Selector labels
 {{- define "polytomic.sync-selectorLabels" -}}
 app.kubernetes.io/name: {{ include "polytomic.name" . }}-sync
 app.kubernetes.io/instance: {{ .Release.Name }}
-vector.dev/include: "true"
 {{- end }}
 
 
@@ -76,7 +74,6 @@ Worker Selector labels
 {{- define "polytomic.worker-selectorLabels" -}}
 app.kubernetes.io/name: {{ include "polytomic.name" . }}-worker
 app.kubernetes.io/instance: {{ .Release.Name }}
-vector.dev/include: "true"
 {{- end }}
 
 

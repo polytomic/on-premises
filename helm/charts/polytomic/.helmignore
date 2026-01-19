@@ -21,3 +21,11 @@
 .idea/
 *.tmproj
 .vscode/
+*.iml
+# Test files
+*.test
+# Documentation and analysis files
+EVALUATION.md
+PR_ANALYSIS.md
+IMPLEMENTATION_PLAN.md
+IMPLEMENTATION_SUMMARY.md

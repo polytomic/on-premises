@@ -12,10 +12,11 @@ spec:
       {{- include "polytomic.dev-selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.dev.podAnnotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.dev.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "polytomic.dev-selectorLabels" . | nindent 8 }}
     spec:

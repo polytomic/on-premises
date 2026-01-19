@@ -2,7 +2,7 @@
 
 Polytomic helm chart for kubernetes
 
-![Version: 0.0.17](https://img.shields.io/badge/Version-0.0.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
+![Version: 0.0.18](https://img.shields.io/badge/Version-0.0.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
 
 ## Installing the Chart
 
@@ -15,6 +15,8 @@ helm install helm/charts/polytomic polytomic
 ```
 
 ## Requirements
+
+Kubernetes: `>=1.24.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
@@ -29,12 +31,16 @@ helm install helm/charts/polytomic polytomic
 | dev.affinity | object | `{}` |  |
 | dev.nodeSelector | object | `{}` |  |
 | dev.podAnnotations | object | `{}` |  |
-| dev.podSecurityContext | object | `{}` |  |
+| dev.podSecurityContext.fsGroup | int | `2000` |  |
 | dev.resources | object | `{}` |  |
-| dev.securityContext | object | `{}` |  |
+| dev.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| dev.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| dev.securityContext.runAsNonRoot | bool | `false` |  |
+| dev.securityContext.runAsUser | int | `0` |  |
 | dev.tolerations | list | `[]` |  |
 | development | bool | `false` |  |
 | fullnameOverride | string | `""` |  |
+| healthProbes | object | `{"livenessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5},"readinessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5}}` | Global health probe configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"` | Image repository |
 | image.tag | string | `"latest"` | Overrides the image tag whose default is the chart appVersion. |
@@ -52,15 +58,25 @@ helm install helm/charts/polytomic polytomic
 | minio.rootPassword | string | `"polytomic"` |  |
 | minio.rootUser | string | `"polytomic"` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.allowExternalHttps | bool | `true` |  |
+| networkPolicy.enabled | bool | `false` |  |
+| networkPolicy.externalHttpsCidrs | list | `[]` |  |
+| networkPolicy.ingressNamespaceSelector.name | string | `"ingress-nginx"` |  |
+| networkPolicy.postgresql.namespaceSelector."kubernetes.io/metadata.name" | string | `"default"` |  |
+| networkPolicy.postgresql.podSelector."app.kubernetes.io/name" | string | `"postgresql"` |  |
+| networkPolicy.redis.namespaceSelector."kubernetes.io/metadata.name" | string | `"default"` |  |
+| networkPolicy.redis.podSelector."app.kubernetes.io/name" | string | `"redis"` |  |
 | nfs-server-provisioner.enabled | bool | `true` |  |
-| nfs-server-provisioner.image.repository | string | `"k8s.gcr.io/sig-storage/nfs-provisioner"` |  |
-| nfs-server-provisioner.image.tag | string | `"v3.0.1"` |  |
+| nfs-server-provisioner.image.repository | string | `"registry.k8s.io/sig-storage/nfs-provisioner"` |  |
+| nfs-server-provisioner.image.tag | string | `"v4.0.8"` |  |
 | nfs-server-provisioner.persistence.enabled | bool | `true` |  |
 | nfs-server-provisioner.storageClass.allowVolumeExpansion | bool | `true` |  |
 | nfs-server-provisioner.storageClass.create | bool | `true` |  |
 | nfs-server-provisioner.storageClass.defaultClass | bool | `false` |  |
 | nfs-server-provisioner.storageClass.name | string | `"nfs"` |  |
 | nfs-server-provisioner.storageClass.parameters | object | `{}` |  |
+| podDisruptionBudget.enabled | bool | `false` |  |
+| podDisruptionBudget.minAvailable | int | `1` |  |
 | polytomic.airtable_client_secret | string | `""` |  |
 | polytomic.asana_client_id | string | `""` |  |
 | polytomic.asana_client_secret | string | `""` |  |
@@ -177,10 +193,13 @@ helm install helm/charts/polytomic polytomic
 | sync.autoscaling.targetMemoryUtilizationPercentage | int | `80` |  |
 | sync.nodeSelector | object | `{}` |  |
 | sync.podAnnotations | object | `{}` |  |
-| sync.podSecurityContext | object | `{}` |  |
+| sync.podSecurityContext.fsGroup | int | `2000` |  |
 | sync.replicaCount | int | `1` |  |
 | sync.resources | object | `{}` |  |
-| sync.securityContext | object | `{}` |  |
+| sync.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| sync.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| sync.securityContext.runAsNonRoot | bool | `false` |  |
+| sync.securityContext.runAsUser | int | `0` |  |
 | sync.sidecarContainers | list | `[]` |  |
 | sync.tolerations | list | `[]` |  |
 | web.affinity | object | `{}` |  |
@@ -191,10 +210,13 @@ helm install helm/charts/polytomic polytomic
 | web.autoscaling.targetMemoryUtilizationPercentage | int | `80` |  |
 | web.nodeSelector | object | `{}` |  |
 | web.podAnnotations | object | `{}` |  |
-| web.podSecurityContext | object | `{}` |  |
+| web.podSecurityContext.fsGroup | int | `2000` |  |
 | web.replicaCount | int | `1` |  |
 | web.resources | object | `{}` |  |
-| web.securityContext | object | `{}` |  |
+| web.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| web.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| web.securityContext.runAsNonRoot | bool | `false` |  |
+| web.securityContext.runAsUser | int | `0` |  |
 | web.sidecarContainers | string | `nil` |  |
 | web.tolerations | list | `[]` |  |
 | worker.affinity | object | `{}` |  |
@@ -205,12 +227,15 @@ helm install helm/charts/polytomic polytomic
 | worker.autoscaling.targetMemoryUtilizationPercentage | int | `80` |  |
 | worker.nodeSelector | object | `{}` |  |
 | worker.podAnnotations | object | `{}` |  |
-| worker.podSecurityContext | object | `{}` |  |
+| worker.podSecurityContext.fsGroup | int | `2000` |  |
 | worker.replicaCount | int | `1` |  |
 | worker.resources | object | `{}` |  |
-| worker.securityContext | object | `{}` |  |
+| worker.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| worker.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| worker.securityContext.runAsNonRoot | bool | `false` |  |
+| worker.securityContext.runAsUser | int | `0` |  |
 | worker.sidecarContainers | list | `[]` |  |
 | worker.tolerations | list | `[]` |  |
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
+Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
