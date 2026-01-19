@@ -154,9 +154,7 @@ Kubernetes: `>=1.24.0-0`
 | polytomic.pardot_client_secret | string | `""` |  |
 | polytomic.query_workers | int | `10` |  |
 | polytomic.s3.access_key_id | string | `""` | Access key ID |
-| polytomic.s3.log_bucket | string | `""` | The bucket stores log files containing records involved in a sync execution |
 | polytomic.s3.operational_bucket | string | `"s3://operations"` |  |
-| polytomic.s3.query_bucket | string | `""` | The bucket is used to store query exports from Polytomic's SQL Runner. |
 | polytomic.s3.record_log_bucket | string | `"records"` | Holds record logs for syncs |
 | polytomic.s3.region | string | `"us-east-1"` | S3 region e.g. us-east-1 |
 | polytomic.s3.secret_access_key | string | `""` | Secret access key |

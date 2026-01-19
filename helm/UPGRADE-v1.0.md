@@ -10,12 +10,13 @@ Version 1.0.0 is a **MAJOR BREAKING RELEASE** that modernizes the Helm chart arc
 
 1. **[BREAKING]** PostgreSQL and Redis are now pluggable (embedded vs external)
 2. **[BREAKING]** Shared volume configuration completely refactored
-3. **[BREAKING]** Image tag default changed from `"latest"` to `""` (uses Chart.appVersion)
-4. **[BREAKING]** PostgreSQL dependency upgraded: 12.1.9 → 16.2.3 (PostgreSQL 12 → 15)
-5. **[BREAKING]** Redis dependency upgraded: 17.4.3 → 20.5.0
-6. **[BREAKING]** Default replica counts changed to 2 for all deployments
-7. **[BREAKING]** Autoscaling enabled by default for web and sync deployments
-8. **[BREAKING]** Resource limits now set by default (previously unlimited)
+3. **[BREAKING]** Deprecated configuration sections removed: `polytomic.postgres`, `polytomic.redis`, `polytomic.cache`, `polytomic.s3.log_bucket`, `polytomic.s3.query_bucket`
+4. **[BREAKING]** Image tag default changed from `"latest"` to `""` (uses Chart.appVersion)
+5. **[BREAKING]** PostgreSQL dependency upgraded: 12.1.9 → 16.2.3 (PostgreSQL 12 → 15)
+6. **[BREAKING]** Redis dependency upgraded: 17.4.3 → 20.5.0
+7. **[BREAKING]** Default replica counts changed to 2 for all deployments
+8. **[BREAKING]** Autoscaling enabled by default for web and sync deployments
+9. **[BREAKING]** Resource limits now set by default (previously unlimited)
 
 ## Prerequisites
 
@@ -203,8 +204,8 @@ polytomic:
     dynamic:
       storageClassName: ""  # Empty = use cluster default
 
-  # DEPRECATED: cache section (kept for backward compatibility)
-  # Will be removed in v2.0.0
+# NOTE: The old polytomic.cache section has been REMOVED in v1.0.0.
+# Use sharedVolume configuration instead (see examples below).
 ```
 
 **Migration Examples:**
