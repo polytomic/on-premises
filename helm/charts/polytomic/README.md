@@ -156,19 +156,7 @@ Kubernetes: `>=1.24.0-0`
 | polytomic.outreach_client_secret | string | `""` |  |
 | polytomic.pardot_client_id | string | `""` |  |
 | polytomic.pardot_client_secret | string | `""` |  |
-| polytomic.postgres.auto_migrate | bool | `true` |  |
-| polytomic.postgres.database | string | `"polytomic"` | Database name |
-| polytomic.postgres.host | string | `"polytomic-postgresql"` | Host address |
-| polytomic.postgres.password | string | `"polytomic"` | Password for given user |
-| polytomic.postgres.port | int | `5432` | Port number |
-| polytomic.postgres.ssl | bool | `false` | enable/disable SSL |
-| polytomic.postgres.username | string | `"polytomic"` | Postgres user name |
 | polytomic.query_workers | int | `10` |  |
-| polytomic.redis.host | string | `"polytomic-redis-master"` |  |
-| polytomic.redis.password | string | `"polytomic"` |  |
-| polytomic.redis.port | int | `6379` |  |
-| polytomic.redis.ssl | bool | `false` |  |
-| polytomic.redis.username | string | `nil` |  |
 | polytomic.s3.access_key_id | string | `""` | Access key ID |
 | polytomic.s3.log_bucket | string | `""` | The bucket stores log files containing records involved in a sync execution |
 | polytomic.s3.operational_bucket | string | `"s3://operations"` |  |

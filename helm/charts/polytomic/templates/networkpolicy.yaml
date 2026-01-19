@@ -55,7 +55,7 @@ spec:
         {{- end }}
       ports:
         - protocol: TCP
-          port: {{ .Values.externalPostgresql.port | default .Values.polytomic.postgres.port }}
+          port: {{ include "polytomic.postgresql.port" . }}
     {{- end }}
     # Allow egress to Redis
     {{- if .Values.networkPolicy.redis }}
@@ -75,7 +75,7 @@ spec:
         {{- end }}
       ports:
         - protocol: TCP
-          port: {{ .Values.externalRedis.port | default .Values.polytomic.redis.port }}
+          port: {{ include "polytomic.redis.port" . }}
     {{- end }}
     # Allow traffic within namespace (pod-to-pod)
     - to:

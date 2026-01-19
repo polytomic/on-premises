@@ -38,45 +38,6 @@
               "description": "Enable single-player mode (no authentication)"
             }
           }
-        },
-        "postgres": {
-          "type": "object",
-          "properties": {
-            "host": {
-              "type": "string",
-              "minLength": 1
-            },
-            "port": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 65535
-            },
-            "username": {
-              "type": "string",
-              "minLength": 1
-            },
-            "password": {
-              "type": "string"
-            },
-            "database": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
-        },
-        "redis": {
-          "type": "object",
-          "properties": {
-            "host": {
-              "type": "string",
-              "minLength": 1
-            },
-            "port": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 65535
-            }
-          }
         }
       }
     },

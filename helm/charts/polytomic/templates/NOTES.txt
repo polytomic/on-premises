@@ -57,14 +57,14 @@ Database:
   {{- if .Values.postgresql.enabled }}
   PostgreSQL: Embedded ({{ include "polytomic.fullname" . }}-postgresql)
   {{- else }}
-  PostgreSQL: External ({{ .Values.polytomic.postgres.host }}:{{ .Values.polytomic.postgres.port }})
+  PostgreSQL: External ({{ include "polytomic.postgresql.host" . }}:{{ include "polytomic.postgresql.port" . }})
   {{- end }}
 
 Cache:
   {{- if .Values.redis.enabled }}
   Redis: Embedded ({{ include "polytomic.fullname" . }}-redis-master)
   {{- else }}
-  Redis: External ({{ .Values.polytomic.redis.host }}:{{ .Values.polytomic.redis.port }})
+  Redis: External ({{ include "polytomic.redis.host" . }}:{{ include "polytomic.redis.port" . }})
   {{- end }}
 
 {{- if .Values.podDisruptionBudget.enabled }}

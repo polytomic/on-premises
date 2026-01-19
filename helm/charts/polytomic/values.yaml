@@ -101,31 +101,6 @@ polytomic:
     workos_api_key: ""
     workos_client_id: ""
 
-  # Postgres connection settings
-  postgres:
-    # -- Postgres user name
-    username: polytomic
-    # -- Password for given user
-    password: polytomic
-    # -- Host address
-    host: polytomic-postgresql
-    # -- Port number
-    port: 5432
-    # -- Database name
-    database: polytomic
-    # -- enable/disable SSL
-    ssl: false
-
-    auto_migrate: true
-
-  # Redis connection settings
-  redis:
-    username:
-    password: polytomic
-    host: polytomic-redis-master
-    port: 6379
-    ssl: false
-
   # The bucket stores log files containing records involved in a sync execution.
   # Record logging is enabled from the Settings page within the app ({POLYTOMIC_URL}/user).
   # Credentials for AWS are pulled through the AWS-SDK's credential chain and the user/role must have permissions for the bucket.

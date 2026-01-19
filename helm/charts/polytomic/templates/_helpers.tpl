@@ -105,10 +105,8 @@ Get PostgreSQL host
 {{- define "polytomic.postgresql.host" -}}
 {{- if .Values.postgresql.enabled -}}
 {{- printf "%s-postgresql" (include "polytomic.fullname" .) -}}
-{{- else if .Values.externalPostgresql.host -}}
-{{- .Values.externalPostgresql.host -}}
 {{- else -}}
-{{- .Values.polytomic.postgres.host -}}
+{{- .Values.externalPostgresql.host -}}
 {{- end -}}
 {{- end -}}
 
@@ -118,10 +116,8 @@ Get PostgreSQL port
 {{- define "polytomic.postgresql.port" -}}
 {{- if .Values.postgresql.enabled -}}
 5432
-{{- else if .Values.externalPostgresql.port -}}
-{{- .Values.externalPostgresql.port -}}
 {{- else -}}
-{{- .Values.polytomic.postgres.port -}}
+{{- .Values.externalPostgresql.port -}}
 {{- end -}}
 {{- end -}}
 
@@ -131,10 +127,8 @@ Get PostgreSQL username
 {{- define "polytomic.postgresql.username" -}}
 {{- if .Values.postgresql.enabled -}}
 {{- .Values.postgresql.auth.username | default "polytomic" -}}
-{{- else if .Values.externalPostgresql.username -}}
-{{- .Values.externalPostgresql.username -}}
 {{- else -}}
-{{- .Values.polytomic.postgres.username -}}
+{{- .Values.externalPostgresql.username -}}
 {{- end -}}
 {{- end -}}
 
@@ -144,10 +138,8 @@ Get PostgreSQL database name
 {{- define "polytomic.postgresql.database" -}}
 {{- if .Values.postgresql.enabled -}}
 {{- .Values.postgresql.auth.database | default "polytomic" -}}
-{{- else if .Values.externalPostgresql.database -}}
-{{- .Values.externalPostgresql.database -}}
 {{- else -}}
-{{- .Values.polytomic.postgres.database -}}
+{{- .Values.externalPostgresql.database -}}
 {{- end -}}
 {{- end -}}
 
@@ -188,8 +180,6 @@ Build PostgreSQL connection URL
 {{- $sslMode = .Values.externalPostgresql.sslMode -}}
 {{- else if .Values.externalPostgresql.ssl -}}
 {{- $sslMode = "require" -}}
-{{- else if .Values.polytomic.postgres.ssl -}}
-{{- $sslMode = "require" -}}
 {{- end -}}
 {{- printf "postgres://%s:$(DATABASE_PASSWORD)@%s:%s/%s?sslmode=%s"
     (include "polytomic.postgresql.username" .)
@@ -205,10 +195,8 @@ Get Redis host
 {{- define "polytomic.redis.host" -}}
 {{- if .Values.redis.enabled -}}
 {{- printf "%s-redis-master" (include "polytomic.fullname" .) -}}
-{{- else if .Values.externalRedis.host -}}
-{{- .Values.externalRedis.host -}}
 {{- else -}}
-{{- .Values.polytomic.redis.host -}}
+{{- .Values.externalRedis.host -}}
 {{- end -}}
 {{- end -}}
 
@@ -218,10 +206,8 @@ Get Redis port
 {{- define "polytomic.redis.port" -}}
 {{- if .Values.redis.enabled -}}
 6379
-{{- else if .Values.externalRedis.port -}}
-{{- .Values.externalRedis.port -}}
 {{- else -}}
-{{- .Values.polytomic.redis.port -}}
+{{- .Values.externalRedis.port -}}
 {{- end -}}
 {{- end -}}
 
@@ -258,13 +244,11 @@ Build Redis connection URL
 {{- $password := "" -}}
 {{- if .Values.redis.enabled -}}
 {{- $password = .Values.redis.auth.password -}}
-{{- else if .Values.externalRedis.password -}}
-{{- $password = .Values.externalRedis.password -}}
 {{- else -}}
-{{- $password = .Values.polytomic.redis.password -}}
+{{- $password = .Values.externalRedis.password -}}
 {{- end -}}
 {{- if $password -}}
-{{- if or .Values.externalRedis.ssl .Values.polytomic.redis.ssl -}}
+{{- if .Values.externalRedis.ssl -}}
 {{- printf "rediss://:$(REDIS_PASSWORD)@%s:%s"
     (include "polytomic.redis.host" .)
     (include "polytomic.redis.port" .) -}}
@@ -290,21 +274,13 @@ DEPLOYMENT_KEY: {{ .Values.polytomic.deployment.key | quote }}
 DEPLOYMENT_API_KEY: {{ .Values.polytomic.deployment.api_key | quote }}
 DATABASE_URL: {{ include "polytomic.postgresql.url" . | quote }}
 {{- if not .Values.postgresql.enabled }}
-{{- if .Values.externalPostgresql.password }}
 DATABASE_PASSWORD: {{ .Values.externalPostgresql.password | quote }}
-{{- else if .Values.polytomic.postgres.password }}
-DATABASE_PASSWORD: {{ .Values.polytomic.postgres.password | quote }}
-{{- end }}
 DATABASE_POOL_SIZE: {{ .Values.externalPostgresql.poolSize | default "15" | quote }}
 DATABASE_IDLE_TIMEOUT: {{ .Values.externalPostgresql.idleTimeout | default "5s" | quote }}
 {{- end }}
 REDIS_URL: {{ include "polytomic.redis.url" . | quote }}
 {{- if not .Values.redis.enabled }}
-{{- if .Values.externalRedis.password }}
 REDIS_PASSWORD: {{ .Values.externalRedis.password | quote }}
-{{- else if .Values.polytomic.redis.password }}
-REDIS_PASSWORD: {{ .Values.polytomic.redis.password | quote }}
-{{- end }}
 REDIS_POOL_SIZE: {{ .Values.externalRedis.poolSize | default "0" | quote }}
 {{- end }}
 POLYTOMIC_URL: {{ .Values.polytomic.auth.url | quote }}
@@ -319,11 +295,7 @@ RECORD_LOG_REGION: {{ .Values.polytomic.s3.region | quote }}
 EXPORT_QUERY_BUCKET: {{ .Values.polytomic.s3.query_bucket | quote }}
 EXPORT_QUERY_REGION: {{ .Values.polytomic.s3.region | quote }}
 LOG_LEVEL: {{ .Values.polytomic.log_level | quote }}
-{{- if .Values.postgresql.enabled }}
-AUTO_MIGRATE: {{ .Values.polytomic.postgres.auto_migrate | default true | quote }}
-{{- else }}
-AUTO_MIGRATE: {{ .Values.externalPostgresql.autoMigrate | default true | quote }}
-{{- end }}
+AUTO_MIGRATE: {{ if .Values.postgresql.enabled }}{{ true | quote }}{{ else }}{{ .Values.externalPostgresql.autoMigrate | default true | quote }}{{ end }}
 DEFAULT_ORG_FEATURES: {{ join "," .Values.polytomic.default_org_features | quote }}
 FIELD_CHANGE_TRACKING: {{ .Values.polytomic.field_change_tracking | quote }}
 ENV: {{ .Values.polytomic.env | quote }}

@@ -121,8 +121,8 @@ redis:
       enabled: true
       size: 8Gi
 
-# DEPRECATED: polytomic.postgres and polytomic.redis sections
-# These are still present for backward compatibility but will be removed in v2.0.0
+# NOTE: The old polytomic.postgres and polytomic.redis configuration sections
+# have been REMOVED in v1.0.0. Use the configuration options above instead.
 ```
 
 **Option 2: External Databases (Production - Recommended)**
