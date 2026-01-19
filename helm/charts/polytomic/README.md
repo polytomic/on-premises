@@ -112,10 +112,6 @@ Kubernetes: `>=1.24.0-0`
 | polytomic.bingads_client_id | string | `""` |  |
 | polytomic.bingads_client_secret | string | `""` |  |
 | polytomic.bingads_developer_token | string | `""` |  |
-| polytomic.cache.enabled | bool | `true` |  |
-| polytomic.cache.size | string | `"20Mi"` |  |
-| polytomic.cache.storage_class | string | `""` |  |
-| polytomic.cache.volume_name | string | `"polytomic-cache"` |  |
 | polytomic.ccloud_api_key | string | `""` |  |
 | polytomic.ccloud_api_secret | string | `""` |  |
 | polytomic.default_org_features | list | `[]` |  |

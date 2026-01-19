@@ -170,14 +170,6 @@ polytomic:
       # -- Storage class name (empty = cluster default)
       storageClassName: ""
 
-  # DEPRECATED: Use sharedVolume instead
-  # Kept for backward compatibility, will be removed in future version
-  cache:
-    enabled: true
-    volume_name: polytomic-cache
-    size: 20Mi
-    storage_class: ""
-
   internal_execution_logs: false
 
   # Integrations
