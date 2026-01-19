@@ -1,0 +1,59 @@
+{{- if and .Values.polytomic.sharedVolume.enabled (ne .Values.polytomic.sharedVolume.mode "emptyDir") }}
+{{- if eq .Values.polytomic.sharedVolume.mode "static" }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.polytomic.sharedVolume.volumeName }}
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+spec:
+  capacity:
+    storage: {{ .Values.polytomic.sharedVolume.size }}
+  volumeMode: Filesystem
+  accessModes:
+    {{- toYaml .Values.polytomic.sharedVolume.accessModes | nindent 4 }}
+  persistentVolumeReclaimPolicy: Retain
+  {{- if .Values.polytomic.sharedVolume.static.driver }}
+  csi:
+    driver: {{ .Values.polytomic.sharedVolume.static.driver }}
+    volumeHandle: {{ .Values.polytomic.sharedVolume.static.volumeHandle }}
+    {{- if .Values.polytomic.sharedVolume.static.volumeAttributes }}
+    volumeAttributes:
+      {{- toYaml .Values.polytomic.sharedVolume.static.volumeAttributes | nindent 6 }}
+    {{- end }}
+  {{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.polytomic.sharedVolume.volumeName }}
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+spec:
+  storageClassName: ""  # Empty for static binding
+  accessModes:
+    {{- toYaml .Values.polytomic.sharedVolume.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.polytomic.sharedVolume.size }}
+  volumeName: {{ .Values.polytomic.sharedVolume.volumeName }}
+{{- else if eq .Values.polytomic.sharedVolume.mode "dynamic" }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.polytomic.sharedVolume.volumeName }}
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.polytomic.sharedVolume.dynamic.storageClassName }}
+  storageClassName: {{ .Values.polytomic.sharedVolume.dynamic.storageClassName }}
+  {{- end }}
+  accessModes:
+    {{- toYaml .Values.polytomic.sharedVolume.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.polytomic.sharedVolume.size }}
+{{- end }}
+{{- end }}

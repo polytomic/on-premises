@@ -7,8 +7,10 @@ image:
   repository: 568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem
   # -- Image pull policy
   pullPolicy: IfNotPresent
-  # -- Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  # -- Image tag. Defaults to Chart.appVersion if not specified.
+  # For production, always specify a concrete version (e.g., "rel2021.11.04")
+  # See https://docs.polytomic.com/changelog for available versions
+  tag: ""
 
 # -- Reference to one or more secrets to be used when pulling images
 imagePullSecrets: []
@@ -153,6 +155,48 @@ polytomic:
     # -- S3 region e.g. us-east-1
     region: us-east-1
 
+  # Shared volume configuration for worker and sync pods
+  # This volume is used for caching and temporary data shared between pods
+  sharedVolume:
+    # -- Enable shared volume (if false, uses emptyDir)
+    enabled: true
+    # -- Provisioning mode: "dynamic" (StorageClass), "static" (pre-existing PV), or "emptyDir"
+    mode: dynamic
+    # -- Volume size
+    size: 20Gi
+    # -- Mount path in containers
+    mountPath: /var/polytomic
+    # -- Access modes
+    accessModes:
+      - ReadWriteMany
+    # -- Volume name for PV/PVC
+    volumeName: polytomic-shared
+    # -- Optional subPath within the volume
+    subPath: ""
+
+    # Static provisioning configuration (for pre-existing volumes like EFS)
+    # Only used when mode=static
+    static:
+      # -- CSI driver (e.g., efs.csi.aws.com, nfs.csi.k8s.io)
+      driver: efs.csi.aws.com
+      # -- Volume handle (e.g., EFS filesystem ID: fs-12345678)
+      volumeHandle: ""
+      # -- Optional volume attributes for CSI driver
+      volumeAttributes: {}
+        # Example for EFS:
+        # path: /
+        # Example for other drivers:
+        # server: nfs-server.example.com
+        # share: /exports/polytomic
+
+    # Dynamic provisioning configuration (StorageClass-based)
+    # Only used when mode=dynamic
+    dynamic:
+      # -- Storage class name (empty = cluster default)
+      storageClassName: ""
+
+  # DEPRECATED: Use sharedVolume instead
+  # Kept for backward compatibility, will be removed in future version
   cache:
     enabled: true
     volume_name: polytomic-cache
@@ -217,20 +261,88 @@ polytomic:
   tracing: false
 
 #############################################################################################
-# Convience subcharts for dependencies
+# DATABASE CONFIGURATION
+# Choose ONE option per service:
+#   1. Embedded: Set enabled=true (default, for testing/development)
+#   2. External: Set enabled=false and configure external* section
+
+# PostgreSQL Database
+# Option 1: Embedded PostgreSQL (Bitnami subchart)
 postgresql:
-  enabled: true
+  enabled: true  # Set to false to use external database
   auth:
     username: polytomic
     password: polytomic
     database: polytomic
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+  # For production embedded PostgreSQL, configure proper resources, backups, etc.
+  # See: https://artifacthub.io/packages/helm/bitnami/postgresql
 
+# Option 2: External PostgreSQL (RDS, CloudSQL, self-hosted, etc.)
+# Only used when postgresql.enabled=false
+externalPostgresql:
+  # -- External PostgreSQL host (required if postgresql.enabled=false)
+  host: ""
+  # -- External PostgreSQL port
+  port: 5432
+  # -- Database username
+  username: "polytomic"
+  # -- Database password (consider using existing secret)
+  password: ""
+  # -- Database name
+  database: "polytomic"
+  # -- Enable SSL/TLS
+  ssl: false
+  # -- SSL mode (disable, require, verify-ca, verify-full)
+  sslMode: "disable"
+  # -- Connection pool size
+  poolSize: "15"
+  # -- Idle timeout
+  idleTimeout: "5s"
+  # -- Auto-run database migrations on startup
+  autoMigrate: true
+  # -- Use existing secret for password (optional)
+  # If set, password field above is ignored
+  existingSecret:
+    name: ""
+    key: "postgresql-password"
+
+# Redis Cache
+# Option 1: Embedded Redis (Bitnami subchart)
 redis:
-  enabled: true
+  enabled: true  # Set to false to use external Redis
   auth:
     password: polytomic
     enabled: true
   architecture: standalone
+  master:
+    persistence:
+      enabled: true
+      size: 8Gi
+  # For production embedded Redis, configure proper resources, replicas, etc.
+  # See: https://artifacthub.io/packages/helm/bitnami/redis
+
+# Option 2: External Redis (ElastiCache, MemoryStore, self-hosted, etc.)
+# Only used when redis.enabled=false
+externalRedis:
+  # -- External Redis host (required if redis.enabled=false)
+  host: ""
+  # -- External Redis port
+  port: 6379
+  # -- Redis password (consider using existing secret)
+  password: ""
+  # -- Enable SSL/TLS
+  ssl: false
+  # -- Connection pool size (0 = unlimited)
+  poolSize: 0
+  # -- Use existing secret for password (optional)
+  # If set, password field above is ignored
+  existingSecret:
+    name: ""
+    key: "redis-password"
 
 minio:
   enabled: false
@@ -318,16 +430,16 @@ podDisruptionBudget:
   # maxUnavailable: 1  # Use either minAvailable OR maxUnavailable, not both
 
 worker:
-  replicaCount: 1
-  resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  replicaCount: 2
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
   autoscaling:
-    enabled: true
+    enabled: false  # Can be enabled if needed
     minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
@@ -349,19 +461,18 @@ worker:
 
 
 web:
-  replicaCount: 1
+  replicaCount: 2
   resources:
-    {}
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
   autoscaling:
     enabled: true
-    minReplicas: 1
-    maxReplicas: 100
+    minReplicas: 2
+    maxReplicas: 10
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
   nodeSelector: {}
@@ -389,12 +500,18 @@ web:
   #       sleep 1;
   #     done
 sync:
-  replicaCount: 1
-  resources: {}
+  replicaCount: 2
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
   autoscaling:
     enabled: true
-    minReplicas: 1
-    maxReplicas: 100
+    minReplicas: 2
+    maxReplicas: 10
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
   nodeSelector: {}
@@ -413,7 +530,14 @@ sync:
   sidecarContainers: []
 
 dev:
-  resources: {}
+  enabled: false  # Development deployment disabled by default
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
   nodeSelector: {}
   tolerations: []
   affinity: {}

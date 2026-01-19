@@ -39,9 +39,23 @@ spec:
           volumeMounts:
           - mountPath: /etc/podinfo
             name: podinfo
-          env:          
+          env:
           - name: ROLE
             value: web,worker,sync,scheduler
+          # Database password needs to be extracted separately for URL construction
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "polytomic.postgresql.secretName" . }}
+                key: {{ include "polytomic.postgresql.secretKey" . }}
+          # Redis password
+          {{- if or .Values.redis.enabled .Values.externalRedis.password .Values.polytomic.redis.password }}
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "polytomic.redis.secretName" . }}
+                key: {{ include "polytomic.redis.secretKey" . }}
+          {{- end }}
           - name: DEPLOYMENT
             value: local
           - name: NAMESPACE

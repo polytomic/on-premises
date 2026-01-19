@@ -43,16 +43,30 @@ spec:
               {{- else }}
               name: {{ include "polytomic.fullname" . }}-config
               {{- end }}
-          env:          
+          env:
           - name: ROLE
             value: worker,scheduler,schemacache
+          # Database password needs to be extracted separately for URL construction
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "polytomic.postgresql.secretName" . }}
+                key: {{ include "polytomic.postgresql.secretKey" . }}
+          # Redis password
+          {{- if or .Values.redis.enabled .Values.externalRedis.password .Values.polytomic.redis.password }}
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "polytomic.redis.secretName" . }}
+                key: {{ include "polytomic.redis.secretKey" . }}
+          {{- end }}
           volumeMounts:
           - mountPath: /etc/podinfo
             name: podinfo
-          - mountPath: /var/polytomic
-            name: cache-volume
-            {{ if .Values.polytomic.cache.sub_path }}
-            subPath: {{ .Values.polytomic.cache.sub_path }}
+          - mountPath: {{ .Values.polytomic.sharedVolume.mountPath }}
+            name: shared-volume
+            {{- if .Values.polytomic.sharedVolume.subPath }}
+            subPath: {{ .Values.polytomic.sharedVolume.subPath }}
             {{- end }}
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}
@@ -72,15 +86,15 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-      {{ if .Values.polytomic.cache.enabled }}
-      - name: cache-volume
+      {{- if and .Values.polytomic.sharedVolume.enabled (ne .Values.polytomic.sharedVolume.mode "emptyDir") }}
+      - name: shared-volume
         persistentVolumeClaim:
-          claimName: {{ .Values.polytomic.cache.volume_name }}
-      {{ else }}
-      - name: cache-volume
+          claimName: {{ .Values.polytomic.sharedVolume.volumeName }}
+      {{- else }}
+      - name: shared-volume
         emptyDir: {}
-      {{- end -}}
-       - downwardAPI:
+      {{- end }}
+      - downwardAPI:
           defaultMode: 420
           items:
           - fieldRef:
