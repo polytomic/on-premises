@@ -150,6 +150,12 @@ kubectl create secret docker-registry polytomic-ecr \
 kubectl create namespace polytomic
 ```
 
+**How Image Pull Secrets Work**:
+- The chart uses the `imagePullSecrets` value to configure image pulling for the main pods (web, worker, sync)
+- The secret name is also passed to the Polytomic application via the `KUBERNETES_IMAGE_PULL_SECRET` environment variable
+- Polytomic uses this to configure image pull secrets for dynamically created job pods (e.g., sync execution jobs)
+- This ensures all pods, both those created by the chart and those created by Polytomic at runtime, can pull images from the private registry
+
 ## Testing the Chart
 
 ### 1. Create a Test Values File

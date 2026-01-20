@@ -332,6 +332,9 @@ KUBERNETES_SECRET: {{ .Values.secret.name }}
 KUBERNETES_SECRET: {{ include "polytomic.fullname" . }}-config
 {{- end }}
 KUBERNETES_SERVICE_ACCOUNT: {{ include "polytomic.serviceAccountName" . | quote }}
+{{- if .Values.imagePullSecrets }}
+KUBERNETES_IMAGE_PULL_SECRET: {{ (index .Values.imagePullSecrets 0).name | quote }}
+{{- end }}
 AIRTABLE_CLIENT_SECRET: {{ .Values.polytomic.airtable_client_secret | quote }}
 ASANA_CLIENT_ID: {{ .Values.polytomic.asana_client_id | quote }}
 ASANA_CLIENT_SECRET: {{ .Values.polytomic.asana_client_secret | quote }}

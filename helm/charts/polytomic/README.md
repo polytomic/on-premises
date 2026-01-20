@@ -65,7 +65,7 @@ Kubernetes: `>=1.24.0-0`
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"` | Image repository |
 | image.tag | string | `""` | Image tag. Defaults to Chart.appVersion if not specified. For production, always specify a concrete version (e.g., "rel2021.11.04") See https://docs.polytomic.com/changelog for available versions |
-| imagePullSecrets | list | `[]` | Reference to one or more secrets to be used when pulling images |
+| imagePullSecrets | list | `[]` | Reference to one or more secrets to be used when pulling images Used both for chart-managed pods and passed to Polytomic for dynamically created job pods Example: imagePullSecrets:   - name: polytomic-ecr |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `"nginx"` | Name of the ingress class to route through this controller |
 | ingress.enabled | bool | `true` |  |
