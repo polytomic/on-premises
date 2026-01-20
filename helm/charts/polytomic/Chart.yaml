@@ -26,7 +26,7 @@ version: 1.0.0
 appVersion: "latest"
 
 # Minimum Kubernetes version required
-kubeVersion: ">=1.24.0-0"
+kubeVersion: ">=1.34.0-0"
 
 maintainers:
   - name: "Polytomic"
@@ -34,11 +34,11 @@ maintainers:
 
 dependencies:
   - name: postgresql
-    version: "16.2.3"
+    version: "18.2.3"
     repository: "https://charts.bitnami.com/bitnami"
     condition: postgresql.enabled
   - name: redis
-    version: "20.5.0"
+    version: "24.1.2"
     repository: "https://charts.bitnami.com/bitnami"
     condition: redis.enabled
   - name: nfs-server-provisioner

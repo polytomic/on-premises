@@ -13,6 +13,9 @@ image:
   tag: ""
 
 # -- Reference to one or more secrets to be used when pulling images
+# Used both for chart-managed pods and passed to Polytomic for dynamically created job pods
+# Example: imagePullSecrets:
+#   - name: polytomic-ecr
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -107,9 +110,6 @@ polytomic:
   # We recommend setting a bucket lifecycle rule to automatically expire objects.
   s3:
     operational_bucket: "s3://operations"
-
-    # -- Holds record logs for syncs
-    record_log_bucket: "records"
 
     # -- Access key ID
     access_key_id: ""

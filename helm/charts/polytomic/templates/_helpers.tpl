@@ -174,19 +174,30 @@ Build PostgreSQL connection URL
 */}}
 {{- define "polytomic.postgresql.url" -}}
 {{- $sslMode := "disable" -}}
+{{- $password := "" -}}
 {{- if .Values.postgresql.enabled -}}
 {{- $sslMode = "disable" -}}
-{{- else if .Values.externalPostgresql.sslMode -}}
+{{- $password = .Values.postgresql.auth.password | default "polytomic" -}}
+{{- printf "postgres://%s:%s@%s:%s/%s?sslmode=%s"
+    (include "polytomic.postgresql.username" .)
+    $password
+    (include "polytomic.postgresql.host" .)
+    (include "polytomic.postgresql.port" .)
+    (include "polytomic.postgresql.database" .)
+    $sslMode -}}
+{{- else -}}
+{{- if .Values.externalPostgresql.sslMode -}}
 {{- $sslMode = .Values.externalPostgresql.sslMode -}}
 {{- else if .Values.externalPostgresql.ssl -}}
 {{- $sslMode = "require" -}}
 {{- end -}}
-{{- printf "postgres://%s:$(DATABASE_PASSWORD)@%s:%s/%s?sslmode=%s"
+{{- printf "postgres://%s:${DATABASE_PASSWORD}@%s:%s/%s?sslmode=%s"
     (include "polytomic.postgresql.username" .)
     (include "polytomic.postgresql.host" .)
     (include "polytomic.postgresql.port" .)
     (include "polytomic.postgresql.database" .)
     $sslMode -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -244,16 +255,25 @@ Build Redis connection URL
 {{- $password := "" -}}
 {{- if .Values.redis.enabled -}}
 {{- $password = .Values.redis.auth.password -}}
-{{- else -}}
-{{- $password = .Values.externalRedis.password -}}
-{{- end -}}
 {{- if $password -}}
-{{- if .Values.externalRedis.ssl -}}
-{{- printf "rediss://:$(REDIS_PASSWORD)@%s:%s"
+{{- printf "redis://:%s@%s:%s"
+    $password
     (include "polytomic.redis.host" .)
     (include "polytomic.redis.port" .) -}}
 {{- else -}}
-{{- printf "redis://:$(REDIS_PASSWORD)@%s:%s"
+{{- printf "redis://%s:%s"
+    (include "polytomic.redis.host" .)
+    (include "polytomic.redis.port" .) -}}
+{{- end -}}
+{{- else -}}
+{{- $password = .Values.externalRedis.password -}}
+{{- if $password -}}
+{{- if .Values.externalRedis.ssl -}}
+{{- printf "rediss://:${REDIS_PASSWORD}@%s:%s"
+    (include "polytomic.redis.host" .)
+    (include "polytomic.redis.port" .) -}}
+{{- else -}}
+{{- printf "redis://:${REDIS_PASSWORD}@%s:%s"
     (include "polytomic.redis.host" .)
     (include "polytomic.redis.port" .) -}}
 {{- end -}}
@@ -261,6 +281,7 @@ Build Redis connection URL
 {{- printf "redis://%s:%s"
     (include "polytomic.redis.host" .)
     (include "polytomic.redis.port" .) -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -287,11 +308,7 @@ POLYTOMIC_URL: {{ .Values.polytomic.auth.url | quote }}
 AUTH_METHODS: {{ join "," .Values.polytomic.auth.methods | quote }}
 GOOGLE_CLIENT_ID: {{ .Values.polytomic.auth.google_client_id | quote }}
 GOOGLE_CLIENT_SECRET: {{ .Values.polytomic.auth.google_client_secret | quote }}
-EXECUTION_LOG_BUCKET: {{ .Values.polytomic.s3.record_log_bucket | quote }}
-EXECUTION_LOG_REGION: {{ if .Values.polytomic.s3.gcs }}"gcs"{{- else }}{{ .Values.polytomic.s3.region | quote }}{{- end}}
 DEFAULT_OPERATIONAL_BUCKET: {{ .Values.polytomic.s3.operational_bucket }}{{- if .Values.polytomic.s3.region }}?region={{ .Values.polytomic.s3.region }}{{- end}}
-RECORD_LOG_BUCKET: {{ .Values.polytomic.s3.record_log_bucket | quote }}
-RECORD_LOG_REGION: {{ .Values.polytomic.s3.region | quote }}
 LOG_LEVEL: {{ .Values.polytomic.log_level | quote }}
 AUTO_MIGRATE: {{ if .Values.postgresql.enabled }}{{ true | quote }}{{ else }}{{ .Values.externalPostgresql.autoMigrate | default true | quote }}{{ end }}
 DEFAULT_ORG_FEATURES: {{ join "," .Values.polytomic.default_org_features | quote }}
@@ -311,6 +328,9 @@ KUBERNETES_SECRET: {{ .Values.secret.name }}
 KUBERNETES_SECRET: {{ include "polytomic.fullname" . }}-config
 {{- end }}
 KUBERNETES_SERVICE_ACCOUNT: {{ include "polytomic.serviceAccountName" . | quote }}
+{{- if .Values.imagePullSecrets }}
+KUBERNETES_IMAGE_PULL_SECRET: {{ (index .Values.imagePullSecrets 0).name | quote }}
+{{- end }}
 AIRTABLE_CLIENT_SECRET: {{ .Values.polytomic.airtable_client_secret | quote }}
 ASANA_CLIENT_ID: {{ .Values.polytomic.asana_client_id | quote }}
 ASANA_CLIENT_SECRET: {{ .Values.polytomic.asana_client_secret | quote }}

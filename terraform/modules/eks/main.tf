@@ -44,7 +44,7 @@ module "eks" {
   version = "~> 21.0"
 
   name               = "${var.prefix}-cluster"
-  kubernetes_version = "1.31"
+  kubernetes_version = "1.34"
 
   vpc_id                 = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
   subnet_ids             = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids

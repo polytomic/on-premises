@@ -16,12 +16,12 @@ helm install helm/charts/polytomic polytomic
 
 ## Requirements
 
-Kubernetes: `>=1.24.0-0`
+Kubernetes: `>=1.34.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | postgresql | 16.2.3 |
-| https://charts.bitnami.com/bitnami | redis | 20.5.0 |
+| https://charts.bitnami.com/bitnami | postgresql | 18.2.3 |
+| https://charts.bitnami.com/bitnami | redis | 24.1.2 |
 | https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/ | nfs-server-provisioner | 1.6.0 |
 
 ## Values
@@ -65,7 +65,7 @@ Kubernetes: `>=1.24.0-0`
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"` | Image repository |
 | image.tag | string | `""` | Image tag. Defaults to Chart.appVersion if not specified. For production, always specify a concrete version (e.g., "rel2021.11.04") See https://docs.polytomic.com/changelog for available versions |
-| imagePullSecrets | list | `[]` | Reference to one or more secrets to be used when pulling images |
+| imagePullSecrets | list | `[]` | Reference to one or more secrets to be used when pulling images Used both for chart-managed pods and passed to Polytomic for dynamically created job pods Example: imagePullSecrets:   - name: polytomic-ecr |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `"nginx"` | Name of the ingress class to route through this controller |
 | ingress.enabled | bool | `true` |  |
@@ -155,7 +155,6 @@ Kubernetes: `>=1.24.0-0`
 | polytomic.query_workers | int | `10` |  |
 | polytomic.s3.access_key_id | string | `""` | Access key ID |
 | polytomic.s3.operational_bucket | string | `"s3://operations"` |  |
-| polytomic.s3.record_log_bucket | string | `"records"` | Holds record logs for syncs |
 | polytomic.s3.region | string | `"us-east-1"` | S3 region e.g. us-east-1 |
 | polytomic.s3.secret_access_key | string | `""` | Secret access key |
 | polytomic.salesforce_client_id | string | `""` |  |
