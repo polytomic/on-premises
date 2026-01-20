@@ -39,7 +39,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The name of the bucket to create | `string` | `"polytomic-bucket"` | no |
+| <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | Optional: Exact S3 bucket name to use. If not specified, defaults to '<prefix>-operations'. Use this to specify an existing bucket or ensure global uniqueness. | `string` | `""` | no |
 | <a name="input_create_efs"></a> [create\_efs](#input\_create\_efs) | Whether to create an EFS instance | `bool` | `true` | no |
 | <a name="input_create_postgres"></a> [create\_postgres](#input\_create\_postgres) | Whether to create a postgres instance | `bool` | `true` | no |
 | <a name="input_create_redis"></a> [create\_redis](#input\_create\_redis) | Whether to create a redis instance | `bool` | `true` | no |

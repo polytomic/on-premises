@@ -34,7 +34,7 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The name of the bucket to create | `string` | `"polytomic-bucket"` | no |
+| <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The GCS bucket name to use. Must be globally unique. Recommended format: '<company>-polytomic-operations' or similar. | `string` | `"polytomic-operations"` | no |
 | <a name="input_cluster_service_account"></a> [cluster\_service\_account](#input\_cluster\_service\_account) | The service account to use for the cluster | `any` | n/a | yes |
 | <a name="input_create_postgres"></a> [create\_postgres](#input\_create\_postgres) | Whether to create a postgres instance | `bool` | `true` | no |
 | <a name="input_create_redis"></a> [create\_redis](#input\_create\_redis) | Whether to create a redis instance | `bool` | `true` | no |

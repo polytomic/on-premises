@@ -5,6 +5,7 @@ This example demonstrates a complete production-ready Polytomic deployment on AW
 ## Architecture
 
 This example creates:
+
 - **EKS Cluster** with managed node groups
 - **VPC** with public/private subnets across 3 availability zones
 - **RDS PostgreSQL** Multi-AZ database
@@ -41,9 +42,9 @@ cd cluster
 
 # Edit main.tf and update the locals block:
 # - region: Your AWS region
-# - prefix: Resource name prefix
+# - prefix: Resource name prefix (used for all resources)
 # - vpc_azs: Availability zones
-# - polytomic_bucket: S3 bucket name (must be globally unique)
+# - bucket_name: (Optional) Explicit S3 bucket name. Defaults to "${prefix}-operational"
 
 terraform init
 terraform plan
@@ -100,20 +101,23 @@ Key configuration:
 
 ```hcl
 locals {
-  region           = "us-west-2"           # AWS region
-  prefix           = "polytomic"           # Resource name prefix
-  vpc_azs          = ["us-west-2a", ...]   # Availability zones
-  polytomic_bucket = "polytomic"           # S3 bucket name (must be globally unique)
+  region  = "us-west-2"           # AWS region
+  prefix  = "polytomic"           # Resource name prefix (used for cluster, DB, etc.)
+  vpc_azs = ["us-west-2a", ...]   # Availability zones
+
+  # Optional: Uncomment to override default bucket name
+  # bucket_name = "my-company-polytomic-prod"  # Must be globally unique
 }
 ```
 
 Creates:
+
 - EKS 1.24 cluster with t3.small nodes (2-4 nodes)
 - VPC with CIDR 10.0.0.0/16
 - RDS PostgreSQL 14.7 (db.t3.small, Multi-AZ)
 - ElastiCache Redis 6.2 (cache.t2.micro)
 - EFS filesystem
-- S3 bucket with encryption
+- S3 bucket with encryption (defaults to `${prefix}-operations`)
 
 ### App Stage (app/main.tf)
 
@@ -134,6 +138,7 @@ locals {
 ```
 
 Installs:
+
 - AWS Load Balancer Controller
 - EFS CSI Driver
 - IAM roles (IRSA) for S3 access
@@ -154,6 +159,7 @@ terraform output -raw redis_auth_string
 ```
 
 Available outputs:
+
 - `cluster_name` - EKS cluster name
 - `vpc_id` - VPC ID
 - `public_subnets` - Public subnet IDs
@@ -191,6 +197,7 @@ kubectl logs -n polytomic <pod-name>
 ```
 
 Common issues:
+
 - Image pull errors: Verify ECR credentials
 - Database connection: Check security groups
 - EFS mount: Verify EFS CSI driver is running

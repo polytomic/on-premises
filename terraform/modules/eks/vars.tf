@@ -271,6 +271,6 @@ variable "create_efs" {
 
 
 variable "bucket_name" {
-  description = "The name of the bucket to create"
-  default     = "polytomic-bucket"
+  description = "Optional: Exact S3 bucket name to use. If not specified, defaults to '<prefix>-operations'. Use this to specify an existing bucket or ensure global uniqueness."
+  default     = ""
 }
