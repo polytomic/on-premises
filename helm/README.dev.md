@@ -113,7 +113,7 @@ echo "127.0.0.1 polytomic.local" | sudo tee -a /etc/hosts
 Navigate to the chart directory and update dependencies:
 
 ```bash
-cd /Users/nathanyergler/p/on-premises/helm/charts/polytomic
+cd ./helm/charts/polytomic
 
 # Update dependencies
 helm dependency update
@@ -130,22 +130,37 @@ This will download:
 
 ### 2. Configure Image Pull Secrets
 
-The Polytomic image is in a private ECR repository, so create an image pull secret:
+The Polytomic image is in a private ECR repository. You need to create the image pull secret in the same namespace where you'll install the chart.
+
+**Important**: Create this secret in the `polytomic` namespace (or whatever namespace you'll use for installation):
 
 ```bash
-# For AWS ECR
-aws ecr get-login-password --region us-west-2 | \
-  kubectl create secret docker-registry polytomic-ecr \
+# For AWS ECR - get the password and create the secret in the polytomic namespace
+ECR_PASSWORD=$(aws ecr get-login-password --region us-west-2)
+
+kubectl create secret docker-registry polytomic-ecr \
+  --namespace polytomic \
   --docker-server=568237466542.dkr.ecr.us-west-2.amazonaws.com \
   --docker-username=AWS \
-  --docker-password-stdin
+  --docker-password="${ECR_PASSWORD}"
+```
+
+**Note**: If the namespace doesn't exist yet, create it first:
+```bash
+kubectl create namespace polytomic
 ```
 
 ## Testing the Chart
 
 ### 1. Create a Test Values File
 
-Create a minimal values file for local testing:
+Create a minimal values file for local testing. You'll need to replace the placeholder values with your actual credentials:
+
+**Required Configuration Values:**
+- `DEPLOYMENT` and `DEPLOYMENT_KEY`: Provided by Polytomic team with your license
+- `POLYTOMIC_URL`: The base URL where you'll access Polytomic (include port if non-standard)
+- `ROOT_USER`: Your admin email address
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`: (Optional) For Google OAuth authentication
 
 ```bash
 cat > /tmp/polytomic-test-values.yaml <<EOF
@@ -168,14 +183,19 @@ ingress:
 
 polytomic:
   deployment:
-    name: "local-dev"
-    key: "your-deployment-key"
-    api_key: "your-api-key"
+    name: "local-dev"              # DEPLOYMENT - replace with your deployment name
+    key: "your-deployment-key"     # DEPLOYMENT_KEY - replace with your key from Polytomic
+    api_key: ""                    # Optional API key
 
   auth:
-    root_user: admin@example.com
-    url: http://polytomic.local
-    single_player: true
+    root_user: admin@example.com   # ROOT_USER - replace with your email
+    url: http://polytomic.local    # POLYTOMIC_URL - your base URL (include port if non-standard)
+    single_player: true            # Set to false to enable Google OAuth
+    # Uncomment for Google OAuth:
+    # google_client_id: "your-client-id.apps.googleusercontent.com"
+    # google_client_secret: "GOCSPX-your-secret"
+    # methods:
+    #   - google
 
   s3:
     operational_bucket: "s3://test-operations"
@@ -444,11 +464,13 @@ sudo sed -i '/polytomic.local/d' /etc/hosts     # Linux
 ```bash
 # Recreate ECR secret
 kubectl delete secret polytomic-ecr -n polytomic
-aws ecr get-login-password --region us-west-2 | \
-  kubectl create secret docker-registry polytomic-ecr -n polytomic \
+
+ECR_PASSWORD=$(aws ecr get-login-password --region us-west-2)
+
+kubectl create secret docker-registry polytomic-ecr -n polytomic \
   --docker-server=568237466542.dkr.ecr.us-west-2.amazonaws.com \
   --docker-username=AWS \
-  --docker-password-stdin
+  --docker-password="${ECR_PASSWORD}"
 ```
 
 ### Issue: Pods CrashLooping
