@@ -502,119 +502,352 @@ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisione
 - Test connection from a debug pod
 - Verify credentials in secret match PostgreSQL configuration
 
-## Testing on AWS (EKS with External Databases)
+## Testing on AWS (EKS with Terraform Modules)
 
-This section covers testing the Helm chart on AWS EKS with external managed services (RDS PostgreSQL and ElastiCache Redis).
+This section covers testing the Helm chart on AWS EKS using the official Polytomic Terraform modules, which provide a production-ready infrastructure setup.
+
+### Overview
+
+The EKS Terraform modules provide three layers of infrastructure:
+
+1. **eks module**: Provisions EKS cluster, VPC, RDS, Redis, EFS, and S3
+2. **eks-addons module**: Installs AWS Load Balancer Controller, EFS CSI Driver, and IAM roles
+3. **eks-helm module**: Deploys the Polytomic Helm chart with production configuration
+
+This approach is recommended for testing because it:
+
+- Mirrors production deployment patterns
+- Automatically configures all dependencies correctly
+- Validates module compatibility with the Helm chart
+- Provides repeatable, infrastructure-as-code testing
 
 ### Prerequisites
 
 - AWS CLI configured with appropriate credentials
-- `eksctl` installed
-- An existing EKS cluster (or use the terraform examples in `terraform/examples/eks-complete`)
-- RDS PostgreSQL instance
-- ElastiCache Redis cluster
-- EFS filesystem (for shared volume)
+- Terraform installed (v1.0+)
+- kubectl installed
+- Helm installed
+- AWS permissions to create EKS, RDS, ElastiCache, EFS, S3, VPC resources
+- Route53 hosted zone for domain validation (if testing ingress with HTTPS)
 
-### 1. Prepare AWS Resources
+### 1. Prepare AWS Resources with Terraform
 
-If using terraform:
+#### Option A: Using the eks-complete Example (Recommended)
+
+The `terraform/examples/eks-complete` example provides a complete, ready-to-use setup:
 
 ```bash
 cd terraform/examples/eks-complete/cluster
+
+# Create terraform.tfvars with your configuration
+cat > terraform.tfvars <<EOF
+# Update these values for your environment
+prefix = "polytomic-test"
+region = "us-west-2"
+vpc_azs = ["us-west-2a", "us-west-2b", "us-west-2c"]
+bucket_name = "polytomic-test-operations"
+EOF
+
 terraform init
+terraform plan
 terraform apply
 
-# Note the outputs:
+# Note the outputs - you'll need these:
 # - cluster_name
 # - postgres_host
-# - postgres_password
+# - postgres_password (sensitive)
 # - redis_host
+# - redis_port
+# - redis_auth_string (sensitive)
 # - filesystem_id (EFS)
+# - bucket
+# - vpc_id
+# - public_subnets
+# - oidc_provider_arn
 ```
 
-### 2. Configure kubectl for EKS
+**Time**: 15-20 minutes
+
+#### Option B: Using Modules Directly
+
+If you want more control, use the modules directly:
 
 ```bash
-aws eks update-kubeconfig --region us-west-2 --name <cluster-name>
-kubectl get nodes
-```
+mkdir -p polytomic-test/cluster
+cd polytomic-test/cluster
 
-### 3. Install AWS Load Balancer Controller
+# Create main.tf
+cat > main.tf <<'EOF'
+locals {
+  region  = "us-west-2"
+  prefix  = "polytomic-test"
+  vpc_azs = ["us-west-2a", "us-west-2b", "us-west-2c"]
+}
 
-```bash
-# Install using Helm
-helm repo add eks https://aws.github.io/eks-charts
-helm repo update
+provider "aws" {
+  region = local.region
+}
 
-helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
-  -n kube-system \
-  --set clusterName=<cluster-name> \
-  --set serviceAccount.create=false \
-  --set serviceAccount.name=aws-load-balancer-controller
-```
+module "eks" {
+  source = "../../terraform/modules/eks"
 
-### 4. Install EFS CSI Driver
+  prefix      = local.prefix
+  region      = local.region
+  vpc_azs     = local.vpc_azs
+  bucket_name = "${local.prefix}-operations"
 
-```bash
-# Install using Helm
-helm repo add aws-efs-csi-driver https://kubernetes-sigs.github.io/aws-efs-csi-driver/
-helm repo update
+  # Use smaller instances for testing
+  database_instance_class = "db.t3.small"
+  database_allocated_storage = 20
+  redis_instance_type = "cache.t3.micro"
+  instance_type = "t3.medium"
+  min_size = 2
+  max_size = 4
+  desired_size = 2
 
-helm install aws-efs-csi-driver aws-efs-csi-driver/aws-efs-csi-driver \
-  -n kube-system \
-  --set controller.serviceAccount.create=false \
-  --set controller.serviceAccount.name=efs-csi-controller-sa
-```
+  tags = {
+    Environment = "test"
+    Purpose     = "helm-chart-testing"
+  }
+}
 
-### 5. Create EFS Storage Class
-
-```bash
-cat <<EOF | kubectl apply -f -
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: efs-sc
-provisioner: efs.csi.aws.com
-parameters:
-  provisioningMode: efs-ap
-  fileSystemId: fs-<your-efs-id>
-  directoryPerms: "700"
+output "cluster_name" { value = module.eks.cluster_name }
+output "vpc_id" { value = module.eks.vpc_id }
+output "public_subnets" { value = module.eks.public_subnets }
+output "oidc_provider_arn" { value = module.eks.oidc_provider_arn }
+output "postgres_host" { value = module.eks.postgres_host }
+output "postgres_password" { value = module.eks.postgres_password, sensitive = true }
+output "redis_host" { value = module.eks.redis_host }
+output "redis_port" { value = module.eks.redis_port }
+output "redis_auth_string" { value = module.eks.redis_auth_string, sensitive = true }
+output "filesystem_id" { value = module.eks.filesystem_id }
+output "bucket" { value = module.eks.bucket }
 EOF
+
+terraform init
+terraform apply
 ```
 
-### 6. Create AWS Test Values File
+### 2. Install EKS Add-ons
 
-Create a values file for AWS testing with external databases:
+Before deploying the Helm chart, install the necessary Kubernetes controllers:
 
 ```bash
-cat > /tmp/polytomic-aws-values.yaml <<EOF
+cd ../app  # or create this directory if using custom setup
+
+# Create main.tf for add-ons
+cat > main.tf <<'EOF'
+locals {
+  region = "us-west-2"
+  prefix = "polytomic-test"
+}
+
+data "terraform_remote_state" "eks" {
+  backend = "local"
+  config = {
+    path = "../cluster/terraform.tfstate"
+  }
+}
+
+data "aws_eks_cluster" "cluster" {
+  name = data.terraform_remote_state.eks.outputs.cluster_name
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name = data.terraform_remote_state.eks.outputs.cluster_name
+}
+
+provider "aws" {
+  region = local.region
+}
+
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.cluster.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = data.aws_eks_cluster.cluster.endpoint
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+    token                  = data.aws_eks_cluster_auth.cluster.token
+  }
+}
+
+module "addons" {
+  source = "../../terraform/modules/eks-addons"
+
+  prefix            = local.prefix
+  region            = local.region
+  cluster_name      = data.terraform_remote_state.eks.outputs.cluster_name
+  vpc_id            = data.terraform_remote_state.eks.outputs.vpc_id
+  oidc_provider_arn = data.terraform_remote_state.eks.outputs.oidc_provider_arn
+  efs_id            = data.terraform_remote_state.eks.outputs.filesystem_id
+}
+
+output "polytomic_role_arn" {
+  value = module.addons.polytomic_role_arn
+}
+EOF
+
+terraform init
+terraform apply
+```
+
+**Time**: 3-5 minutes
+
+This installs:
+
+- AWS Load Balancer Controller (for ALB ingress)
+- EFS CSI Driver (for shared volume support)
+- IAM roles with proper IRSA configuration
+
+### 3. Configure kubectl for EKS
+
+```bash
+aws eks update-kubeconfig --region us-west-2 --name polytomic-test-cluster
+kubectl get nodes
+
+# Verify add-ons are running
+kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
+kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-efs-csi-driver
+```
+
+### 4. Deploy Using eks-helm Module (Automated)
+
+The `eks-helm` module provides the easiest way to test the Helm chart with proper configuration:
+
+```bash
+# Add to your app/main.tf
+cat >> main.tf <<'EOF'
+
+# You'll need these values - update accordingly
+locals {
+  url                            = "polytomic-test.example.com"  # Your domain
+  domain                         = "example.com"                 # Your Route53 zone
+  polytomic_deployment           = "test-deployment"             # From Polytomic team
+  polytomic_deployment_key       = "test-key"                    # From Polytomic team
+  polytomic_api_key              = ""                            # Optional
+  polytomic_image                = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"
+  polytomic_image_tag            = "latest"                      # Use specific version in production
+  polytomic_root_user            = "admin@example.com"
+  polytomic_google_client_id     = "your-google-client-id"
+  polytomic_google_client_secret = "your-google-client-secret"
+}
+
+# Create ACM certificate
+resource "aws_acm_certificate" "cert" {
+  domain_name       = local.url
+  validation_method = "DNS"
+}
+
+data "aws_route53_zone" "zone" {
+  name = local.domain
+}
+
+resource "aws_route53_record" "cert_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = data.aws_route53_zone.zone.zone_id
+}
+
+resource "aws_acm_certificate_validation" "validation" {
+  certificate_arn         = aws_acm_certificate.cert.arn
+  validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
+}
+
+# Deploy Polytomic with eks-helm module
+module "eks_helm" {
+  source = "../../terraform/modules/eks-helm"
+
+  certificate_arn                    = aws_acm_certificate.cert.arn
+  subnets                            = join(",", data.terraform_remote_state.eks.outputs.public_subnets)
+  polytomic_url                      = local.url
+  polytomic_deployment               = local.polytomic_deployment
+  polytomic_deployment_key           = local.polytomic_deployment_key
+  polytomic_api_key                  = local.polytomic_api_key
+  polytomic_image                    = local.polytomic_image
+  polytomic_image_tag                = local.polytomic_image_tag
+  polytomic_root_user                = local.polytomic_root_user
+  redis_host                         = data.terraform_remote_state.eks.outputs.redis_host
+  redis_port                         = data.terraform_remote_state.eks.outputs.redis_port
+  redis_password                     = data.terraform_remote_state.eks.outputs.redis_auth_string
+  postgres_host                      = data.terraform_remote_state.eks.outputs.postgres_host
+  postgres_password                  = data.terraform_remote_state.eks.outputs.postgres_password
+  polytomic_google_client_id         = local.polytomic_google_client_id
+  polytomic_google_client_secret     = local.polytomic_google_client_secret
+  polytomic_bucket                   = data.terraform_remote_state.eks.outputs.bucket
+  polytomic_bucket_region            = local.region
+  efs_id                             = data.terraform_remote_state.eks.outputs.filesystem_id
+  polytomic_service_account_role_arn = module.addons.polytomic_role_arn
+
+  depends_on = [
+    module.addons,
+    aws_acm_certificate_validation.validation
+  ]
+}
+EOF
+
+terraform apply
+```
+
+**Time**: 5-10 minutes
+
+This automatically:
+
+- Deploys the Polytomic Helm chart with v1.0.0 configuration
+- Configures external PostgreSQL and Redis
+- Sets up EFS shared volume with static provisioning
+- Configures ALB ingress with HTTPS
+- Applies production-ready resource limits and health probes
+
+### 5. Manual Helm Installation (Alternative)
+
+If you want to test Helm chart changes directly without using the eks-helm module:
+
+#### a. Create Test Values File
+
+Extract Terraform outputs and create a values file:
+
+```bash
+# Get values from Terraform
+cd ../app
+CLUSTER_NAME=$(terraform output -raw cluster_name 2>/dev/null || terraform output cluster_name)
+POSTGRES_HOST=$(cd ../cluster && terraform output -raw postgres_host)
+POSTGRES_PASSWORD=$(cd ../cluster && terraform output -raw postgres_password)
+REDIS_HOST=$(cd ../cluster && terraform output -raw redis_host)
+REDIS_PORT=$(cd ../cluster && terraform output -raw redis_port)
+REDIS_PASSWORD=$(cd ../cluster && terraform output -raw redis_auth_string)
+EFS_ID=$(cd ../cluster && terraform output -raw filesystem_id)
+BUCKET=$(cd ../cluster && terraform output -raw bucket)
+ROLE_ARN=$(terraform output -raw polytomic_role_arn)
+
+# Create values file
+cat > /tmp/polytomic-test-eks.yaml <<EOF
 image:
   repository: 568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem
-  tag: "latest"
-
-ingress:
-  enabled: true
-  className: alb
-  annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:ACCOUNT:certificate/CERT_ID
-  hosts:
-    - host: polytomic.example.com
-      paths:
-        - path: /
-          pathType: Prefix
+  tag: "latest"  # Use specific version in production
 
 polytomic:
   deployment:
-    name: "aws-test"
-    key: "your-deployment-key"
-    api_key: "your-api-key"
+    name: "test-deployment"          # Your deployment name
+    key: "test-key"                  # Your deployment key
+    api_key: ""                      # Optional API key
 
   auth:
-    root_user: admin@example.com
-    url: https://polytomic.example.com
+    root_user: admin@example.com     # Update with your email
+    url: https://polytomic-test.example.com  # Your domain
     single_player: false
     google_client_id: "your-google-client-id"
     google_client_secret: "your-google-client-secret"
@@ -622,8 +855,8 @@ polytomic:
       - google
 
   s3:
-    operational_bucket: "s3://polytomic-operations"
-    record_log_bucket: "polytomic-records"
+    operational_bucket: "s3://\${BUCKET}"
+    record_log_bucket: "\${BUCKET}"
     region: us-west-2
 
   sharedVolume:
@@ -632,31 +865,32 @@ polytomic:
     size: 100Gi
     static:
       driver: efs.csi.aws.com
-      volumeHandle: fs-<your-efs-id>
+      volumeHandle: \${EFS_ID}
 
-# Disable embedded databases
+# Disable embedded databases - use external managed services
 postgresql:
   enabled: false
 
 redis:
   enabled: false
 
-# Configure external databases
+# Configure external PostgreSQL (RDS)
 externalPostgresql:
-  host: "polytomic.abc123.us-west-2.rds.amazonaws.com"
+  host: "\${POSTGRES_HOST}"
   port: 5432
   username: polytomic
-  password: "YOUR_DB_PASSWORD"
+  password: "\${POSTGRES_PASSWORD}"
   database: polytomic
   ssl: true
   sslMode: require
   poolSize: "15"
   autoMigrate: true
 
+# Configure external Redis (ElastiCache)
 externalRedis:
-  host: "polytomic.xyz789.0001.usw2.cache.amazonaws.com"
-  port: 6379
-  password: "YOUR_REDIS_PASSWORD"
+  host: "\${REDIS_HOST}"
+  port: \${REDIS_PORT}
+  password: "\${REDIS_PASSWORD}"
   ssl: false
 
 nfs-server-provisioner:
@@ -665,47 +899,88 @@ nfs-server-provisioner:
 minio:
   enabled: false
 
-# Production-ready settings
+# Reduce resources for testing (increase for production)
 web:
-  replicaCount: 2
-  autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 10
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
 
 worker:
-  replicaCount: 2
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
 
 sync:
-  replicaCount: 2
-  autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 10
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
 
-# Configure service account for IRSA (IAM Roles for Service Accounts)
+# Configure service account for IRSA
 serviceAccount:
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT:role/polytomic-role
+    eks.amazonaws.com/role-arn: \${ROLE_ARN}
+    eks.amazonaws.com/sts-regional-endpoints: "true"
 EOF
 ```
 
-### 7. Install on EKS
+#### b. Install the Chart
 
 ```bash
-# Create namespace
-kubectl create namespace polytomic
+# Navigate to helm directory
+cd ../../helm
+
+# Update chart dependencies
+cd charts/polytomic
+helm dependency update
+cd ../..
 
 # Install the chart
 helm install polytomic charts/polytomic \
-  -f /tmp/polytomic-aws-values.yaml \
+  -f /tmp/polytomic-test-eks.yaml \
+  --create-namespace \
   --namespace polytomic
 
 # Monitor installation
 kubectl get pods -n polytomic -w
 ```
 
-### 8. Verify AWS Integration
+**Time**: 2-3 minutes for pods to start
+
+#### c. Verify Installation
+
+```bash
+# Check all pods are running
+kubectl get pods -n polytomic
+
+# Expected output:
+# NAME                              READY   STATUS    RESTARTS   AGE
+# polytomic-web-xxxxxxxxxx-xxxxx    1/1     Running   0          2m
+# polytomic-worker-xxxxxxxxx-xxxxx  1/1     Running   0          2m
+# polytomic-sync-xxxxxxxxxx-xxxxx   1/1     Running   0          2m
+
+# Check services and ingress
+kubectl get svc,ingress -n polytomic
+
+# View logs
+kubectl logs -n polytomic -l app.kubernetes.io/component=web --tail=50
+```
+
+### 6. Verify AWS Integration
 
 ```bash
 # Check pods are running
@@ -727,7 +1002,34 @@ kubectl exec -it -n polytomic deployment/polytomic-worker -- \
 kubectl get ingress -n polytomic
 ```
 
-### 9. Testing External Database Failover
+### 7. Testing Helm Chart Changes
+
+When testing Helm chart modifications:
+
+```bash
+# Make changes to the chart
+cd helm/charts/polytomic
+# Edit templates or values.yaml
+
+# Update dependencies if Chart.yaml changed
+helm dependency update
+
+# Test template rendering
+helm template polytomic . -f /tmp/polytomic-test-eks.yaml --debug
+
+# Upgrade the release
+helm upgrade polytomic . \
+  -f /tmp/polytomic-test-eks.yaml \
+  --namespace polytomic
+
+# Watch pods restart
+kubectl get pods -n polytomic -w
+
+# Check for issues
+kubectl get events -n polytomic --sort-by='.lastTimestamp' | head -20
+```
+
+### 8. Testing External Database Failover
 
 Test database resilience:
 
@@ -741,7 +1043,7 @@ aws rds reboot-db-instance \
 kubectl logs -n polytomic -l app.kubernetes.io/component=web -f
 ```
 
-### 10. AWS-Specific Debugging
+### 9. AWS-Specific Debugging
 
 ```bash
 # Check IAM role permissions
@@ -762,22 +1064,51 @@ kubectl run -it --rm efs-test --image=busybox -n polytomic \
   --overrides='{"spec":{"containers":[{"name":"efs-test","image":"busybox","command":["sh"],"volumeMounts":[{"name":"efs","mountPath":"/efs"}]}],"volumes":[{"name":"efs","persistentVolumeClaim":{"claimName":"polytomic-shared"}}]}}'
 ```
 
-### 11. Clean Up AWS Resources
+### 10. Clean Up AWS Resources
+
+**Important**: Always clean up in the correct order to avoid orphaned resources.
+
+#### If Using Terraform Modules:
 
 ```bash
-# Uninstall chart
+# 1. Destroy application and add-ons
+cd app
+terraform destroy
+
+# 2. Destroy cluster infrastructure
+cd ../cluster
+terraform destroy
+```
+
+#### If Using Manual Helm Installation:
+
+```bash
+# 1. Uninstall Helm chart
 helm uninstall polytomic -n polytomic
 
-# Delete namespace
+# 2. Delete namespace
 kubectl delete namespace polytomic
 
-# Clean up AWS resources (if using terraform)
-cd terraform/examples/eks-complete/app
+# 3. Destroy add-ons and infrastructure
+cd app
 terraform destroy
 
 cd ../cluster
 terraform destroy
 ```
+
+**Estimated time**: 10-15 minutes
+
+**Cost Savings**: Always destroy test environments when not in use to avoid unnecessary AWS charges.
+
+### Terraform Module Documentation
+
+For comprehensive information about the EKS Terraform modules:
+
+- [EKS Modules Usage Guide](../../terraform/modules/eks/README-USAGE.md) - Complete deployment guide
+- [eks module README](../../terraform/modules/eks/README.md) - Infrastructure module documentation
+- [eks-addons module README](../../terraform/modules/eks-addons/README.md) - Add-ons module documentation
+- [eks-helm module README](../../terraform/modules/eks-helm/README.md) - Helm deployment module documentation
 
 ## Advanced Testing
 
