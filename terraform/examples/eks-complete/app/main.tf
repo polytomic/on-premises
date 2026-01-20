@@ -1,8 +1,14 @@
 locals {
-  region                         = "us-west-2"
-  prefix                         = "polytomic"
-  url                            = "polytomic.${local.domain}"
-  domain                         = "example.com"
+  region = "us-east-2"
+  prefix = "polytomic-testing"
+
+  # The domain/hostname where Polytomic will be accessed
+  # This is used for:
+  #   1. Kubernetes Ingress host configuration
+  #   2. Polytomic's internal URL settings (OAuth redirects, etc.)
+  # After deployment, create a DNS CNAME record pointing this domain to the ALB hostname
+  url = "app.polytomic-staging.net"
+
   polytomic_deployment           = "deployment"
   polytomic_deployment_key       = "key"
   polytomic_image                = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"
@@ -51,7 +57,7 @@ provider "helm" {
 
 
 module "addons" {
-  source = "github.com/polytomic/on-premises/terraform/modules/eks-addons"
+  source = "../../../modules/eks-addons"
 
   prefix            = local.prefix
   region            = local.region
@@ -63,7 +69,7 @@ module "addons" {
 }
 
 module "eks_helm" {
-  source = "github.com/polytomic/on-premises/terraform/modules/eks-helm"
+  source = "../../../modules/eks-helm"
 
   # Certificate ARN is optional. When omitted, the ALB will listen on HTTP (port 80) only.
   # Options for handling TLS:
