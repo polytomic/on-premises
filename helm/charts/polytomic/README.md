@@ -2,7 +2,7 @@
 
 Polytomic helm chart for kubernetes
 
-![Version: 0.0.17](https://img.shields.io/badge/Version-0.0.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
+![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 ## Installing the Chart
 
@@ -16,10 +16,12 @@ helm install helm/charts/polytomic polytomic
 
 ## Requirements
 
+Kubernetes: `>=1.34.0-0`
+
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | postgresql | 12.1.9 |
-| https://charts.bitnami.com/bitnami | redis | 17.4.3 |
+| https://charts.bitnami.com/bitnami | postgresql | 18.2.3 |
+| https://charts.bitnami.com/bitnami | redis | 24.1.2 |
 | https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/ | nfs-server-provisioner | 1.6.0 |
 
 ## Values
@@ -27,18 +29,57 @@ helm install helm/charts/polytomic polytomic
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | dev.affinity | object | `{}` |  |
+| dev.enabled | bool | `false` |  |
 | dev.nodeSelector | object | `{}` |  |
 | dev.podAnnotations | object | `{}` |  |
-| dev.podSecurityContext | object | `{}` |  |
-| dev.resources | object | `{}` |  |
-| dev.securityContext | object | `{}` |  |
+| dev.podSecurityContext.fsGroup | int | `2000` |  |
+| dev.resources.limits.cpu | string | `"500m"` |  |
+| dev.resources.limits.memory | string | `"1Gi"` |  |
+| dev.resources.requests.cpu | string | `"100m"` |  |
+| dev.resources.requests.memory | string | `"256Mi"` |  |
+| dev.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| dev.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| dev.securityContext.runAsNonRoot | bool | `false` |  |
+| dev.securityContext.runAsUser | int | `0` |  |
 | dev.tolerations | list | `[]` |  |
 | development | bool | `false` |  |
+| externalPostgresql.autoMigrate | bool | `true` | Auto-run database migrations on startup |
+| externalPostgresql.database | string | `"polytomic"` | Database name |
+| externalPostgresql.existingSecret | object | `{"key":"postgresql-password","name":""}` | Use existing secret for password (optional) If set, password field above is ignored |
+| externalPostgresql.host | string | `""` | External PostgreSQL host (required if postgresql.enabled=false) |
+| externalPostgresql.idleTimeout | string | `"5s"` | Idle timeout |
+| externalPostgresql.password | string | `""` | Database password (consider using existing secret) |
+| externalPostgresql.poolSize | string | `"15"` | Connection pool size |
+| externalPostgresql.port | int | `5432` | External PostgreSQL port |
+| externalPostgresql.ssl | bool | `false` | Enable SSL/TLS |
+| externalPostgresql.sslMode | string | `"disable"` | SSL mode (disable, require, verify-ca, verify-full) |
+| externalPostgresql.username | string | `"polytomic"` | Database username |
+| externalRedis.existingSecret | object | `{"key":"redis-password","name":""}` | Use existing secret for password (optional) If set, password field above is ignored |
+| externalRedis.host | string | `""` | External Redis host (required if redis.enabled=false) |
+| externalRedis.password | string | `""` | Redis password (consider using existing secret) |
+| externalRedis.poolSize | int | `0` | Connection pool size (0 = unlimited) |
+| externalRedis.port | int | `6379` | External Redis port |
+| externalRedis.ssl | bool | `false` | Enable SSL/TLS |
 | fullnameOverride | string | `""` |  |
+| healthProbes | object | `{"livenessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5},"readinessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5}}` | Global health probe configuration |
+| healthcheck.affinity | object | `{}` |  |
+| healthcheck.nodeSelector | object | `{}` |  |
+| healthcheck.podAnnotations | object | `{}` |  |
+| healthcheck.podSecurityContext.fsGroup | int | `2000` |  |
+| healthcheck.resources.limits.cpu | string | `"100m"` |  |
+| healthcheck.resources.limits.memory | string | `"256Mi"` |  |
+| healthcheck.resources.requests.cpu | string | `"50m"` |  |
+| healthcheck.resources.requests.memory | string | `"128Mi"` |  |
+| healthcheck.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| healthcheck.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| healthcheck.securityContext.runAsNonRoot | bool | `false` |  |
+| healthcheck.securityContext.runAsUser | int | `0` |  |
+| healthcheck.sidecarContainers | list | `[]` |  |
+| healthcheck.tolerations | list | `[]` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"` | Image repository |
-| image.tag | string | `"latest"` | Overrides the image tag whose default is the chart appVersion. |
-| imagePullSecrets | list | `[]` | Reference to one or more secrets to be used when pulling images |
+| image.tag | string | `""` | Image tag. Defaults to Chart.appVersion if not specified. For production, always specify a concrete version (e.g., "rel2021.11.04") See https://docs.polytomic.com/changelog for available versions |
+| imagePullSecrets | list | `[]` | Reference to one or more secrets to be used when pulling images Used both for chart-managed pods and passed to Polytomic for dynamically created job pods Example: imagePullSecrets:   - name: polytomic-ecr |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `"nginx"` | Name of the ingress class to route through this controller |
 | ingress.enabled | bool | `true` |  |
@@ -46,21 +87,45 @@ helm install helm/charts/polytomic polytomic
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | ingress.tls | list | `[]` |  |
+| jobworker.affinity | object | `{}` |  |
+| jobworker.nodeSelector | object | `{}` |  |
+| jobworker.podAnnotations | object | `{}` |  |
+| jobworker.podSecurityContext.fsGroup | int | `2000` |  |
+| jobworker.resources.limits.cpu | string | `"1000m"` |  |
+| jobworker.resources.limits.memory | string | `"2Gi"` |  |
+| jobworker.resources.requests.cpu | string | `"500m"` |  |
+| jobworker.resources.requests.memory | string | `"1Gi"` |  |
+| jobworker.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| jobworker.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| jobworker.securityContext.runAsNonRoot | bool | `false` |  |
+| jobworker.securityContext.runAsUser | int | `0` |  |
+| jobworker.sidecarContainers | list | `[]` |  |
+| jobworker.tolerations | list | `[]` |  |
 | minio.enabled | bool | `false` |  |
 | minio.mode | string | `"standalone"` |  |
 | minio.persistence.size | string | `"50Mi"` |  |
 | minio.rootPassword | string | `"polytomic"` |  |
 | minio.rootUser | string | `"polytomic"` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.allowExternalHttps | bool | `true` |  |
+| networkPolicy.enabled | bool | `false` |  |
+| networkPolicy.externalHttpsCidrs | list | `[]` |  |
+| networkPolicy.ingressNamespaceSelector.name | string | `"ingress-nginx"` |  |
+| networkPolicy.postgresql.namespaceSelector."kubernetes.io/metadata.name" | string | `"default"` |  |
+| networkPolicy.postgresql.podSelector."app.kubernetes.io/name" | string | `"postgresql"` |  |
+| networkPolicy.redis.namespaceSelector."kubernetes.io/metadata.name" | string | `"default"` |  |
+| networkPolicy.redis.podSelector."app.kubernetes.io/name" | string | `"redis"` |  |
 | nfs-server-provisioner.enabled | bool | `true` |  |
-| nfs-server-provisioner.image.repository | string | `"k8s.gcr.io/sig-storage/nfs-provisioner"` |  |
-| nfs-server-provisioner.image.tag | string | `"v3.0.1"` |  |
+| nfs-server-provisioner.image.repository | string | `"registry.k8s.io/sig-storage/nfs-provisioner"` |  |
+| nfs-server-provisioner.image.tag | string | `"v4.0.8"` |  |
 | nfs-server-provisioner.persistence.enabled | bool | `true` |  |
 | nfs-server-provisioner.storageClass.allowVolumeExpansion | bool | `true` |  |
 | nfs-server-provisioner.storageClass.create | bool | `true` |  |
 | nfs-server-provisioner.storageClass.defaultClass | bool | `false` |  |
 | nfs-server-provisioner.storageClass.name | string | `"nfs"` |  |
 | nfs-server-provisioner.storageClass.parameters | object | `{}` |  |
+| podDisruptionBudget.enabled | bool | `false` |  |
+| podDisruptionBudget.minAvailable | int | `1` |  |
 | polytomic.airtable_client_secret | string | `""` |  |
 | polytomic.asana_client_id | string | `""` |  |
 | polytomic.asana_client_secret | string | `""` |  |
@@ -75,10 +140,6 @@ helm install helm/charts/polytomic polytomic
 | polytomic.bingads_client_id | string | `""` |  |
 | polytomic.bingads_client_secret | string | `""` |  |
 | polytomic.bingads_developer_token | string | `""` |  |
-| polytomic.cache.enabled | bool | `true` |  |
-| polytomic.cache.size | string | `"20Mi"` |  |
-| polytomic.cache.storage_class | string | `""` |  |
-| polytomic.cache.volume_name | string | `"polytomic-cache"` |  |
 | polytomic.ccloud_api_key | string | `""` |  |
 | polytomic.ccloud_api_secret | string | `""` |  |
 | polytomic.default_org_features | list | `[]` |  |
@@ -119,28 +180,24 @@ helm install helm/charts/polytomic polytomic
 | polytomic.outreach_client_secret | string | `""` |  |
 | polytomic.pardot_client_id | string | `""` |  |
 | polytomic.pardot_client_secret | string | `""` |  |
-| polytomic.postgres.auto_migrate | bool | `true` |  |
-| polytomic.postgres.database | string | `"polytomic"` | Database name |
-| polytomic.postgres.host | string | `"polytomic-postgresql"` | Host address |
-| polytomic.postgres.password | string | `"polytomic"` | Password for given user |
-| polytomic.postgres.port | int | `5432` | Port number |
-| polytomic.postgres.ssl | bool | `false` | enable/disable SSL |
-| polytomic.postgres.username | string | `"polytomic"` | Postgres user name |
 | polytomic.query_workers | int | `10` |  |
-| polytomic.redis.host | string | `"polytomic-redis-master"` |  |
-| polytomic.redis.password | string | `"polytomic"` |  |
-| polytomic.redis.port | int | `6379` |  |
-| polytomic.redis.ssl | bool | `false` |  |
-| polytomic.redis.username | string | `nil` |  |
 | polytomic.s3.access_key_id | string | `""` | Access key ID |
-| polytomic.s3.log_bucket | string | `""` | The bucket stores log files containing records involved in a sync execution |
 | polytomic.s3.operational_bucket | string | `"s3://operations"` |  |
-| polytomic.s3.query_bucket | string | `""` | The bucket is used to store query exports from Polytomic's SQL Runner. |
-| polytomic.s3.record_log_bucket | string | `"records"` | Holds record logs for syncs |
 | polytomic.s3.region | string | `"us-east-1"` | S3 region e.g. us-east-1 |
 | polytomic.s3.secret_access_key | string | `""` | Secret access key |
 | polytomic.salesforce_client_id | string | `""` |  |
 | polytomic.salesforce_client_secret | string | `""` |  |
+| polytomic.sharedVolume.accessModes | list | `["ReadWriteMany"]` | Access modes |
+| polytomic.sharedVolume.dynamic.storageClassName | string | `""` | Storage class name (empty = cluster default) |
+| polytomic.sharedVolume.enabled | bool | `true` | Enable shared volume (if false, uses emptyDir) |
+| polytomic.sharedVolume.mode | string | `"dynamic"` | Provisioning mode: "dynamic" (StorageClass), "static" (pre-existing PV), or "emptyDir" |
+| polytomic.sharedVolume.mountPath | string | `"/var/polytomic"` | Mount path in containers |
+| polytomic.sharedVolume.size | string | `"20Gi"` | Volume size |
+| polytomic.sharedVolume.static.driver | string | `"efs.csi.aws.com"` | CSI driver (e.g., efs.csi.aws.com, nfs.csi.k8s.io) |
+| polytomic.sharedVolume.static.volumeAttributes | object | `{}` | Optional volume attributes for CSI driver |
+| polytomic.sharedVolume.static.volumeHandle | string | `""` | Volume handle (e.g., EFS filesystem ID: fs-12345678) |
+| polytomic.sharedVolume.subPath | string | `""` | Optional subPath within the volume |
+| polytomic.sharedVolume.volumeName | string | `"polytomic-shared"` | Volume name for PV/PVC |
 | polytomic.shipbob_client_id | string | `""` |  |
 | polytomic.shipbob_client_secret | string | `""` |  |
 | polytomic.shopify_client_id | string | `""` |  |
@@ -159,10 +216,42 @@ helm install helm/charts/polytomic polytomic
 | postgresql.auth.password | string | `"polytomic"` |  |
 | postgresql.auth.username | string | `"polytomic"` |  |
 | postgresql.enabled | bool | `true` |  |
+| postgresql.primary.persistence.enabled | bool | `true` |  |
+| postgresql.primary.persistence.size | string | `"8Gi"` |  |
 | redis.architecture | string | `"standalone"` |  |
 | redis.auth.enabled | bool | `true` |  |
 | redis.auth.password | string | `"polytomic"` |  |
 | redis.enabled | bool | `true` |  |
+| redis.master.persistence.enabled | bool | `true` |  |
+| redis.master.persistence.size | string | `"8Gi"` |  |
+| scheduler.affinity | object | `{}` |  |
+| scheduler.nodeSelector | object | `{}` |  |
+| scheduler.podAnnotations | object | `{}` |  |
+| scheduler.podSecurityContext.fsGroup | int | `2000` |  |
+| scheduler.resources.limits.cpu | string | `"500m"` |  |
+| scheduler.resources.limits.memory | string | `"1Gi"` |  |
+| scheduler.resources.requests.cpu | string | `"250m"` |  |
+| scheduler.resources.requests.memory | string | `"512Mi"` |  |
+| scheduler.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| scheduler.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| scheduler.securityContext.runAsNonRoot | bool | `false` |  |
+| scheduler.securityContext.runAsUser | int | `0` |  |
+| scheduler.sidecarContainers | list | `[]` |  |
+| scheduler.tolerations | list | `[]` |  |
+| schemacache.affinity | object | `{}` |  |
+| schemacache.nodeSelector | object | `{}` |  |
+| schemacache.podAnnotations | object | `{}` |  |
+| schemacache.podSecurityContext.fsGroup | int | `2000` |  |
+| schemacache.resources.limits.cpu | string | `"500m"` |  |
+| schemacache.resources.limits.memory | string | `"1Gi"` |  |
+| schemacache.resources.requests.cpu | string | `"250m"` |  |
+| schemacache.resources.requests.memory | string | `"512Mi"` |  |
+| schemacache.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| schemacache.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| schemacache.securityContext.runAsNonRoot | bool | `false` |  |
+| schemacache.securityContext.runAsUser | int | `0` |  |
+| schemacache.sidecarContainers | list | `[]` |  |
+| schemacache.tolerations | list | `[]` |  |
 | secret.name | string | `""` |  |
 | service.port | int | `80` |  |
 | service.type | string | `"ClusterIP"` |  |
@@ -171,44 +260,62 @@ helm install helm/charts/polytomic polytomic
 | serviceAccount.name | string | `""` |  |
 | sync.affinity | object | `{}` |  |
 | sync.autoscaling.enabled | bool | `true` |  |
-| sync.autoscaling.maxReplicas | int | `100` |  |
-| sync.autoscaling.minReplicas | int | `1` |  |
+| sync.autoscaling.maxReplicas | int | `10` |  |
+| sync.autoscaling.minReplicas | int | `2` |  |
 | sync.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | sync.autoscaling.targetMemoryUtilizationPercentage | int | `80` |  |
 | sync.nodeSelector | object | `{}` |  |
 | sync.podAnnotations | object | `{}` |  |
-| sync.podSecurityContext | object | `{}` |  |
-| sync.replicaCount | int | `1` |  |
-| sync.resources | object | `{}` |  |
-| sync.securityContext | object | `{}` |  |
+| sync.podSecurityContext.fsGroup | int | `2000` |  |
+| sync.replicaCount | int | `2` |  |
+| sync.resources.limits.cpu | string | `"1000m"` |  |
+| sync.resources.limits.memory | string | `"2Gi"` |  |
+| sync.resources.requests.cpu | string | `"500m"` |  |
+| sync.resources.requests.memory | string | `"1Gi"` |  |
+| sync.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| sync.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| sync.securityContext.runAsNonRoot | bool | `false` |  |
+| sync.securityContext.runAsUser | int | `0` |  |
 | sync.sidecarContainers | list | `[]` |  |
 | sync.tolerations | list | `[]` |  |
 | web.affinity | object | `{}` |  |
 | web.autoscaling.enabled | bool | `true` |  |
-| web.autoscaling.maxReplicas | int | `100` |  |
-| web.autoscaling.minReplicas | int | `1` |  |
+| web.autoscaling.maxReplicas | int | `10` |  |
+| web.autoscaling.minReplicas | int | `2` |  |
 | web.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | web.autoscaling.targetMemoryUtilizationPercentage | int | `80` |  |
 | web.nodeSelector | object | `{}` |  |
 | web.podAnnotations | object | `{}` |  |
-| web.podSecurityContext | object | `{}` |  |
-| web.replicaCount | int | `1` |  |
-| web.resources | object | `{}` |  |
-| web.securityContext | object | `{}` |  |
+| web.podSecurityContext.fsGroup | int | `2000` |  |
+| web.replicaCount | int | `2` |  |
+| web.resources.limits.cpu | string | `"1000m"` |  |
+| web.resources.limits.memory | string | `"2Gi"` |  |
+| web.resources.requests.cpu | string | `"500m"` |  |
+| web.resources.requests.memory | string | `"1Gi"` |  |
+| web.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| web.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| web.securityContext.runAsNonRoot | bool | `false` |  |
+| web.securityContext.runAsUser | int | `0` |  |
 | web.sidecarContainers | string | `nil` |  |
 | web.tolerations | list | `[]` |  |
 | worker.affinity | object | `{}` |  |
-| worker.autoscaling.enabled | bool | `true` |  |
+| worker.autoscaling.enabled | bool | `false` |  |
 | worker.autoscaling.maxReplicas | int | `100` |  |
 | worker.autoscaling.minReplicas | int | `1` |  |
 | worker.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | worker.autoscaling.targetMemoryUtilizationPercentage | int | `80` |  |
 | worker.nodeSelector | object | `{}` |  |
 | worker.podAnnotations | object | `{}` |  |
-| worker.podSecurityContext | object | `{}` |  |
-| worker.replicaCount | int | `1` |  |
-| worker.resources | object | `{}` |  |
-| worker.securityContext | object | `{}` |  |
+| worker.podSecurityContext.fsGroup | int | `2000` |  |
+| worker.replicaCount | int | `2` |  |
+| worker.resources.limits.cpu | string | `"500m"` |  |
+| worker.resources.limits.memory | string | `"1Gi"` |  |
+| worker.resources.requests.cpu | string | `"250m"` |  |
+| worker.resources.requests.memory | string | `"512Mi"` |  |
+| worker.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| worker.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| worker.securityContext.runAsNonRoot | bool | `false` |  |
+| worker.securityContext.runAsUser | int | `0` |  |
 | worker.sidecarContainers | list | `[]` |  |
 | worker.tolerations | list | `[]` |  |
 

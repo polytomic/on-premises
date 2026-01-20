@@ -57,7 +57,6 @@ Web Selector labels
 {{- define "polytomic.web-selectorLabels" -}}
 app.kubernetes.io/name: {{ include "polytomic.name" . }}-web
 app.kubernetes.io/instance: {{ .Release.Name }}
-vector.dev/include: "true"
 {{- end }}
 
 {{/*
@@ -66,7 +65,6 @@ Sync Selector labels
 {{- define "polytomic.sync-selectorLabels" -}}
 app.kubernetes.io/name: {{ include "polytomic.name" . }}-sync
 app.kubernetes.io/instance: {{ .Release.Name }}
-vector.dev/include: "true"
 {{- end }}
 
 
@@ -76,7 +74,6 @@ Worker Selector labels
 {{- define "polytomic.worker-selectorLabels" -}}
 app.kubernetes.io/name: {{ include "polytomic.name" . }}-worker
 app.kubernetes.io/instance: {{ .Release.Name }}
-vector.dev/include: "true"
 {{- end }}
 
 
@@ -85,6 +82,38 @@ Development Selector labels
 */}}
 {{- define "polytomic.dev-selectorLabels" -}}
 app.kubernetes.io/name: {{ include "polytomic.name" . }}-dev
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Schemacache Selector labels
+*/}}
+{{- define "polytomic.schemacache-selectorLabels" -}}
+app.kubernetes.io/name: {{ include "polytomic.name" . }}-schemacache
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Scheduler Selector labels
+*/}}
+{{- define "polytomic.scheduler-selectorLabels" -}}
+app.kubernetes.io/name: {{ include "polytomic.name" . }}-scheduler
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Jobworker Selector labels
+*/}}
+{{- define "polytomic.jobworker-selectorLabels" -}}
+app.kubernetes.io/name: {{ include "polytomic.name" . }}-jobworker
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Healthcheck Selector labels
+*/}}
+{{- define "polytomic.healthcheck-selectorLabels" -}}
+app.kubernetes.io/name: {{ include "polytomic.name" . }}-healthcheck
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
@@ -103,6 +132,192 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
+Get PostgreSQL host
+*/}}
+{{- define "polytomic.postgresql.host" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- printf "%s-postgresql" (include "polytomic.fullname" .) -}}
+{{- else -}}
+{{- .Values.externalPostgresql.host -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get PostgreSQL port
+*/}}
+{{- define "polytomic.postgresql.port" -}}
+{{- if .Values.postgresql.enabled -}}
+5432
+{{- else -}}
+{{- .Values.externalPostgresql.port -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get PostgreSQL username
+*/}}
+{{- define "polytomic.postgresql.username" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- .Values.postgresql.auth.username | default "polytomic" -}}
+{{- else -}}
+{{- .Values.externalPostgresql.username -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get PostgreSQL database name
+*/}}
+{{- define "polytomic.postgresql.database" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- .Values.postgresql.auth.database | default "polytomic" -}}
+{{- else -}}
+{{- .Values.externalPostgresql.database -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get PostgreSQL password secret name
+*/}}
+{{- define "polytomic.postgresql.secretName" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- printf "%s-postgresql" (include "polytomic.fullname" .) -}}
+{{- else if .Values.externalPostgresql.existingSecret.name -}}
+{{- .Values.externalPostgresql.existingSecret.name -}}
+{{- else -}}
+{{- include "polytomic.fullname" . -}}-config
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get PostgreSQL password secret key
+*/}}
+{{- define "polytomic.postgresql.secretKey" -}}
+{{- if .Values.postgresql.enabled -}}
+password
+{{- else if .Values.externalPostgresql.existingSecret.name -}}
+{{- .Values.externalPostgresql.existingSecret.key -}}
+{{- else -}}
+DATABASE_PASSWORD
+{{- end -}}
+{{- end -}}
+
+{{/*
+Build PostgreSQL connection URL
+*/}}
+{{- define "polytomic.postgresql.url" -}}
+{{- $sslMode := "disable" -}}
+{{- $password := "" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- $sslMode = "disable" -}}
+{{- $password = .Values.postgresql.auth.password | default "polytomic" -}}
+{{- printf "postgres://%s:%s@%s:%s/%s?sslmode=%s"
+    (include "polytomic.postgresql.username" .)
+    $password
+    (include "polytomic.postgresql.host" .)
+    (include "polytomic.postgresql.port" .)
+    (include "polytomic.postgresql.database" .)
+    $sslMode -}}
+{{- else -}}
+{{- if .Values.externalPostgresql.sslMode -}}
+{{- $sslMode = .Values.externalPostgresql.sslMode -}}
+{{- else if .Values.externalPostgresql.ssl -}}
+{{- $sslMode = "require" -}}
+{{- end -}}
+{{- printf "postgres://%s:${DATABASE_PASSWORD}@%s:%s/%s?sslmode=%s"
+    (include "polytomic.postgresql.username" .)
+    (include "polytomic.postgresql.host" .)
+    (include "polytomic.postgresql.port" .)
+    (include "polytomic.postgresql.database" .)
+    $sslMode -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get Redis host
+*/}}
+{{- define "polytomic.redis.host" -}}
+{{- if .Values.redis.enabled -}}
+{{- printf "%s-redis-master" (include "polytomic.fullname" .) -}}
+{{- else -}}
+{{- .Values.externalRedis.host -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get Redis port
+*/}}
+{{- define "polytomic.redis.port" -}}
+{{- if .Values.redis.enabled -}}
+6379
+{{- else -}}
+{{- .Values.externalRedis.port -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get Redis password secret name
+*/}}
+{{- define "polytomic.redis.secretName" -}}
+{{- if .Values.redis.enabled -}}
+{{- printf "%s-redis" (include "polytomic.fullname" .) -}}
+{{- else if .Values.externalRedis.existingSecret.name -}}
+{{- .Values.externalRedis.existingSecret.name -}}
+{{- else -}}
+{{- include "polytomic.fullname" . -}}-config
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get Redis password secret key
+*/}}
+{{- define "polytomic.redis.secretKey" -}}
+{{- if .Values.redis.enabled -}}
+redis-password
+{{- else if .Values.externalRedis.existingSecret.name -}}
+{{- .Values.externalRedis.existingSecret.key -}}
+{{- else -}}
+REDIS_PASSWORD
+{{- end -}}
+{{- end -}}
+
+{{/*
+Build Redis connection URL
+*/}}
+{{- define "polytomic.redis.url" -}}
+{{- $password := "" -}}
+{{- if .Values.redis.enabled -}}
+{{- $password = .Values.redis.auth.password -}}
+{{- if $password -}}
+{{- printf "redis://:%s@%s:%s"
+    $password
+    (include "polytomic.redis.host" .)
+    (include "polytomic.redis.port" .) -}}
+{{- else -}}
+{{- printf "redis://%s:%s"
+    (include "polytomic.redis.host" .)
+    (include "polytomic.redis.port" .) -}}
+{{- end -}}
+{{- else -}}
+{{- $password = .Values.externalRedis.password -}}
+{{- if $password -}}
+{{- if .Values.externalRedis.ssl -}}
+{{- printf "rediss://:${REDIS_PASSWORD}@%s:%s"
+    (include "polytomic.redis.host" .)
+    (include "polytomic.redis.port" .) -}}
+{{- else -}}
+{{- printf "redis://:${REDIS_PASSWORD}@%s:%s"
+    (include "polytomic.redis.host" .)
+    (include "polytomic.redis.port" .) -}}
+{{- end -}}
+{{- else -}}
+{{- printf "redis://%s:%s"
+    (include "polytomic.redis.host" .)
+    (include "polytomic.redis.port" .) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Construct Polytomic Configuration
 */}}
 {{- define "polytomic.config" -}}
@@ -110,29 +325,24 @@ ROOT_USER: {{ .Values.polytomic.auth.root_user | quote }}
 DEPLOYMENT: {{ .Values.polytomic.deployment.name | quote }}
 DEPLOYMENT_KEY: {{ .Values.polytomic.deployment.key | quote }}
 DEPLOYMENT_API_KEY: {{ .Values.polytomic.deployment.api_key | quote }}
-{{ if .Values.polytomic.postgres.ssl -}}
-DATABASE_URL: postgres://{{ .Values.polytomic.postgres.username }}{{- if .Values.polytomic.postgres.password}}:{{ .Values.polytomic.postgres.password }}{{- end}}@{{ .Values.polytomic.postgres.host }}:{{ .Values.polytomic.postgres.port }}/{{ .Values.polytomic.postgres.database }}
-{{- else}}
-DATABASE_URL: postgres://{{ .Values.polytomic.postgres.username }}{{- if .Values.polytomic.postgres.password}}:{{ .Values.polytomic.postgres.password }}{{- end}}@{{ .Values.polytomic.postgres.host }}:{{ .Values.polytomic.postgres.port }}/{{ .Values.polytomic.postgres.database }}?sslmode=disable
+DATABASE_URL: {{ include "polytomic.postgresql.url" . | quote }}
+{{- if not .Values.postgresql.enabled }}
+DATABASE_PASSWORD: {{ .Values.externalPostgresql.password | quote }}
+DATABASE_POOL_SIZE: {{ .Values.externalPostgresql.poolSize | default "15" | quote }}
+DATABASE_IDLE_TIMEOUT: {{ .Values.externalPostgresql.idleTimeout | default "5s" | quote }}
 {{- end }}
-{{ if .Values.polytomic.redis.ssl -}}
-REDIS_URL: rediss://{{- if .Values.polytomic.redis.username}}{{ .Values.polytomic.redis.username }}{{- end}}{{- if .Values.polytomic.redis.password}}:{{ .Values.polytomic.redis.password }}{{- end}}{{- if or .Values.polytomic.redis.username  .Values.polytomic.redis.password}}@{{- end}}{{ .Values.polytomic.redis.host }}:{{ .Values.polytomic.redis.port }}/
-{{- else}}
-REDIS_URL: redis://{{- if .Values.polytomic.redis.username}}{{ .Values.polytomic.redis.username }}{{- end}}{{- if .Values.polytomic.redis.password}}:{{ .Values.polytomic.redis.password }}{{- end}}{{- if or .Values.polytomic.redis.username .Values.polytomic.redis.password}}@{{- end}}{{ .Values.polytomic.redis.host }}:{{ .Values.polytomic.redis.port }}/
+REDIS_URL: {{ include "polytomic.redis.url" . | quote }}
+{{- if not .Values.redis.enabled }}
+REDIS_PASSWORD: {{ .Values.externalRedis.password | quote }}
+REDIS_POOL_SIZE: {{ .Values.externalRedis.poolSize | default "0" | quote }}
 {{- end }}
 POLYTOMIC_URL: {{ .Values.polytomic.auth.url | quote }}
 AUTH_METHODS: {{ join "," .Values.polytomic.auth.methods | quote }}
 GOOGLE_CLIENT_ID: {{ .Values.polytomic.auth.google_client_id | quote }}
 GOOGLE_CLIENT_SECRET: {{ .Values.polytomic.auth.google_client_secret | quote }}
-EXECUTION_LOG_BUCKET: {{ .Values.polytomic.s3.record_log_bucket | quote }}
-EXECUTION_LOG_REGION: {{ if .Values.polytomic.s3.gcs }}"gcs"{{- else }}{{ .Values.polytomic.s3.region | quote }}{{- end}}
 DEFAULT_OPERATIONAL_BUCKET: {{ .Values.polytomic.s3.operational_bucket }}{{- if .Values.polytomic.s3.region }}?region={{ .Values.polytomic.s3.region }}{{- end}}
-RECORD_LOG_BUCKET: {{ .Values.polytomic.s3.record_log_bucket | quote }}
-RECORD_LOG_REGION: {{ .Values.polytomic.s3.region | quote }}
-EXPORT_QUERY_BUCKET: {{ .Values.polytomic.s3.query_bucket | quote }}
-EXPORT_QUERY_REGION: {{ .Values.polytomic.s3.region | quote }}
 LOG_LEVEL: {{ .Values.polytomic.log_level | quote }}
-AUTO_MIGRATE: {{ .Values.polytomic.postgres.auto_migrate | quote }}
+AUTO_MIGRATE: {{ if .Values.postgresql.enabled }}{{ true | quote }}{{ else }}{{ .Values.externalPostgresql.autoMigrate | default true | quote }}{{ end }}
 DEFAULT_ORG_FEATURES: {{ join "," .Values.polytomic.default_org_features | quote }}
 FIELD_CHANGE_TRACKING: {{ .Values.polytomic.field_change_tracking | quote }}
 ENV: {{ .Values.polytomic.env | quote }}
@@ -142,14 +352,17 @@ AWS_ACCESS_KEY_ID: {{ .Values.polytomic.s3.access_key_id | quote }}
 AWS_SECRET_ACCESS_KEY: {{ .Values.polytomic.s3.secret_access_key | quote }}
 KUBERNETES: "true"
 KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
-KUBERNETES_IMAGE: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-KUBERNETES_VOLUME: {{ .Values.polytomic.cache.volume_name }}
+KUBERNETES_IMAGE: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+KUBERNETES_VOLUME: {{ .Values.polytomic.sharedVolume.volumeName }}
 {{- if .Values.secret.name }}
 KUBERNETES_SECRET: {{ .Values.secret.name }}
 {{- else }}
 KUBERNETES_SECRET: {{ include "polytomic.fullname" . }}-config
 {{- end }}
 KUBERNETES_SERVICE_ACCOUNT: {{ include "polytomic.serviceAccountName" . | quote }}
+{{- if .Values.imagePullSecrets }}
+KUBERNETES_IMAGE_PULL_SECRET: {{ (index .Values.imagePullSecrets 0).name | quote }}
+{{- end }}
 AIRTABLE_CLIENT_SECRET: {{ .Values.polytomic.airtable_client_secret | quote }}
 ASANA_CLIENT_ID: {{ .Values.polytomic.asana_client_id | quote }}
 ASANA_CLIENT_SECRET: {{ .Values.polytomic.asana_client_secret | quote }}
@@ -183,12 +396,12 @@ INTERCOM_CLIENT_ID: {{ .Values.polytomic.intercom_client_id | quote }}
 INTERCOM_CLIENT_SECRET: {{ .Values.polytomic.intercom_client_secret | quote }}
 LINKEDINADS_CLIENT_ID: {{ .Values.polytomic.linkedinads_client_id | quote }}
 LINKEDINADS_CLIENT_SECRET: {{ .Values.polytomic.linkedinads_client_secret | quote }}
-{{- if .Values.polytomic.cache.enabled }}
+{{- if and .Values.polytomic.sharedVolume.enabled (ne .Values.polytomic.sharedVolume.mode "emptyDir") }}
 LOCAL_DATA: "1"
 {{- else }}
 LOCAL_DATA: "0"
 {{- end }}
-LOCAL_DATA_PATH: "/var/polytomic/"
+LOCAL_DATA_PATH: {{ .Values.polytomic.sharedVolume.mountPath | quote }}
 METRICS: {{ .Values.polytomic.metrics | quote }}
 OUTREACH_CLIENT_ID: {{ .Values.polytomic.outreach_client_id | quote }}
 OUTREACH_CLIENT_SECRET: {{ .Values.polytomic.outreach_client_secret | quote }}

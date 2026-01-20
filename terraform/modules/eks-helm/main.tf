@@ -31,13 +31,12 @@ image:
   repository: ${var.polytomic_image}
   tag: ${var.polytomic_image_tag}
 
-
 polytomic:
   deployment:
     name: ${var.polytomic_deployment}
     key: ${var.polytomic_deployment_key}
     api_key: ${var.polytomic_api_key}
-  
+
   auth:
     methods:
     - google
@@ -49,38 +48,46 @@ polytomic:
     google_client_id: ${var.polytomic_google_client_id}
     google_client_secret: ${var.polytomic_google_client_secret}
 
-  redis:
-    username:
-    password: ${var.redis_password}
-    host: ${var.redis_host}
-    port: ${var.redis_port}
-
-  postgres:
-    username: polytomic
-    password: ${var.postgres_password}
-    host: ${var.postgres_host}
-
-
   s3:
     operational_bucket: "s3://${var.polytomic_bucket}"
-    record_log_bucket: ${var.polytomic_bucket}
     region: "${var.polytomic_bucket_region}"
-  
+
   jobs:
     image: ${var.polytomic_image}
 
-  cache:
-    storage_class: efs-sc
+  sharedVolume:
     enabled: true
-    type: static
-    efs_id: ${var.efs_id}
+    mode: static
     size: 10Gi
+    static:
+      driver: efs.csi.aws.com
+      volumeHandle: ${var.efs_id}
+
+# Disable embedded databases - use external RDS and ElastiCache
+postgresql:
+  enabled: false
 
 redis:
   enabled: false
 
-postgresql:
-  enabled: false
+# Configure external PostgreSQL (RDS)
+externalPostgresql:
+  host: ${var.postgres_host}
+  port: 5432
+  username: polytomic
+  password: ${var.postgres_password}
+  database: polytomic
+  ssl: true
+  sslMode: require
+  poolSize: "15"
+  autoMigrate: true
+
+# Configure external Redis (ElastiCache)
+externalRedis:
+  host: ${var.redis_host}
+  port: ${var.redis_port}
+  password: ${var.redis_password}
+  ssl: false
 
 nfs-server-provisioner:
   enabled: false
@@ -88,11 +95,10 @@ nfs-server-provisioner:
 minio:
   enabled: false
 
-
 serviceAccount:
   annotations:
-      eks.amazonaws.com/role-arn: ${var.polytomic_service_account_role_arn}
-      eks.amazonaws.com/sts-regional-endpoints: "true"
+    eks.amazonaws.com/role-arn: ${var.polytomic_service_account_role_arn}
+    eks.amazonaws.com/sts-regional-endpoints: "true"
 EOF
   ]
 

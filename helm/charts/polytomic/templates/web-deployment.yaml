@@ -14,12 +14,14 @@ spec:
       {{- include "polytomic.web-selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.web.podAnnotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.web.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "polytomic.web-selectorLabels" . | nindent 8 }}
+        vector.dev/include: "true"
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -41,21 +43,43 @@ spec:
               {{- else }}
               name: {{ include "polytomic.fullname" . }}-config
               {{- end }}
-          env:          
+          env:
           - name: ROLE
             value: web
+          # Database password needs to be extracted separately for URL construction
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "polytomic.postgresql.secretName" . }}
+                key: {{ include "polytomic.postgresql.secretKey" . }}
+          # Redis password
+          {{- if or .Values.redis.enabled .Values.externalRedis.password }}
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "polytomic.redis.secretName" . }}
+                key: {{ include "polytomic.redis.secretKey" . }}
+          {{- end }}
           ports:
             - name: http
               containerPort: 5100
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /status.txt
               port: http
+            initialDelaySeconds: {{ .Values.healthProbes.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthProbes.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthProbes.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthProbes.livenessProbe.failureThreshold }}
           readinessProbe:
             httpGet:
-              path: /
+              path: /status.txt
               port: http
+            initialDelaySeconds: {{ .Values.healthProbes.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthProbes.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthProbes.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthProbes.readinessProbe.failureThreshold }}
           resources:
             {{- toYaml .Values.web.resources | nindent 12 }}
       {{- if .Values.web.sidecarContainers }}

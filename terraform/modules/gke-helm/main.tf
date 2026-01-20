@@ -37,7 +37,6 @@ polytomic:
     key: ${var.polytomic_deployment_key}
     api_key: ${var.polytomic_api_key}
 
-  
   auth:
     methods:
       - google
@@ -49,35 +48,50 @@ polytomic:
     google_client_id: ${var.polytomic_google_client_id}
     google_client_secret: ${var.polytomic_google_client_secret}
 
-  redis:
-    username:
-    password: ${var.redis_password}
-    host: ${var.redis_host}
-    port: ${var.redis_port}
-
-  postgres:
-    username: polytomic
-    password: ${var.postgres_password}
-    host: ${var.postgres_host}
-
   s3:
     operational_bucket: gs://${var.polytomic_bucket}
-    record_log_bucket: ${var.polytomic_bucket}
     region: ""
     gcs: true
-  
+
   jobs:
     image: ${var.polytomic_image}
 
   internal_execution_logs: true
 
-redis:
-  enabled: false
+  sharedVolume:
+    enabled: true
+    mode: dynamic
+    size: 20Gi
 
+# Disable embedded databases - use external Cloud SQL and MemoryStore
 postgresql:
   enabled: false
 
+redis:
+  enabled: false
+
+# Configure external PostgreSQL (Cloud SQL)
+externalPostgresql:
+  host: ${var.postgres_host}
+  port: 5432
+  username: polytomic
+  password: ${var.postgres_password}
+  database: polytomic
+  ssl: false
+  poolSize: "15"
+  autoMigrate: true
+
+# Configure external Redis (MemoryStore)
+externalRedis:
+  host: ${var.redis_host}
+  port: ${var.redis_port}
+  password: ${var.redis_password}
+  ssl: false
+
 minio:
+  enabled: false
+
+nfs-server-provisioner:
   enabled: false
 
 EOF

@@ -7,13 +7,31 @@ image:
   repository: 568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem
   # -- Image pull policy
   pullPolicy: IfNotPresent
-  # -- Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  # -- Image tag. Defaults to Chart.appVersion if not specified.
+  # For production, always specify a concrete version (e.g., "rel2021.11.04")
+  # See https://docs.polytomic.com/changelog for available versions
+  tag: ""
 
 # -- Reference to one or more secrets to be used when pulling images
+# Used both for chart-managed pods and passed to Polytomic for dynamically created job pods
+# Example: imagePullSecrets:
+#   - name: polytomic-ecr
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+
+# -- Global health probe configuration
+healthProbes:
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
 
 service:
   type: ClusterIP
@@ -86,52 +104,12 @@ polytomic:
     workos_api_key: ""
     workos_client_id: ""
 
-  # Postgres connection settings
-  postgres:
-    # -- Postgres user name
-    username: polytomic
-    # -- Password for given user
-    password: polytomic
-    # -- Host address
-    host: polytomic-postgresql
-    # -- Port number
-    port: 5432
-    # -- Database name
-    database: polytomic
-    # -- enable/disable SSL
-    ssl: false
-
-    auto_migrate: true
-
-  # Redis connection settings
-  redis:
-    username:
-    password: polytomic
-    host: polytomic-redis-master
-    port: 6379
-    ssl: false
-
   # The bucket stores log files containing records involved in a sync execution.
   # Record logging is enabled from the Settings page within the app ({POLYTOMIC_URL}/user).
   # Credentials for AWS are pulled through the AWS-SDK's credential chain and the user/role must have permissions for the bucket.
   # We recommend setting a bucket lifecycle rule to automatically expire objects.
   s3:
     operational_bucket: "s3://operations"
-
-    # -- Holds record logs for syncs
-    record_log_bucket: "records"
-
-
-    # -- DEPRECATED!!
-    #
-    # use operational_bucket instead of log_bucket and query_bucket
-    #
-    # -- The bucket stores log files containing records involved in a sync execution
-    log_bucket: ""
-    # -- The bucket is used to store query exports from Polytomic's SQL Runner.
-    query_bucket: ""
-    #
-    #
 
     # -- Access key ID
     access_key_id: ""
@@ -140,11 +118,45 @@ polytomic:
     # -- S3 region e.g. us-east-1
     region: us-east-1
 
-  cache:
+  # Shared volume configuration for worker and sync pods
+  # This volume is used for caching and temporary data shared between pods
+  sharedVolume:
+    # -- Enable shared volume (if false, uses emptyDir)
     enabled: true
-    volume_name: polytomic-cache
-    size: 20Mi
-    storage_class: ""
+    # -- Provisioning mode: "dynamic" (StorageClass), "static" (pre-existing PV), or "emptyDir"
+    mode: dynamic
+    # -- Volume size
+    size: 20Gi
+    # -- Mount path in containers
+    mountPath: /var/polytomic
+    # -- Access modes
+    accessModes:
+      - ReadWriteMany
+    # -- Volume name for PV/PVC
+    volumeName: polytomic-shared
+    # -- Optional subPath within the volume
+    subPath: ""
+
+    # Static provisioning configuration (for pre-existing volumes like EFS)
+    # Only used when mode=static
+    static:
+      # -- CSI driver (e.g., efs.csi.aws.com, nfs.csi.k8s.io)
+      driver: efs.csi.aws.com
+      # -- Volume handle (e.g., EFS filesystem ID: fs-12345678)
+      volumeHandle: ""
+      # -- Optional volume attributes for CSI driver
+      volumeAttributes: {}
+        # Example for EFS:
+        # path: /
+        # Example for other drivers:
+        # server: nfs-server.example.com
+        # share: /exports/polytomic
+
+    # Dynamic provisioning configuration (StorageClass-based)
+    # Only used when mode=dynamic
+    dynamic:
+      # -- Storage class name (empty = cluster default)
+      storageClassName: ""
 
   internal_execution_logs: false
 
@@ -204,20 +216,88 @@ polytomic:
   tracing: false
 
 #############################################################################################
-# Convience subcharts for dependencies
+# DATABASE CONFIGURATION
+# Choose ONE option per service:
+#   1. Embedded: Set enabled=true (default, for testing/development)
+#   2. External: Set enabled=false and configure external* section
+
+# PostgreSQL Database
+# Option 1: Embedded PostgreSQL (Bitnami subchart)
 postgresql:
-  enabled: true
+  enabled: true  # Set to false to use external database
   auth:
     username: polytomic
     password: polytomic
     database: polytomic
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+  # For production embedded PostgreSQL, configure proper resources, backups, etc.
+  # See: https://artifacthub.io/packages/helm/bitnami/postgresql
 
+# Option 2: External PostgreSQL (RDS, CloudSQL, self-hosted, etc.)
+# Only used when postgresql.enabled=false
+externalPostgresql:
+  # -- External PostgreSQL host (required if postgresql.enabled=false)
+  host: ""
+  # -- External PostgreSQL port
+  port: 5432
+  # -- Database username
+  username: "polytomic"
+  # -- Database password (consider using existing secret)
+  password: ""
+  # -- Database name
+  database: "polytomic"
+  # -- Enable SSL/TLS
+  ssl: false
+  # -- SSL mode (disable, require, verify-ca, verify-full)
+  sslMode: "disable"
+  # -- Connection pool size
+  poolSize: "15"
+  # -- Idle timeout
+  idleTimeout: "5s"
+  # -- Auto-run database migrations on startup
+  autoMigrate: true
+  # -- Use existing secret for password (optional)
+  # If set, password field above is ignored
+  existingSecret:
+    name: ""
+    key: "postgresql-password"
+
+# Redis Cache
+# Option 1: Embedded Redis (Bitnami subchart)
 redis:
-  enabled: true
+  enabled: true  # Set to false to use external Redis
   auth:
     password: polytomic
     enabled: true
   architecture: standalone
+  master:
+    persistence:
+      enabled: true
+      size: 8Gi
+  # For production embedded Redis, configure proper resources, replicas, etc.
+  # See: https://artifacthub.io/packages/helm/bitnami/redis
+
+# Option 2: External Redis (ElastiCache, MemoryStore, self-hosted, etc.)
+# Only used when redis.enabled=false
+externalRedis:
+  # -- External Redis host (required if redis.enabled=false)
+  host: ""
+  # -- External Redis port
+  port: 6379
+  # -- Redis password (consider using existing secret)
+  password: ""
+  # -- Enable SSL/TLS
+  ssl: false
+  # -- Connection pool size (0 = unlimited)
+  poolSize: 0
+  # -- Use existing secret for password (optional)
+  # If set, password field above is ignored
+  existingSecret:
+    name: ""
+    key: "redis-password"
 
 minio:
   enabled: false
@@ -230,8 +310,8 @@ minio:
 nfs-server-provisioner:
   enabled: true
   image:
-    repository: k8s.gcr.io/sig-storage/nfs-provisioner
-    tag: v3.0.1
+    repository: registry.k8s.io/sig-storage/nfs-provisioner
+    tag: v4.0.8
 
   persistence:
     enabled: true
@@ -269,17 +349,52 @@ secret:
   # The name of the secret to use instead of generating one
   name: ""
 
+# Production hardening features (disabled by default)
+networkPolicy:
+  enabled: false
+  # Ingress controller namespace selector
+  ingressNamespaceSelector:
+    name: ingress-nginx
+  # PostgreSQL access configuration
+  postgresql:
+    # For in-cluster PostgreSQL (when postgresql.enabled=true)
+    podSelector:
+      app.kubernetes.io/name: postgresql
+    namespaceSelector:
+      kubernetes.io/metadata.name: default
+    # For external PostgreSQL (RDS, etc), uncomment and comment out podSelector above:
+    # ipBlock: "10.0.0.0/16"
+  # Redis access configuration
+  redis:
+    # For in-cluster Redis (when redis.enabled=true)
+    podSelector:
+      app.kubernetes.io/name: redis
+    namespaceSelector:
+      kubernetes.io/metadata.name: default
+    # For external Redis (ElastiCache, etc), uncomment and comment out podSelector above:
+    # ipBlock: "10.0.0.0/16"
+  # Allow HTTPS egress for external integrations
+  allowExternalHttps: true
+  # Optional: Restrict to specific CIDR ranges (empty = 0.0.0.0/0)
+  externalHttpsCidrs: []
+
+# PodDisruptionBudget - ensures minimum availability during disruptions
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  # maxUnavailable: 1  # Use either minAvailable OR maxUnavailable, not both
+
 worker:
-  replicaCount: 1
-  resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  replicaCount: 2
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
   autoscaling:
-    enabled: true
+    enabled: false  # Can be enabled if needed
     minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
@@ -289,41 +404,45 @@ worker:
   affinity: {}
   podAnnotations: {}
   podSecurityContext:
-    {}
-    # fsGroup: 2000
+    fsGroup: 2000
   securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
   sidecarContainers: []
 
 
 web:
-  replicaCount: 1
+  replicaCount: 2
   resources:
-    {}
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
   autoscaling:
     enabled: true
-    minReplicas: 1
-    maxReplicas: 100
+    minReplicas: 2
+    maxReplicas: 10
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
   nodeSelector: {}
   tolerations: []
   affinity: {}
   podAnnotations: {}
-  podSecurityContext: {}
-  securityContext: {}
+  podSecurityContext:
+    fsGroup: 2000
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
   sidecarContainers:
   # - image: busybox
   #   name: sidecar-example
@@ -336,12 +455,18 @@ web:
   #       sleep 1;
   #     done
 sync:
-  replicaCount: 1
-  resources: {}
+  replicaCount: 2
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
   autoscaling:
     enabled: true
-    minReplicas: 1
-    maxReplicas: 100
+    minReplicas: 2
+    maxReplicas: 10
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
   nodeSelector: {}
@@ -349,34 +474,129 @@ sync:
   affinity: {}
   podAnnotations: {}
   podSecurityContext:
-    {}
-    # fsGroup: 2000
+    fsGroup: 2000
   securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
   sidecarContainers: []
 
-dev:
-  resources: {}
+schemacache:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
   nodeSelector: {}
   tolerations: []
   affinity: {}
   podAnnotations: {}
   podSecurityContext:
-    {}
-    # fsGroup: 2000
+    fsGroup: 2000
   securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+  sidecarContainers: []
+
+scheduler:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 2000
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+  sidecarContainers: []
+
+jobworker:
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 2000
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+  sidecarContainers: []
+
+healthcheck:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 2000
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+  sidecarContainers: []
+
+dev:
+  enabled: false  # Development deployment disabled by default
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 2000
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
 
 development: false
