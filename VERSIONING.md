@@ -80,8 +80,13 @@ git commit -m "Bump Helm chart version to 1.2.0"
 
 ## 4. Create and push tag
 ```bash
+# For Terraform modules
 git tag -a terraform/eks/v1.2.0 -m "Release EKS module v1.2.0"
 git push origin terraform/eks/v1.2.0
+
+# For Helm chart (triggers automatic GitHub release)
+git tag -a helm/v1.2.0 -m "Release Helm chart v1.2.0"
+git push origin helm/v1.2.0
 ```
 
 ## 5. Update root CHANGELOG.md
@@ -101,7 +106,9 @@ git push origin master
 
 Done!
 
-Optional: Create a GitHub Release at https://github.com/polytomic/on-premises/releases
+**Note:**
+- **Helm charts**: GitHub Release is created automatically when you push the `helm/v*` tag
+- **Terraform modules**: Optionally create a manual GitHub Release at https://github.com/polytomic/on-premises/releases
 
 ---
 
