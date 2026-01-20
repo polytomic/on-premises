@@ -174,19 +174,30 @@ Build PostgreSQL connection URL
 */}}
 {{- define "polytomic.postgresql.url" -}}
 {{- $sslMode := "disable" -}}
+{{- $password := "" -}}
 {{- if .Values.postgresql.enabled -}}
 {{- $sslMode = "disable" -}}
-{{- else if .Values.externalPostgresql.sslMode -}}
+{{- $password = .Values.postgresql.auth.password | default "polytomic" -}}
+{{- printf "postgres://%s:%s@%s:%s/%s?sslmode=%s"
+    (include "polytomic.postgresql.username" .)
+    $password
+    (include "polytomic.postgresql.host" .)
+    (include "polytomic.postgresql.port" .)
+    (include "polytomic.postgresql.database" .)
+    $sslMode -}}
+{{- else -}}
+{{- if .Values.externalPostgresql.sslMode -}}
 {{- $sslMode = .Values.externalPostgresql.sslMode -}}
 {{- else if .Values.externalPostgresql.ssl -}}
 {{- $sslMode = "require" -}}
 {{- end -}}
-{{- printf "postgres://%s:$(DATABASE_PASSWORD)@%s:%s/%s?sslmode=%s"
+{{- printf "postgres://%s:${DATABASE_PASSWORD}@%s:%s/%s?sslmode=%s"
     (include "polytomic.postgresql.username" .)
     (include "polytomic.postgresql.host" .)
     (include "polytomic.postgresql.port" .)
     (include "polytomic.postgresql.database" .)
     $sslMode -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -244,16 +255,25 @@ Build Redis connection URL
 {{- $password := "" -}}
 {{- if .Values.redis.enabled -}}
 {{- $password = .Values.redis.auth.password -}}
-{{- else -}}
-{{- $password = .Values.externalRedis.password -}}
-{{- end -}}
 {{- if $password -}}
-{{- if .Values.externalRedis.ssl -}}
-{{- printf "rediss://:$(REDIS_PASSWORD)@%s:%s"
+{{- printf "redis://:%s@%s:%s"
+    $password
     (include "polytomic.redis.host" .)
     (include "polytomic.redis.port" .) -}}
 {{- else -}}
-{{- printf "redis://:$(REDIS_PASSWORD)@%s:%s"
+{{- printf "redis://%s:%s"
+    (include "polytomic.redis.host" .)
+    (include "polytomic.redis.port" .) -}}
+{{- end -}}
+{{- else -}}
+{{- $password = .Values.externalRedis.password -}}
+{{- if $password -}}
+{{- if .Values.externalRedis.ssl -}}
+{{- printf "rediss://:${REDIS_PASSWORD}@%s:%s"
+    (include "polytomic.redis.host" .)
+    (include "polytomic.redis.port" .) -}}
+{{- else -}}
+{{- printf "redis://:${REDIS_PASSWORD}@%s:%s"
     (include "polytomic.redis.host" .)
     (include "polytomic.redis.port" .) -}}
 {{- end -}}
@@ -261,6 +281,7 @@ Build Redis connection URL
 {{- printf "redis://%s:%s"
     (include "polytomic.redis.host" .)
     (include "polytomic.redis.port" .) -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
