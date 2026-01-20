@@ -16,8 +16,8 @@ ingress:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: 'ip'
     alb.ingress.kubernetes.io/subnets: "${var.subnets}"
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
-    alb.ingress.kubernetes.io/certificate-arn: '${var.certificate_arn}'
+    alb.ingress.kubernetes.io/listen-ports: '${var.certificate_arn != "" ? "[{\"HTTPS\":443}]" : "[{\"HTTP\":80}]"}'
+    ${var.certificate_arn != "" ? "alb.ingress.kubernetes.io/certificate-arn: '${var.certificate_arn}'" : "# certificate-arn not configured - using HTTP only"}
     alb.ingress.kubernetes.io/ip-address-type: ipv4
     alb.ingress.kubernetes.io/inbound-cidrs: 0.0.0.0/0
 

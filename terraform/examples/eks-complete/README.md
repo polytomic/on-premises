@@ -29,9 +29,13 @@ This example has two stages that must be applied in order:
 - Terraform v1.0+
 - kubectl installed
 - Helm installed
-- Route53 hosted zone for your domain
 - Polytomic license (deployment name and key)
 - Google OAuth credentials (client ID and secret)
+
+**Note**: This example does not manage TLS certificates or DNS. You'll need to:
+- Obtain the ALB DNS name after deployment
+- Configure DNS (CNAME) in your DNS provider
+- Handle TLS termination externally (CloudFlare, CloudFront, etc.) or provide an ACM certificate ARN
 
 ## Quick Start
 
@@ -60,7 +64,6 @@ cd ../app
 
 # Edit main.tf and update the locals block:
 # - url: Your domain name (e.g., polytomic.example.com)
-# - domain: Route53 hosted zone (e.g., example.com)
 # - polytomic_deployment: Provided by Polytomic team
 # - polytomic_deployment_key: Provided by Polytomic team
 # - polytomic_api_key: Optional API key
@@ -68,6 +71,9 @@ cd ../app
 # - polytomic_root_user: Your admin email
 # - polytomic_google_client_id: Google OAuth client ID
 # - polytomic_google_client_secret: Google OAuth secret
+#
+# Optional: If you have an ACM certificate, add to eks_helm module:
+# certificate_arn = "arn:aws:acm:us-east-2:123456789:certificate/your-cert-id"
 
 terraform init
 terraform plan
@@ -76,22 +82,31 @@ terraform apply
 
 **Time**: 5-10 minutes
 
-### Step 3: Access the Deployment
+### Step 3: Configure DNS and Access
 
 ```bash
 # Configure kubectl
-aws eks update-kubeconfig --region us-west-2 --name polytomic-cluster
+aws eks update-kubeconfig --region us-east-2 --name polytomic-testing-cluster
 
 # Check deployment status
 kubectl get pods -n polytomic
 
 # Get ALB DNS name
-kubectl get ingress -n polytomic
+kubectl get ingress -n polytomic polytomic -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 ```
 
-The ingress will show the ALB hostname. The ACM certificate validation and Route53 records are handled automatically by Terraform.
+**DNS Configuration**:
+1. The command above returns the ALB hostname (e.g., `k8s-polytomic-xxx.elb.us-east-2.amazonaws.com`)
+2. Create a CNAME record in your DNS provider:
+   - Name: `polytomic.example.com` (your domain from locals.url)
+   - Type: CNAME
+   - Value: The ALB hostname from above
 
-Navigate to `https://your-domain.com` to access Polytomic.
+**TLS Configuration**:
+- **Without certificate**: The ALB listens on HTTP (port 80). Use CloudFlare, CloudFront, or another CDN for TLS termination
+- **With ACM certificate**: Pass `certificate_arn` to the eks_helm module in main.tf. The ALB will listen on HTTPS (port 443)
+
+Navigate to your configured URL to access Polytomic.
 
 ## Configuration Details
 
@@ -126,11 +141,10 @@ Key configuration:
 ```hcl
 locals {
   url                            = "polytomic.example.com"  # Your domain
-  domain                         = "example.com"             # Route53 zone
   polytomic_deployment           = "deployment"             # From Polytomic
   polytomic_deployment_key       = "key"                    # From Polytomic
   polytomic_api_key              = ""                       # Optional
-  polytomic_image_tag            = "latest"                 # Use specific version
+  polytomic_image_tag            = "rel2025.01.07"          # Use specific version
   polytomic_root_user            = "admin@example.com"      # Admin email
   polytomic_google_client_id     = "your-client-id"
   polytomic_google_client_secret = "your-client-secret"
@@ -143,7 +157,7 @@ Installs:
 - EFS CSI Driver
 - IAM roles (IRSA) for S3 access
 - Polytomic Helm chart with external database configuration
-- ACM certificate with automatic DNS validation
+- Application Load Balancer (HTTP by default; HTTPS if certificate_arn provided)
 
 ## Outputs
 

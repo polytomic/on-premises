@@ -65,7 +65,15 @@ module "addons" {
 module "eks_helm" {
   source = "github.com/polytomic/on-premises/terraform/modules/eks-helm"
 
-  certificate_arn                    = aws_acm_certificate.cert.arn
+  # Certificate ARN is optional. When omitted, the ALB will listen on HTTP (port 80) only.
+  # Options for handling TLS:
+  # 1. Provide an existing ACM certificate ARN (e.g., from another AWS account or manually validated)
+  # 2. Use an external load balancer or CDN (CloudFlare, CloudFront, etc.) for TLS termination
+  # 3. Create an ACM certificate here and manually validate DNS records in your DNS provider
+  #
+  # Example with certificate:
+  # certificate_arn = "arn:aws:acm:us-east-2:123456789:certificate/your-cert-id"
+
   subnets                            = join(",", data.terraform_remote_state.eks.outputs.public_subnets)
   polytomic_url                      = local.url
   polytomic_deployment               = local.polytomic_deployment
@@ -92,33 +100,31 @@ module "eks_helm" {
 
 }
 
-resource "aws_acm_certificate" "cert" {
-  domain_name       = local.url
-  validation_method = "DNS"
-}
-
-data "aws_route53_zone" "zone" {
-  name = local.domain
-}
-
-resource "aws_route53_record" "record" {
-  for_each = {
-    for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
-  }
-
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = data.aws_route53_zone.zone.zone_id
-}
-
-resource "aws_acm_certificate_validation" "validation" {
-  certificate_arn         = aws_acm_certificate.cert.arn
-  validation_record_fqdns = [for record in aws_route53_record.record : record.fqdn]
-}
+# After deployment, get the ALB DNS name with:
+# kubectl get ingress -n polytomic polytomic -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+#
+# Then create a CNAME record in your DNS provider pointing your domain to the ALB DNS name.
+#
+# For TLS, you can:
+# - Use CloudFlare or another CDN for TLS termination
+# - Create an ACM certificate with manual DNS validation (see example below)
+# - Use an external load balancer
+#
+# Example: ACM certificate with manual DNS validation
+# Uncomment and configure the following to create a certificate:
+#
+# resource "aws_acm_certificate" "cert" {
+#   domain_name       = local.url
+#   validation_method = "DNS"
+#
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
+#
+# After applying, get the validation records:
+# aws acm describe-certificate --certificate-arn $(terraform output -raw certificate_arn)
+#
+# Add the CNAME validation records to your DNS provider, then pass the certificate ARN
+# to the eks_helm module above using:
+# certificate_arn = aws_acm_certificate.cert.arn
