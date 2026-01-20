@@ -85,6 +85,38 @@ app.kubernetes.io/name: {{ include "polytomic.name" . }}-dev
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{/*
+Schemacache Selector labels
+*/}}
+{{- define "polytomic.schemacache-selectorLabels" -}}
+app.kubernetes.io/name: {{ include "polytomic.name" . }}-schemacache
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Scheduler Selector labels
+*/}}
+{{- define "polytomic.scheduler-selectorLabels" -}}
+app.kubernetes.io/name: {{ include "polytomic.name" . }}-scheduler
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Jobworker Selector labels
+*/}}
+{{- define "polytomic.jobworker-selectorLabels" -}}
+app.kubernetes.io/name: {{ include "polytomic.name" . }}-jobworker
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Healthcheck Selector labels
+*/}}
+{{- define "polytomic.healthcheck-selectorLabels" -}}
+app.kubernetes.io/name: {{ include "polytomic.name" . }}-healthcheck
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
 
 
 

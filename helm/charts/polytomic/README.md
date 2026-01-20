@@ -62,6 +62,20 @@ Kubernetes: `>=1.34.0-0`
 | externalRedis.ssl | bool | `false` | Enable SSL/TLS |
 | fullnameOverride | string | `""` |  |
 | healthProbes | object | `{"livenessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5},"readinessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5}}` | Global health probe configuration |
+| healthcheck.affinity | object | `{}` |  |
+| healthcheck.nodeSelector | object | `{}` |  |
+| healthcheck.podAnnotations | object | `{}` |  |
+| healthcheck.podSecurityContext.fsGroup | int | `2000` |  |
+| healthcheck.resources.limits.cpu | string | `"100m"` |  |
+| healthcheck.resources.limits.memory | string | `"256Mi"` |  |
+| healthcheck.resources.requests.cpu | string | `"50m"` |  |
+| healthcheck.resources.requests.memory | string | `"128Mi"` |  |
+| healthcheck.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| healthcheck.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| healthcheck.securityContext.runAsNonRoot | bool | `false` |  |
+| healthcheck.securityContext.runAsUser | int | `0` |  |
+| healthcheck.sidecarContainers | list | `[]` |  |
+| healthcheck.tolerations | list | `[]` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"` | Image repository |
 | image.tag | string | `""` | Image tag. Defaults to Chart.appVersion if not specified. For production, always specify a concrete version (e.g., "rel2021.11.04") See https://docs.polytomic.com/changelog for available versions |
@@ -73,6 +87,20 @@ Kubernetes: `>=1.34.0-0`
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | ingress.tls | list | `[]` |  |
+| jobworker.affinity | object | `{}` |  |
+| jobworker.nodeSelector | object | `{}` |  |
+| jobworker.podAnnotations | object | `{}` |  |
+| jobworker.podSecurityContext.fsGroup | int | `2000` |  |
+| jobworker.resources.limits.cpu | string | `"1000m"` |  |
+| jobworker.resources.limits.memory | string | `"2Gi"` |  |
+| jobworker.resources.requests.cpu | string | `"500m"` |  |
+| jobworker.resources.requests.memory | string | `"1Gi"` |  |
+| jobworker.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| jobworker.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| jobworker.securityContext.runAsNonRoot | bool | `false` |  |
+| jobworker.securityContext.runAsUser | int | `0` |  |
+| jobworker.sidecarContainers | list | `[]` |  |
+| jobworker.tolerations | list | `[]` |  |
 | minio.enabled | bool | `false` |  |
 | minio.mode | string | `"standalone"` |  |
 | minio.persistence.size | string | `"50Mi"` |  |
@@ -196,6 +224,34 @@ Kubernetes: `>=1.34.0-0`
 | redis.enabled | bool | `true` |  |
 | redis.master.persistence.enabled | bool | `true` |  |
 | redis.master.persistence.size | string | `"8Gi"` |  |
+| scheduler.affinity | object | `{}` |  |
+| scheduler.nodeSelector | object | `{}` |  |
+| scheduler.podAnnotations | object | `{}` |  |
+| scheduler.podSecurityContext.fsGroup | int | `2000` |  |
+| scheduler.resources.limits.cpu | string | `"500m"` |  |
+| scheduler.resources.limits.memory | string | `"1Gi"` |  |
+| scheduler.resources.requests.cpu | string | `"250m"` |  |
+| scheduler.resources.requests.memory | string | `"512Mi"` |  |
+| scheduler.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| scheduler.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| scheduler.securityContext.runAsNonRoot | bool | `false` |  |
+| scheduler.securityContext.runAsUser | int | `0` |  |
+| scheduler.sidecarContainers | list | `[]` |  |
+| scheduler.tolerations | list | `[]` |  |
+| schemacache.affinity | object | `{}` |  |
+| schemacache.nodeSelector | object | `{}` |  |
+| schemacache.podAnnotations | object | `{}` |  |
+| schemacache.podSecurityContext.fsGroup | int | `2000` |  |
+| schemacache.resources.limits.cpu | string | `"500m"` |  |
+| schemacache.resources.limits.memory | string | `"1Gi"` |  |
+| schemacache.resources.requests.cpu | string | `"250m"` |  |
+| schemacache.resources.requests.memory | string | `"512Mi"` |  |
+| schemacache.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| schemacache.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| schemacache.securityContext.runAsNonRoot | bool | `false` |  |
+| schemacache.securityContext.runAsUser | int | `0` |  |
+| schemacache.sidecarContainers | list | `[]` |  |
+| schemacache.tolerations | list | `[]` |  |
 | secret.name | string | `""` |  |
 | service.port | int | `80` |  |
 | service.type | string | `"ClusterIP"` |  |
