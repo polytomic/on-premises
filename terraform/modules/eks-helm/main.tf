@@ -50,7 +50,6 @@ polytomic:
 
   s3:
     operational_bucket: "s3://${var.polytomic_bucket}"
-    record_log_bucket: ${var.polytomic_bucket}
     region: "${var.polytomic_bucket_region}"
 
   jobs:

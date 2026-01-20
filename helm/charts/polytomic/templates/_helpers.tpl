@@ -308,11 +308,7 @@ POLYTOMIC_URL: {{ .Values.polytomic.auth.url | quote }}
 AUTH_METHODS: {{ join "," .Values.polytomic.auth.methods | quote }}
 GOOGLE_CLIENT_ID: {{ .Values.polytomic.auth.google_client_id | quote }}
 GOOGLE_CLIENT_SECRET: {{ .Values.polytomic.auth.google_client_secret | quote }}
-EXECUTION_LOG_BUCKET: {{ .Values.polytomic.s3.record_log_bucket | quote }}
-EXECUTION_LOG_REGION: {{ if .Values.polytomic.s3.gcs }}"gcs"{{- else }}{{ .Values.polytomic.s3.region | quote }}{{- end}}
 DEFAULT_OPERATIONAL_BUCKET: {{ .Values.polytomic.s3.operational_bucket }}{{- if .Values.polytomic.s3.region }}?region={{ .Values.polytomic.s3.region }}{{- end}}
-RECORD_LOG_BUCKET: {{ .Values.polytomic.s3.record_log_bucket | quote }}
-RECORD_LOG_REGION: {{ .Values.polytomic.s3.region | quote }}
 LOG_LEVEL: {{ .Values.polytomic.log_level | quote }}
 AUTO_MIGRATE: {{ if .Values.postgresql.enabled }}{{ true | quote }}{{ else }}{{ .Values.externalPostgresql.autoMigrate | default true | quote }}{{ end }}
 DEFAULT_ORG_FEATURES: {{ join "," .Values.polytomic.default_org_features | quote }}

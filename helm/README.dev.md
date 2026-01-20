@@ -205,7 +205,6 @@ polytomic:
 
   s3:
     operational_bucket: "s3://test-operations"
-    record_log_bucket: "test-records"
     region: us-east-1
 
   sharedVolume:
@@ -884,7 +883,6 @@ polytomic:
 
   s3:
     operational_bucket: "s3://\${BUCKET}"
-    record_log_bucket: "\${BUCKET}"
     region: us-west-2
 
   sharedVolume:

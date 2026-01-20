@@ -111,9 +111,6 @@ polytomic:
   s3:
     operational_bucket: "s3://operations"
 
-    # -- Holds record logs for syncs
-    record_log_bucket: "records"
-
     # -- Access key ID
     access_key_id: ""
     # -- Secret access key

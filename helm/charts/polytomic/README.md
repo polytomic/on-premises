@@ -155,7 +155,6 @@ Kubernetes: `>=1.24.0-0`
 | polytomic.query_workers | int | `10` |  |
 | polytomic.s3.access_key_id | string | `""` | Access key ID |
 | polytomic.s3.operational_bucket | string | `"s3://operations"` |  |
-| polytomic.s3.record_log_bucket | string | `"records"` | Holds record logs for syncs |
 | polytomic.s3.region | string | `"us-east-1"` | S3 region e.g. us-east-1 |
 | polytomic.s3.secret_access_key | string | `""` | Secret access key |
 | polytomic.salesforce_client_id | string | `""` |  |
