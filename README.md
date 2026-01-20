@@ -208,7 +208,27 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- 
+### For Maintainers: Cutting a Release
+
+This repository uses component-specific versioning and tagging. Each Terraform module and the Helm chart are versioned independently.
+
+**Quick reference:**
+- [VERSIONING.md](VERSIONING.md) - Complete versioning strategy and release process
+- [CHANGELOG.md](CHANGELOG.md) - Index of all component changelogs
+
+**Release process summary:**
+1. Update the component's CHANGELOG.md (e.g., `terraform/modules/eks/CHANGELOG.md`)
+2. For Helm: Update version in `helm/charts/polytomic/Chart.yaml`
+3. Commit changes
+4. Create and push a component-specific tag (e.g., `terraform/eks/v1.2.0` or `helm/v1.2.0`)
+5. Create a GitHub Release
+6. Update root CHANGELOG.md with new version
+
+See [VERSIONING.md](VERSIONING.md) for detailed step-by-step instructions and examples.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!--
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
@@ -216,11 +236,9 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
  -->
 
-
-
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
 [contributors-shield]: https://img.shields.io/github/contributors/polytomic/on-premises.svg?style=for-the-badge
 [contributors-url]: https://github.com/polytomic/on-premises/graphs/contributors
 [stars-shield]: https://img.shields.io/github/stars/polytomic/on-premises.svg?style=for-the-badge
