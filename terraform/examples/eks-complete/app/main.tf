@@ -8,7 +8,7 @@ locals {
   polytomic_image                = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"
   polytomic_image_tag            = "latest"
   polytomic_root_user            = "user@example.com"
-  polytomic_bucket               = "polytomic-bucket"
+  polytomic_api_key              = ""  # Optional: Polytomic API key
   polytomic_google_client_id     = "google-client-id"
   polytomic_google_client_secret = "google-client-secret"
 }
@@ -70,11 +70,13 @@ module "eks_helm" {
   polytomic_url                      = local.url
   polytomic_deployment               = local.polytomic_deployment
   polytomic_deployment_key           = local.polytomic_deployment_key
+  polytomic_api_key                  = local.polytomic_api_key
   polytomic_image                    = local.polytomic_image
   polytomic_image_tag                = local.polytomic_image_tag
   polytomic_root_user                = local.polytomic_root_user
   redis_host                         = data.terraform_remote_state.eks.outputs.redis_host
   redis_port                         = data.terraform_remote_state.eks.outputs.redis_port
+  redis_password                     = data.terraform_remote_state.eks.outputs.redis_auth_string
   postgres_host                      = data.terraform_remote_state.eks.outputs.postgres_host
   postgres_password                  = data.terraform_remote_state.eks.outputs.postgres_password
   polytomic_google_client_id         = local.polytomic_google_client_id

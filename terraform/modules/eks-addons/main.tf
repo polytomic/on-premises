@@ -1,7 +1,8 @@
 module "lb_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
 
-  role_name                              = "${var.prefix}_eks_lb"
+  name                                   = "${var.prefix}_eks_lb"
   attach_load_balancer_controller_policy = true
 
   oidc_providers = {
@@ -71,9 +72,10 @@ resource "helm_release" "lb" {
 
 
 module "ebs_csi_irsa_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
 
-  role_name             = "${var.prefix}_ebs_csi"
+  name                  = "${var.prefix}_ebs_csi"
   attach_ebs_csi_policy = true
 
   oidc_providers = {
@@ -85,9 +87,10 @@ module "ebs_csi_irsa_role" {
 }
 
 module "ebs_csi_node_irsa_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
 
-  role_name             = "${var.prefix}_ebs_node_csi"
+  name                  = "${var.prefix}_ebs_node_csi"
   attach_ebs_csi_policy = true
 
   oidc_providers = {
@@ -99,11 +102,12 @@ module "ebs_csi_node_irsa_role" {
 }
 
 module "efs_csi_irsa_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
 
   count = var.efs_id == "" ? 0 : 1
 
-  role_name             = "${var.prefix}_efs_csi"
+  name                  = "${var.prefix}_efs_csi"
   attach_efs_csi_policy = true
 
   oidc_providers = {
@@ -149,10 +153,11 @@ EOF
 
 
 module "polytomic_role" {
-  source    = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  role_name = "${var.prefix}_iam_eks"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
+  name    = "${var.prefix}_iam_eks"
 
-  role_policy_arns = {
+  policies = {
     policy = aws_iam_policy.polytomic.arn
   }
 

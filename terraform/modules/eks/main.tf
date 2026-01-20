@@ -5,7 +5,8 @@ locals {
 
 
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 6.0"
 
   count = var.vpc_id == "" ? 1 : 0
 
@@ -39,17 +40,17 @@ resource "aws_vpc_endpoint" "s3" {
 
 
 module "eks" {
-  source = "terraform-aws-modules/eks/aws"
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 21.0"
 
-  cluster_name    = "${var.prefix}-cluster"
-  cluster_version = "1.24"
+  name               = "${var.prefix}-cluster"
+  kubernetes_version = "1.31"
 
-  vpc_id                         = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
-  subnet_ids                     = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
-  cluster_endpoint_public_access = true
+  vpc_id                 = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
+  subnet_ids             = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
+  endpoint_public_access = true
 
-
-  cluster_addons = {
+  addons = {
     aws-ebs-csi-driver = {}
     aws-efs-csi-driver = {}
   }
