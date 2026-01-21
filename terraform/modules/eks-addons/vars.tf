@@ -21,10 +21,4 @@ variable "cluster_name" {
 
 variable "oidc_provider_arn" {
   description = "OIDC provider ARN"
-
-}
-
-variable "efs_id" {
-  description = "EFS ID"
-  default     = ""
 }
