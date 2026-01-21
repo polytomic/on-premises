@@ -211,6 +211,7 @@ module "polytomic-ecs" {
 | [aws_ecs_service.sync](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_service.web](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_service.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
+| [aws_ecs_task_definition.ingest](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
 | [aws_ecs_task_definition.scheduler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
 | [aws_ecs_task_definition.schemacache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
 | [aws_ecs_task_definition.stats_reporter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
@@ -332,6 +333,8 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_query_runner_exclude_dbs"></a> [polytomic\_query\_runner\_exclude\_dbs](#input\_polytomic\_query\_runner\_exclude\_dbs) | List of databases to exclude from query runner | `list` | `[]` | no |
 | <a name="input_polytomic_query_worker_count"></a> [polytomic\_query\_worker\_count](#input\_polytomic\_query\_worker\_count) | Number of query workers to use | `number` | `20` | no |
 | <a name="input_polytomic_record_log_disabled"></a> [polytomic\_record\_log\_disabled](#input\_polytomic\_record\_log\_disabled) | Globally disable record logging for this deployment | `bool` | `false` | no |
+| <a name="input_polytomic_resource_ingest_cpu"></a> [polytomic\_resource\_ingest\_cpu](#input\_polytomic\_resource\_ingest\_cpu) | CPU units for the ingest container | `number` | `2048` | no |
+| <a name="input_polytomic_resource_ingest_memory"></a> [polytomic\_resource\_ingest\_memory](#input\_polytomic\_resource\_ingest\_memory) | Memory units for the ingest container | `number` | `8192` | no |
 | <a name="input_polytomic_resource_scheduler_cpu"></a> [polytomic\_resource\_scheduler\_cpu](#input\_polytomic\_resource\_scheduler\_cpu) | CPU units for the scheduler container | `number` | `1024` | no |
 | <a name="input_polytomic_resource_scheduler_memory"></a> [polytomic\_resource\_scheduler\_memory](#input\_polytomic\_resource\_scheduler\_memory) | Memory units for the scheduler container | `number` | `2048` | no |
 | <a name="input_polytomic_resource_schemacache_cpu"></a> [polytomic\_resource\_schemacache\_cpu](#input\_polytomic\_resource\_schemacache\_cpu) | CPU units for the schemacache container | `number` | `2048` | no |
