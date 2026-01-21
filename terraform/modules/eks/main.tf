@@ -117,6 +117,11 @@ module "eks" {
       min_size     = var.min_size
       max_size     = var.max_size
       desired_size = var.desired_size
+
+      # Allow nodes to pull images from ECR
+      iam_role_additional_policies = {
+        AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+      }
     }
   }
 

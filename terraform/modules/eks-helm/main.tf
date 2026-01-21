@@ -1,8 +1,7 @@
 resource "helm_release" "polytomic" {
-  name       = "polytomic"
-  namespace  = "polytomic"
-  repository = "https://charts.polytomic.com"
-  chart      = "polytomic"
+  name      = "polytomic"
+  namespace = "polytomic"
+  chart     = "${path.module}/../../../helm/charts/polytomic"
 
   create_namespace = true
   wait             = false

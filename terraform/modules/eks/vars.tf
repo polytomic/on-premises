@@ -48,7 +48,7 @@ variable "vpc_id" {
 
 variable "instance_type" {
   description = "Instance type"
-  default     = "t3.small"
+  default     = "t3.medium"
 }
 
 

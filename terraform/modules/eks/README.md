@@ -71,7 +71,7 @@
 | <a name="input_database_skip_final_snapshot"></a> [database\_skip\_final\_snapshot](#input\_database\_skip\_final\_snapshot) | Database skip final snapshot | `bool` | `false` | no |
 | <a name="input_database_username"></a> [database\_username](#input\_database\_username) | Database username | `string` | `"polytomic"` | no |
 | <a name="input_desired_size"></a> [desired\_size](#input\_desired\_size) | Desired number of nodes | `number` | `3` | no |
-| <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Instance type | `string` | `"t3.small"` | no |
+| <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Instance type | `string` | `"t3.medium"` | no |
 | <a name="input_max_size"></a> [max\_size](#input\_max\_size) | Maximum number of nodes | `number` | `4` | no |
 | <a name="input_min_size"></a> [min\_size](#input\_min\_size) | Minimum number of nodes | `number` | `2` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix for all resources | `string` | `"polytomic"` | no |

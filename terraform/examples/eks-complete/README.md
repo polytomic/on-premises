@@ -77,6 +77,8 @@ terraform apply
 
 **Deployment time**: ~15-20 minutes
 
+**Note**: The EKS module automatically configures node IAM roles with ECR read permissions, so pods can pull from private ECR repositories without needing imagePullSecrets.
+
 ### Step 2: Deploy Application
 
 ```bash
@@ -214,6 +216,9 @@ kubectl logs -n polytomic -l app.kubernetes.io/component=web --tail=50
 
 # Check ALB controller
 kubectl logs -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
+
+# If seeing ImagePullBackOff errors, verify the node IAM role has ECR permissions
+kubectl describe pod -n polytomic <pod-name> | grep -A 5 "Events:"
 ```
 
 ## Additional Resources

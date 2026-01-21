@@ -48,7 +48,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host                   = data.aws_eks_cluster.cluster.endpoint
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
     token                  = data.aws_eks_cluster_auth.cluster.token
@@ -64,8 +64,6 @@ module "addons" {
   cluster_name      = data.terraform_remote_state.eks.outputs.cluster_name
   vpc_id            = data.terraform_remote_state.eks.outputs.vpc_id
   oidc_provider_arn = data.terraform_remote_state.eks.outputs.oidc_provider_arn
-  efs_id            = data.terraform_remote_state.eks.outputs.filesystem_id
-
 }
 
 module "eks_helm" {
