@@ -274,3 +274,9 @@ variable "bucket_name" {
   description = "Optional: Exact S3 bucket name to use. If not specified, defaults to '<prefix>-operations'. Use this to specify an existing bucket or ensure global uniqueness."
   default     = ""
 }
+
+variable "access_entries" {
+  description = "Map of IAM principal ARNs to access entry configurations. Allows granting cluster access to additional IAM users/roles beyond the one that created the cluster. Each entry can specify kubernetes_groups, access_policies, and type."
+  type        = any
+  default     = {}
+}

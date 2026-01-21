@@ -38,6 +38,43 @@ resource "aws_vpc_endpoint" "s3" {
   tags            = var.tags
 }
 
+# IAM role for EBS CSI driver
+module "ebs_csi_driver_irsa" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 5.0"
+
+  role_name_prefix = "${var.prefix}-ebs-csi-"
+
+  attach_ebs_csi_policy = true
+
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
+    }
+  }
+
+  tags = var.tags
+}
+
+# IAM role for EFS CSI driver
+module "efs_csi_driver_irsa" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 5.0"
+
+  role_name_prefix = "${var.prefix}-efs-csi-"
+
+  attach_efs_csi_policy = true
+
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:efs-csi-controller-sa"]
+    }
+  }
+
+  tags = var.tags
+}
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -51,8 +88,24 @@ module "eks" {
   endpoint_public_access = true
 
   addons = {
-    aws-ebs-csi-driver = {}
-    aws-efs-csi-driver = {}
+    coredns = {
+      most_recent = true
+    }
+    kube-proxy = {
+      most_recent = true
+    }
+    vpc-cni = {
+      before_compute = true
+      most_recent    = true
+    }
+    aws-ebs-csi-driver = {
+      service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
+      most_recent              = true
+    }
+    aws-efs-csi-driver = {
+      service_account_role_arn = module.efs_csi_driver_irsa.iam_role_arn
+      most_recent              = true
+    }
   }
 
   eks_managed_node_groups = {
@@ -87,6 +140,8 @@ module "eks" {
     }
 
   }
+
+  access_entries = var.access_entries
 
   tags = var.tags
 }

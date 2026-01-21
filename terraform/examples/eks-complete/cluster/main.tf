@@ -22,5 +22,36 @@ module "eks" {
 
   # Uncomment to specify explicit bucket name (otherwise uses "${prefix}-operations")
   # bucket_name = local.bucket_name
+
+  # Optional: Grant additional IAM principals access to the cluster
+  # By default, only the IAM principal that creates the cluster (the one running Terraform) has access.
+  # Uncomment and modify to grant access to additional users/roles (e.g., your root user, DevOps team members)
+  #
+  # access_entries = {
+  #   # Example: Grant cluster admin access to root user
+  #   root_user = {
+  #     principal_arn = "arn:aws:iam::123456789012:root"
+  #     policy_associations = {
+  #       admin = {
+  #         policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  #         access_scope = {
+  #           type = "cluster"
+  #         }
+  #       }
+  #     }
+  #   }
+  #   # Example: Grant a specific IAM user admin access
+  #   devops_user = {
+  #     principal_arn = "arn:aws:iam::123456789012:user/devops-admin"
+  #     policy_associations = {
+  #       admin = {
+  #         policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  #         access_scope = {
+  #           type = "cluster"
+  #         }
+  #       }
+  #     }
+  #   }
+  # }
 }
 
