@@ -1,7 +1,15 @@
+locals {
+  # Determine chart source based on configuration
+  use_repository = var.chart_repository != ""
+  chart_path     = var.chart_path != "" ? var.chart_path : "${path.module}/../../../helm/charts/polytomic"
+}
+
 resource "helm_release" "polytomic" {
-  name      = "polytomic"
-  namespace = "polytomic"
-  chart     = "${path.module}/../../../helm/charts/polytomic"
+  name       = "polytomic"
+  namespace  = "polytomic"
+  repository = local.use_repository ? var.chart_repository : null
+  chart      = local.use_repository ? "polytomic" : local.chart_path
+  version    = local.use_repository && var.chart_version != "" ? var.chart_version : null
 
   create_namespace = true
   wait             = false

@@ -22,6 +22,9 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_chart_path"></a> [chart\_path](#input\_chart\_path) | Path to local Helm chart. Only used when chart\_repository is empty. Defaults to relative path to chart in this repository. | `string` | `""` | no |
+| <a name="input_chart_repository"></a> [chart\_repository](#input\_chart\_repository) | The Helm chart repository URL. Leave empty to use local chart. | `string` | `"https://charts.polytomic.com"` | no |
+| <a name="input_chart_version"></a> [chart\_version](#input\_chart\_version) | The version of the Polytomic Helm chart to install. Only used when chart\_repository is set. | `string` | `""` | no |
 | <a name="input_polytomic_api_key"></a> [polytomic\_api\_key](#input\_polytomic\_api\_key) | The api key for the polytomic deployment | `string` | `""` | no |
 | <a name="input_polytomic_bucket"></a> [polytomic\_bucket](#input\_polytomic\_bucket) | The operational bucket for the polytomic deployment | `any` | n/a | yes |
 | <a name="input_polytomic_cert_name"></a> [polytomic\_cert\_name](#input\_polytomic\_cert\_name) | The name of the certificate to use for the polytomic deployment | `any` | n/a | yes |

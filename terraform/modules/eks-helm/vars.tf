@@ -84,3 +84,21 @@ variable "polytomic_api_key" {
   default     = ""
   description = "The api key for the polytomic deployment"
 }
+
+variable "chart_repository" {
+  description = "The Helm chart repository URL. Leave empty to use local chart."
+  type        = string
+  default     = "https://charts.polytomic.com"
+}
+
+variable "chart_version" {
+  description = "The version of the Polytomic Helm chart to install. Only used when chart_repository is set."
+  type        = string
+  default     = ""
+}
+
+variable "chart_path" {
+  description = "Path to local Helm chart. Only used when chart_repository is empty. Defaults to relative path to chart in this repository."
+  type        = string
+  default     = ""
+}
