@@ -42,8 +42,8 @@ This example differs from the comprehensive guide in that it:
 **Does NOT manage DNS or TLS certificates**
 
 - You must manually create CNAME records pointing to the ALB
-- TLS can be handled externally (CloudFlare, CloudFront) or by providing an ACM certificate ARN
-- See step 3d in the Quick Start below for TLS options
+- TLS requires providing an ACM certificate ARN
+- See the TLS Configuration section below for details
 
 **Uses simplified configuration**
 
@@ -132,19 +132,11 @@ kubectl get pods -n polytomic
 # HTTP by default; HTTPS if certificate_arn was provided
 ```
 
-## TLS Configuration Options
+## TLS Configuration
 
-This example does not manage TLS certificates by default. Choose one of these options:
+This example does not manage TLS certificates by default. To enable HTTPS, provide an ACM certificate ARN.
 
-### Option 1: External TLS Termination (Recommended)
-
-Use CloudFlare, CloudFront, or another CDN to handle TLS:
-
-- The ALB serves HTTP on port 80
-- Your CDN terminates TLS and forwards to ALB
-- No ACM certificate needed
-
-### Option 2: ACM Certificate
+### Using an ACM Certificate
 
 If you have an ACM certificate in the same AWS account/region:
 
@@ -156,9 +148,13 @@ module "eks_helm" {
 }
 ```
 
-### Option 3: Manual Certificate Creation
+The ALB will be configured to:
+- Listen on port 443 (HTTPS) with the certificate
+- Redirect HTTP (port 80) to HTTPS
 
-Uncomment the certificate resources at the bottom of [app/main.tf](app/main.tf), then:
+### Creating an ACM Certificate
+
+If you need to create a certificate, uncomment the certificate resources at the bottom of [app/main.tf](app/main.tf), then:
 
 ```bash
 cd app
@@ -170,7 +166,7 @@ aws acm describe-certificate --certificate-arn <arn> | \
   jq -r '.Certificate.DomainValidationOptions[0].ResourceRecord'
 ```
 
-Add the CNAME validation record to your DNS provider, then the certificate will be issued.
+Add the CNAME validation record to your DNS provider, then the certificate will be issued and can be used with the `certificate_arn` parameter.
 
 ## Configuration Files
 
