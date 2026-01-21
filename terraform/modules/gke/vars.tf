@@ -44,8 +44,8 @@ variable "postgres_instance_tier" {
 }
 
 variable "bucket_name" {
-  description = "The name of the bucket to create"
-  default     = "polytomic-bucket"
+  description = "The GCS bucket name to use. Must be globally unique. Recommended format: '<company>-polytomic-operations' or similar."
+  default     = "polytomic-operations"
 }
 
 

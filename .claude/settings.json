@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(helm dependency list:*)"
+      "Bash(helm dependency list:*)",
+      "Bash(terraform-docs markdown table:*)"
     ]
   }
 }

@@ -223,8 +223,9 @@ Build PostgreSQL connection URL
 {{- else if .Values.externalPostgresql.ssl -}}
 {{- $sslMode = "require" -}}
 {{- end -}}
-{{- printf "postgres://%s:${DATABASE_PASSWORD}@%s:%s/%s?sslmode=%s"
+{{- printf "postgres://%s:%s@%s:%s/%s?sslmode=%s"
     (include "polytomic.postgresql.username" .)
+    .Values.externalPostgresql.password
     (include "polytomic.postgresql.host" .)
     (include "polytomic.postgresql.port" .)
     (include "polytomic.postgresql.database" .)
@@ -301,11 +302,13 @@ Build Redis connection URL
 {{- $password = .Values.externalRedis.password -}}
 {{- if $password -}}
 {{- if .Values.externalRedis.ssl -}}
-{{- printf "rediss://:${REDIS_PASSWORD}@%s:%s"
+{{- printf "rediss://:%s@%s:%s"
+    $password
     (include "polytomic.redis.host" .)
     (include "polytomic.redis.port" .) -}}
 {{- else -}}
-{{- printf "redis://:${REDIS_PASSWORD}@%s:%s"
+{{- printf "redis://:%s@%s:%s"
+    $password
     (include "polytomic.redis.host" .)
     (include "polytomic.redis.port" .) -}}
 {{- end -}}
@@ -350,6 +353,10 @@ SINGLE_PLAYER: {{ .Values.polytomic.auth.single_player | quote }}
 AWS_REGION: {{ .Values.polytomic.s3.region | quote }}
 AWS_ACCESS_KEY_ID: {{ .Values.polytomic.s3.access_key_id | quote }}
 AWS_SECRET_ACCESS_KEY: {{ .Values.polytomic.s3.secret_access_key | quote }}
+RECORD_LOG_BUCKET: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | quote }}
+RECORD_LOG_REGION: {{ .Values.polytomic.s3.region | quote }}
+EXECUTION_LOG_BUCKET: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | quote }}
+EXECUTION_LOG_REGION: {{ .Values.polytomic.s3.region | quote }}
 KUBERNETES: "true"
 KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
 KUBERNETES_IMAGE: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}

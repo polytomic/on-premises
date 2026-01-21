@@ -1,6 +1,16 @@
 # Polytomic EKS Deployment Guide
 
+<<<<<<< HEAD
+This is the comprehensive deployment guide for Polytomic on AWS EKS using the
+three EKS Terraform modules (eks, eks-addons, eks-helm).
+
+> **Note**: If you're using the [eks-complete
+> example](../../examples/eks-complete/), refer to that README for
+> example-specific quick start instructions, then return here for detailed
+> configuration and troubleshooting.
+=======
 This guide provides comprehensive instructions for deploying Polytomic on AWS EKS using the three EKS Terraform modules.
+>>>>>>> master
 
 ## Table of Contents
 

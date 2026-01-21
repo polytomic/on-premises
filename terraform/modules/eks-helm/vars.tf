@@ -54,7 +54,8 @@ variable "postgres_host" {
 }
 
 variable "certificate_arn" {
-  description = "The arn of the certificate to use for the polytomic deployment"
+  description = "The arn of the certificate to use for the polytomic deployment. If not provided, the ALB will listen on HTTP (port 80) only."
+  default     = ""
 }
 
 variable "subnets" {
