@@ -85,7 +85,7 @@ variable "redis_cluster_size" {
 
 variable "redis_instance_type" {
   description = "Redis instance type"
-  default     = "cache.t2.micro"
+  default     = "cache.t3.micro"
 }
 
 variable "redis_engine_version" {
@@ -179,17 +179,17 @@ variable "database_auto_minor_version_upgrade" {
 
 variable "database_engine_version" {
   description = "Database engine version"
-  default     = "14.7"
+  default     = "17.2"
 }
 
 variable "database_family" {
   description = "Database family"
-  default     = "postgres14"
+  default     = "postgres17"
 }
 
 variable "database_major_engine_version" {
   description = "Database major engine version"
-  default     = "14"
+  default     = "17"
 }
 
 variable "database_instance_class" {
