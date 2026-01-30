@@ -370,74 +370,11 @@ KUBERNETES_SERVICE_ACCOUNT: {{ include "polytomic.serviceAccountName" . | quote 
 {{- if .Values.imagePullSecrets }}
 KUBERNETES_IMAGE_PULL_SECRET: {{ (index .Values.imagePullSecrets 0).name | quote }}
 {{- end }}
-{{- /* Integration credentials - supports both new map format and legacy individual fields */ -}}
-{{- $integrations := dict -}}
-{{- /* New format: polytomic.integrations map (preferred) */ -}}
-{{- if .Values.polytomic.integrations -}}
-{{- $integrations = .Values.polytomic.integrations -}}
-{{- end -}}
-{{- /* Legacy format: individual fields (backwards compatibility) */ -}}
-{{- $legacyIntegrations := dict
-  "AIRTABLE_CLIENT_SECRET" .Values.polytomic.airtable_client_secret
-  "ASANA_CLIENT_ID" .Values.polytomic.asana_client_id
-  "ASANA_CLIENT_SECRET" .Values.polytomic.asana_client_secret
-  "BINGADS_CLIENT_ID" .Values.polytomic.bingads_client_id
-  "BINGADS_CLIENT_SECRET" .Values.polytomic.bingads_client_secret
-  "BINGADS_DEVELOPER_TOKEN" .Values.polytomic.bingads_developer_token
-  "CCLOUD_API_KEY" .Values.polytomic.ccloud_api_key
-  "CCLOUD_API_SECRET" .Values.polytomic.ccloud_api_secret
-  "FBAUDIENCE_CLIENT_ID" .Values.polytomic.fbaudience_client_id
-  "FBAUDIENCE_CLIENT_SECRET" .Values.polytomic.fbaudience_client_secret
-  "FB_LOGIN_CONFIGURATION_ID" .Values.polytomic.fb_login_configuration_id
-  "FRONT_CLIENT_ID" .Values.polytomic.front_client_id
-  "FRONT_CLIENT_SECRET" .Values.polytomic.front_client_secret
-  "GITHUB_CLIENT_ID" .Values.polytomic.github_client_id
-  "GITHUB_CLIENT_SECRET" .Values.polytomic.github_client_secret
-  "GITHUB_DEPLOY_KEY" .Values.polytomic.github_deploy_key
-  "GOOGLEADS_CLIENT_ID" .Values.polytomic.googleads_client_id
-  "GOOGLEADS_CLIENT_SECRET" .Values.polytomic.googleads_client_secret
-  "GOOGLEADS_DEVELOPER_TOKEN" .Values.polytomic.googleads_developer_token
-  "GOOGLESEARCHCONSOLE_CLIENT_ID" .Values.polytomic.googlesearchconsole_client_id
-  "GOOGLESEARCHCONSOLE_CLIENT_SECRET" .Values.polytomic.googlesearchconsole_client_secret
-  "GOOGLEWORKSPACE_CLIENT_ID" .Values.polytomic.googleworkspace_client_id
-  "GOOGLEWORKSPACE_CLIENT_SECRET" .Values.polytomic.googleworkspace_client_secret
-  "GSHEETS_API_KEY" .Values.polytomic.gsheets_api_key
-  "GSHEETS_APP_ID" .Values.polytomic.gsheets_app_id
-  "GSHEETS_CLIENT_ID" .Values.polytomic.gsheets_client_id
-  "GSHEETS_CLIENT_SECRET" .Values.polytomic.gsheets_client_secret
-  "HUBSPOT_CLIENT_ID" .Values.polytomic.hubspot_client_id
-  "HUBSPOT_CLIENT_SECRET" .Values.polytomic.hubspot_client_secret
-  "INTERCOM_CLIENT_ID" .Values.polytomic.intercom_client_id
-  "INTERCOM_CLIENT_SECRET" .Values.polytomic.intercom_client_secret
-  "LINKEDINADS_CLIENT_ID" .Values.polytomic.linkedinads_client_id
-  "LINKEDINADS_CLIENT_SECRET" .Values.polytomic.linkedinads_client_secret
-  "OUTREACH_CLIENT_ID" .Values.polytomic.outreach_client_id
-  "OUTREACH_CLIENT_SECRET" .Values.polytomic.outreach_client_secret
-  "PARDOT_CLIENT_ID" .Values.polytomic.pardot_client_id
-  "PARDOT_CLIENT_SECRET" .Values.polytomic.pardot_client_secret
-  "SALESFORCE_CLIENT_ID" .Values.polytomic.salesforce_client_id
-  "SALESFORCE_CLIENT_SECRET" .Values.polytomic.salesforce_client_secret
-  "SHIPBOB_CLIENT_ID" .Values.polytomic.shipbob_client_id
-  "SHIPBOB_CLIENT_SECRET" .Values.polytomic.shipbob_client_secret
-  "SHOPIFY_CLIENT_ID" .Values.polytomic.shopify_client_id
-  "SHOPIFY_CLIENT_SECRET" .Values.polytomic.shopify_client_secret
-  "SMARTSHEET_CLIENT_ID" .Values.polytomic.smartsheet_client_id
-  "SMARTSHEET_CLIENT_SECRET" .Values.polytomic.smartsheet_client_secret
-  "STRIPE_SECRET_KEY" .Values.polytomic.stripe_secret_key
-  "ZENDESK_CLIENT_ID" .Values.polytomic.zendesk_client_id
-  "ZENDESK_CLIENT_SECRET" .Values.polytomic.zendesk_client_secret
--}}
-{{- /* Merge legacy values into integrations map (new format takes precedence) */ -}}
-{{- range $key, $value := $legacyIntegrations -}}
-{{- if and $value (not (hasKey $integrations $key)) -}}
-{{- $_ := set $integrations $key $value -}}
-{{- end -}}
-{{- end -}}
-{{- /* Output only non-empty integration credentials */ -}}
-{{- range $key, $value := $integrations -}}
+{{- /* Integration credentials - only output non-empty values */ -}}
+{{- range $key, $value := .Values.polytomic.integrations }}
 {{- if $value }}
 {{ $key }}: {{ $value | quote }}
-{{- end -}}
+{{- end }}
 {{- end }}
 {{- if and .Values.polytomic.sharedVolume.enabled (ne .Values.polytomic.sharedVolume.mode "emptyDir") }}
 LOCAL_DATA: "1"
