@@ -169,6 +169,7 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.gsheets_client_secret | string | `""` |  |
 | polytomic.hubspot_client_id | string | `""` |  |
 | polytomic.hubspot_client_secret | string | `""` |  |
+| polytomic.integrations | object | `{}` | Integration credentials Configure OAuth credentials and API keys for third-party integrations. Only non-empty values will be included in the deployment secret. Supports all integration environment variables in UPPER_CASE format. Example:   integrations:     SALESFORCE_CLIENT_ID: "your-client-id"     SALESFORCE_CLIENT_SECRET: "your-client-secret"     HUBSPOT_CLIENT_ID: "your-hubspot-id"     HUBSPOT_CLIENT_SECRET: "your-hubspot-secret" |
 | polytomic.intercom_client_id | string | `""` |  |
 | polytomic.intercom_client_secret | string | `""` |  |
 | polytomic.internal_execution_logs | bool | `false` |  |

@@ -160,7 +160,20 @@ polytomic:
 
   internal_execution_logs: false
 
-  # Integrations
+  # -- Integration credentials
+  # Configure OAuth credentials and API keys for third-party integrations.
+  # Only non-empty values will be included in the deployment secret.
+  # Supports all integration environment variables in UPPER_CASE format.
+  # Example:
+  #   integrations:
+  #     SALESFORCE_CLIENT_ID: "your-client-id"
+  #     SALESFORCE_CLIENT_SECRET: "your-client-secret"
+  #     HUBSPOT_CLIENT_ID: "your-hubspot-id"
+  #     HUBSPOT_CLIENT_SECRET: "your-hubspot-secret"
+  integrations: {}
+
+  # DEPRECATED: Legacy individual fields (kept for backwards compatibility)
+  # Use the integrations map above instead. These will be removed in a future version.
   airtable_client_secret: ""
   asana_client_id: ""
   asana_client_secret: ""
