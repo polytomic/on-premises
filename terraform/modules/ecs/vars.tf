@@ -291,7 +291,7 @@ variable "redis_cluster_size" {
 
 variable "redis_instance_type" {
   description = "Redis instance type"
-  default     = "cache.t2.micro"
+  default     = "cache.t4g.micro"
 }
 
 variable "redis_engine_version" {

@@ -193,9 +193,9 @@ module "polytomic-ecs" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.0, < 6.0.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | >= 3.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.27.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.2.2 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
 
 ## Resources
 
@@ -365,7 +365,7 @@ module "polytomic-ecs" {
 | <a name="input_redis_endpoint"></a> [redis\_endpoint](#input\_redis\_endpoint) | Redis endpoint | `string` | `""` | no |
 | <a name="input_redis_engine_version"></a> [redis\_engine\_version](#input\_redis\_engine\_version) | Redis engine version | `string` | `"6.2"` | no |
 | <a name="input_redis_family"></a> [redis\_family](#input\_redis\_family) | Redis family | `string` | `"redis6.x"` | no |
-| <a name="input_redis_instance_type"></a> [redis\_instance\_type](#input\_redis\_instance\_type) | Redis instance type | `string` | `"cache.t2.micro"` | no |
+| <a name="input_redis_instance_type"></a> [redis\_instance\_type](#input\_redis\_instance\_type) | Redis instance type | `string` | `"cache.t4g.micro"` | no |
 | <a name="input_redis_maintenance_window"></a> [redis\_maintenance\_window](#input\_redis\_maintenance\_window) | Redis maintenance window | `string` | `"mon:03:00-mon:04:00"` | no |
 | <a name="input_redis_port"></a> [redis\_port](#input\_redis\_port) | Redis port | `number` | `6379` | no |
 | <a name="input_redis_snapshot_retention_limit"></a> [redis\_snapshot\_retention\_limit](#input\_redis\_snapshot\_retention\_limit) | Redis snapshot retention limit | `string` | `"7"` | no |
