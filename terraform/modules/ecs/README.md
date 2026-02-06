@@ -184,8 +184,8 @@ module "polytomic-ecs" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0, < 6.0.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.11 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0, < 7.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.0 |
 
@@ -248,22 +248,22 @@ module "polytomic-ecs" {
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_database"></a> [database](#module\_database) | terraform-aws-modules/rds/aws | 5.9.0 |
-| <a name="module_database_sg"></a> [database\_sg](#module\_database\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
-| <a name="module_ecs"></a> [ecs](#module\_ecs) | terraform-aws-modules/ecs/aws | <5.0.0 |
+| <a name="module_database"></a> [database](#module\_database) | terraform-aws-modules/rds/aws | ~> 7.0 |
+| <a name="module_database_sg"></a> [database\_sg](#module\_database\_sg) | terraform-aws-modules/security-group/aws | ~> 5.0 |
+| <a name="module_ecs"></a> [ecs](#module\_ecs) | terraform-aws-modules/ecs/aws | ~> 6.0 |
 | <a name="module_ecs-alerts-worker"></a> [ecs-alerts-worker](#module\_ecs-alerts-worker) | ../monitoring/ecs-alerts | n/a |
-| <a name="module_ecs_log_groups"></a> [ecs\_log\_groups](#module\_ecs\_log\_groups) | terraform-aws-modules/cloudwatch/aws//modules/log-group | ~> 3.0 |
-| <a name="module_efs"></a> [efs](#module\_efs) | cloudposse/efs/aws | ~> 0.35.0 |
-| <a name="module_efs_sg"></a> [efs\_sg](#module\_efs\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
+| <a name="module_ecs_log_groups"></a> [ecs\_log\_groups](#module\_ecs\_log\_groups) | terraform-aws-modules/cloudwatch/aws//modules/log-group | ~> 5.0 |
+| <a name="module_efs"></a> [efs](#module\_efs) | cloudposse/efs/aws | ~> 1.1 |
+| <a name="module_efs_sg"></a> [efs\_sg](#module\_efs\_sg) | terraform-aws-modules/security-group/aws | ~> 5.0 |
 | <a name="module_elasticache-alerts"></a> [elasticache-alerts](#module\_elasticache-alerts) | ../monitoring/elasticache-alerts | n/a |
-| <a name="module_fargate_sg"></a> [fargate\_sg](#module\_fargate\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
-| <a name="module_lb_sg"></a> [lb\_sg](#module\_lb\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
-| <a name="module_log_group"></a> [log\_group](#module\_log\_group) | terraform-aws-modules/cloudwatch/aws//modules/log-group | ~> 3.0 |
+| <a name="module_fargate_sg"></a> [fargate\_sg](#module\_fargate\_sg) | terraform-aws-modules/security-group/aws | ~> 5.0 |
+| <a name="module_lb_sg"></a> [lb\_sg](#module\_lb\_sg) | terraform-aws-modules/security-group/aws | ~> 5.0 |
+| <a name="module_log_group"></a> [log\_group](#module\_log\_group) | terraform-aws-modules/cloudwatch/aws//modules/log-group | ~> 5.0 |
 | <a name="module_rds-alerts"></a> [rds-alerts](#module\_rds-alerts) | ../monitoring/rds-alerts | n/a |
-| <a name="module_redis"></a> [redis](#module\_redis) | umotif-public/elasticache-redis/aws | n/a |
-| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | 4.11.0 |
-| <a name="module_scheduled_task"></a> [scheduled\_task](#module\_scheduled\_task) | cn-terraform/ecs-fargate-scheduled-task/aws | 1.0.22 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | <5.0.0 |
+| <a name="module_redis"></a> [redis](#module\_redis) | ../elasticache-redis | n/a |
+| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | ~> 5.0 |
+| <a name="module_scheduled_task"></a> [scheduled\_task](#module\_scheduled\_task) | cn-terraform/ecs-fargate-scheduled-task/aws | ~> 1.0.27 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 6.0 |
 
 ## Inputs
 
