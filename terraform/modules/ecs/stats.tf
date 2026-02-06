@@ -2,7 +2,7 @@ module "scheduled_task" {
   count = var.enable_stats ? 1 : 0
 
   source                                      = "cn-terraform/ecs-fargate-scheduled-task/aws"
-  version                                     = "1.0.22"
+  version                                     = "~> 1.0.27"
   name_prefix                                 = var.prefix
   ecs_cluster_arn                             = var.ecs_cluster_name == "" ? module.ecs[0].cluster_arn : data.aws_ecs_cluster.cluster[0].arn
   event_rule_name                             = "polytomic-stats-reporter"

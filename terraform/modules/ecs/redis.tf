@@ -1,5 +1,5 @@
 module "redis" {
-  source = "umotif-public/elasticache-redis/aws"
+  source = "../elasticache-redis"
 
   count = var.redis_endpoint == "" ? 1 : 0
 

@@ -1,6 +1,6 @@
 module "database_sg" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   count = var.database_endpoint == "" ? 1 : 0
 
@@ -29,7 +29,7 @@ module "database_sg" {
 
 module "fargate_sg" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   name   = "${var.prefix}-fargate_task"
   vpc_id = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
@@ -65,7 +65,7 @@ module "fargate_sg" {
 
 module "efs_sg" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   name   = "${var.prefix}-efs"
   vpc_id = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
@@ -92,7 +92,7 @@ module "efs_sg" {
 
 module "lb_sg" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   count = length(var.load_balancer_security_groups) == 0 ? 1 : 0
 
