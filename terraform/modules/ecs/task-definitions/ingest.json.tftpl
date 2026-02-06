@@ -1,0 +1,172 @@
+[{
+    %{ if !polytomic_logger }
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "secretOptions": null,
+        "options": {
+            "awslogs-group": "${ingest_log_group}",
+            "awslogs-region": "${region}",
+            "awslogs-stream-prefix": "service"
+        }
+    },
+    %{ else }
+    "logConfiguration": {
+        "logDriver": "splunk",
+        "options": {
+            "splunk-token": "test",
+            "splunk-url": "http://localhost:8000",
+            "splunk-verify-connection": "false"
+        }
+    },
+    "dependsOn": [
+      {
+        "containerName": "vector",
+        "condition": "HEALTHY"
+        }
+    ],
+    %{ endif }
+    "environment": [
+        %{ for key, value in env ~}
+        {
+            "name": "${key}",
+            "value": "${value}"
+        },
+        %{ endfor ~}
+        %{~ if polytomic_dd_agent }
+        {
+            "name": "DD_AGENT_HOST",
+            "value": "localhost"
+        },
+        {
+            "name": "METRICS",
+            "value": "true"
+        },
+        %{ endif ~}
+        {
+            "name": "ROLE",
+            "value": "ingest"
+        }
+    ],
+    "secrets": [
+%{ for key, _ in secrets ~}
+        {
+            "name": "${key}",
+            "valueFrom": "${task_secret_arn}:${key}::"
+        }%{ if key != keys(secrets)[length(keys(secrets)) - 1] },%{ endif }
+%{ endfor ~}
+    ],
+    "mountPoints": [
+    {
+        "containerPath": "${mount_path}",
+        "sourceVolume": "polytomic"
+    }],
+    "image": "${image}",
+    "portMappings": [
+        {
+            "containerPort": 8126,
+            "hostPort": 8126
+        }
+    ],
+    "name": "ingest",
+    "ulimits": [
+      {
+        "name": "nofile",
+        "softLimit": 1024000,
+        "hardLimit": 1024000
+      }
+    ]
+}
+%{~ if polytomic_logger },
+{
+    "image": "${polytomic_logger_image}",
+     "logConfiguration": {
+        "logDriver": "awslogs",
+        "secretOptions": null,
+        "options": {
+            "awslogs-group": "${ingest_log_group}",
+            "awslogs-region": "${region}",
+            "awslogs-stream-prefix": "service"
+        }
+    },
+    "name": "vector",
+    "essential": true,
+    "environment": [
+        %{ for key, value in env ~}
+        {
+            "name": "${key}",
+            "value": "${value}"
+        },
+        %{ endfor ~}
+        {
+            "name": "ROLE",
+            "value": "logger"
+        }
+    ],
+    "secrets": [
+%{ for key, _ in support_secrets ~}
+        {
+            "name": "${key}",
+            "valueFrom": "${task_secret_arn}:${key}::"
+        }%{ if key != keys(support_secrets)[length(keys(support_secrets)) - 1] },%{ endif }
+%{ endfor ~}
+    ],
+    "healthCheck": {
+      "command": [
+        "CMD-SHELL",
+        "wget --no-verbose --tries=1 --spider http://localhost:8000/services/collector/health > /dev/null || exit 1"
+        ],
+        "interval":30,
+        "retries":3,
+        "startPeriod":100,
+        "timeout":5
+    }
+}
+  %{ endif }
+  %{~ if polytomic_dd_agent },
+{
+    "name": "datadog-agent",
+    "image": "${polytomic_dd_agent_image}",
+    "essential": true,
+    "environment": [
+        %{ for key, value in env ~}
+        {
+        "name": "${key}",
+        "value": "${value}"
+        },
+        %{ endfor ~}
+        {
+            "name": "DD_API_KEY",
+            "value": "ENC[DD_API_KEY]"
+        },
+        {
+        "name": "DD_SECRET_BACKEND_COMMAND",
+        "value": "/bin/ptctl"
+        },
+        {
+        "name": "DD_SECRET_BACKEND_ARGUMENTS",
+        "value": "config get -f vector -"
+        },
+        {
+        "name": "DD_DOCKER_ENV_AS_TAGS",
+        "value": "{\\\"role\\\": \\\"polytomic.role\\\"}"
+        },
+        {
+        "name": "DD_APM_ENABLED",
+        "value": "true"
+        },
+        {
+            "name": "ECS_FARGATE",
+            "value": "true"
+        }
+    ],
+    "secrets": [
+%{ for key, _ in support_secrets ~}
+        {
+            "name": "${key}",
+            "valueFrom": "${task_secret_arn}:${key}::"
+        }%{ if key != keys(support_secrets)[length(keys(support_secrets)) - 1] },%{ endif }
+%{ endfor ~}
+    ]
+}
+ %{ endif }
+]
