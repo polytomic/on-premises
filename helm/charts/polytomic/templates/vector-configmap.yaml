@@ -7,61 +7,61 @@ metadata:
     {{- include "polytomic.labels" . | nindent 4 }}
     app.kubernetes.io/component: vector
 data:
-  vector.toml: {{ `[secret]
-[secret.dd_secret]
-type = "exec"
-command = [
-    "/bin/ptconf",
-    "get",
-    "-f",
-    "vector",
-    "-"
-]
+  vector.toml: |
+    [secret]
+    [secret.dd_secret]
+    type = "exec"
+    command = [
+        "/bin/ptconf",
+        "get",
+        "-f",
+        "vector",
+        "-"
+    ]
 
-# Kubernetes logs source - collects from /var/log/pods
-[sources.kubernetes_logs]
-type = "kubernetes_logs"
-# Only collect from Polytomic pods using instance label
-# (each deployment has different app.kubernetes.io/name: polytomic-web, polytomic-sync, etc.)
-extra_label_selector = "${POD_LABEL_SELECTOR:-app.kubernetes.io/instance=polytomic}"
-# Read from /var/log/pods
-glob_minimum_cooldown_ms = 1000
+    # Kubernetes logs source - collects from /var/log/pods
+    [sources.kubernetes_logs]
+    type = "kubernetes_logs"
+    # Only collect from Polytomic pods using instance label
+    # (each deployment has different app.kubernetes.io/name: polytomic-web, polytomic-sync, etc.)
+    extra_label_selector = "${POD_LABEL_SELECTOR:-app.kubernetes.io/instance=polytomic}"
+    # Read from /var/log/pods
+    glob_minimum_cooldown_ms = 1000
 
-# Parse JSON logs
-[transforms.parse]
-type = "remap"
-inputs = [ "kubernetes_logs" ]
-source = ". |= object!(parse_json!(.message))"
+    # Parse JSON logs
+    [transforms.parse]
+    type = "remap"
+    inputs = [ "kubernetes_logs" ]
+    source = ". |= object!(parse_json!(.message))"
 
-# Filter for execution logs
-[transforms.filter]
-type = "filter"
-inputs = [ "parse" ]
-condition = 'exists(.execution_id) && exists(.organization_id) && exists(.sync_id)'
+    # Filter for execution logs
+    [transforms.filter]
+    type = "filter"
+    inputs = [ "parse" ]
+    condition = 'exists(.execution_id) && exists(.organization_id) && exists(.sync_id)'
 
-# S3 sink (always enabled)
-[sinks.s3]
-type = "aws_s3"
-inputs = [ "filter" ]
-bucket =  "${EXECUTION_LOG_BUCKET:?err}"
-key_prefix = "{{ organization_id  }}/execution_logs/{{ sync_id }}/{{ execution_id }}"
-region = "${AWS_REGION:?err}"
-filename_append_uuid = true
-filename_time_format = "%s"
-filename_extension = "json"
-[sinks.s3.encoding]
-codec = "json"
-[sinks.s3.batch]
-timeout_secs = 10
+    # S3 sink (always enabled)
+    [sinks.s3]
+    type = "aws_s3"
+    inputs = [ "filter" ]
+    bucket =  "${EXECUTION_LOG_BUCKET:?err}"
+    key_prefix = "{{ "{{" }} organization_id  {{ "}}" }}/execution_logs/{{ "{{" }} sync_id {{ "}}" }}/{{ "{{" }} execution_id {{ "}}" }}"
+    region = "${AWS_REGION:?err}"
+    filename_append_uuid = true
+    filename_time_format = "%s"
+    filename_extension = "json"
+    [sinks.s3.encoding]
+    codec = "json"
+    [sinks.s3.batch]
+    timeout_secs = 10
 
-# Debug sink (optional)
-[sinks.debug]
-type = "console"
-inputs = [ "kubernetes_logs" ]
-target = "stdout"
-[sinks.debug.encoding]
-codec = "json"
+    # Debug sink (optional)
+    [sinks.debug]
+    type = "console"
+    inputs = [ "kubernetes_logs" ]
+    target = "stdout"
+    [sinks.debug.encoding]
+    codec = "json"
 
-# Note: Datadog sink is added by entrypoint.sh when SEND_LOGS=true
-` | nindent 4 }}
+    # Note: Datadog sink is added by entrypoint.sh when SEND_LOGS=true
 {{- end }}
