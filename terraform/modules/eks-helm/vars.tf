@@ -102,3 +102,33 @@ variable "chart_path" {
   type        = string
   default     = ""
 }
+
+variable "polytomic_logger_image" {
+  description = "Docker image for Vector DaemonSet with ptconf for secret decryption"
+  type        = string
+  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest"
+}
+
+variable "polytomic_use_logger" {
+  description = "Deploy Vector DaemonSet for stdout/stderr log collection. Disable to reduce costs in dev environments or if using alternative log collection. Matches ECS module variable."
+  type        = bool
+  default     = true
+}
+
+variable "polytomic_managed_logs" {
+  description = "Enable Datadog log forwarding for both embedded Vector and DaemonSet. Matches ECS module variable."
+  type        = bool
+  default     = false
+}
+
+variable "oidc_provider_arn" {
+  description = "OIDC provider ARN for IRSA (IAM Roles for Service Accounts). Required for Vector DaemonSet IAM role."
+  type        = string
+  default     = ""
+}
+
+variable "execution_log_bucket_arn" {
+  description = "ARN of the S3 bucket for execution logs. Used for Vector DaemonSet IAM permissions."
+  type        = string
+  default     = ""
+}

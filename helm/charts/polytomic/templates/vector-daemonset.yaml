@@ -1,0 +1,94 @@
+{{- if .Values.polytomic.vector.daemonset.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "polytomic.fullname" . }}-vector
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+    app.kubernetes.io/component: vector
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "polytomic.name" . }}-vector
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/vector-configmap.yaml") . | sha256sum }}
+      labels:
+        app.kubernetes.io/name: {{ include "polytomic.name" . }}-vector
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ include "polytomic.fullname" . }}-vector
+      containers:
+      - name: vector
+        image: {{ .Values.polytomic.vector.daemonset.image }}
+        imagePullPolicy: IfNotPresent
+        command:
+          - /entrypoint.sh
+        env:
+        # DaemonSet needs SEND_LOGS to conditionally add Datadog sink
+        - name: SEND_LOGS
+          value: {{ .Values.polytomic.vector.managedLogs | quote }}
+        # Pod label selector for filtering
+        - name: POD_LABEL_SELECTOR
+          value: {{ .Values.polytomic.vector.daemonset.podLabelSelector | quote }}
+        # S3 configuration
+        - name: EXECUTION_LOG_BUCKET
+          value: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | quote }}
+        - name: AWS_REGION
+          value: {{ .Values.polytomic.s3.region | quote }}
+        {{- if .Values.polytomic.s3.access_key_id }}
+        - name: AWS_ACCESS_KEY_ID
+          value: {{ .Values.polytomic.s3.access_key_id | quote }}
+        {{- end }}
+        {{- if .Values.polytomic.s3.secret_access_key }}
+        - name: AWS_SECRET_ACCESS_KEY
+          value: {{ .Values.polytomic.s3.secret_access_key | quote }}
+        {{- end }}
+        # All the same env vars as app pods for ptconf
+        - name: DEPLOYMENT
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.secret.name }}
+              name: {{ .Values.secret.name }}
+              {{- else }}
+              name: {{ include "polytomic.fullname" . }}-config
+              {{- end }}
+              key: DEPLOYMENT
+        - name: DEPLOYMENT_KEY
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.secret.name }}
+              name: {{ .Values.secret.name }}
+              {{- else }}
+              name: {{ include "polytomic.fullname" . }}-config
+              {{- end }}
+              key: DEPLOYMENT_KEY
+        volumeMounts:
+        - name: config
+          mountPath: /etc/vector
+          readOnly: true
+        - name: var-log
+          mountPath: /var/log
+          readOnly: true
+        - name: var-lib
+          mountPath: /var/lib
+          readOnly: true
+        resources:
+          {{- toYaml .Values.polytomic.vector.daemonset.resources | nindent 10 }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "polytomic.fullname" . }}-vector
+      - name: var-log
+        hostPath:
+          path: /var/log
+      - name: var-lib
+        hostPath:
+          path: /var/lib
+      tolerations:
+      # Run on all nodes, including control plane
+      - effect: NoSchedule
+        operator: Exists
+{{- end }}

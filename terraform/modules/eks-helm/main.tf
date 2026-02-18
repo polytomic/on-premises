@@ -59,6 +59,17 @@ polytomic:
     operational_bucket: "s3://${var.polytomic_bucket}"
     region: "${var.polytomic_bucket_region}"
 
+  # Vector logging configuration
+  internal_execution_logs: true
+  vector:
+    enabled: false  # Sidecar disabled in Kubernetes
+    daemonset:
+      enabled: ${var.polytomic_use_logger}
+      image: ${var.polytomic_logger_image}
+      serviceAccount:
+        roleArn: ${var.polytomic_use_logger && var.oidc_provider_arn != "" ? module.vector_role[0].arn : ""}
+    managedLogs: ${var.polytomic_managed_logs}
+
   jobs:
     image: ${var.polytomic_image}
 
@@ -111,3 +122,45 @@ EOF
 
 }
 
+# IAM role for Vector DaemonSet (IRSA)
+module "vector_role" {
+  count   = var.polytomic_use_logger && var.oidc_provider_arn != "" ? 1 : 0
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
+
+  name = "${var.polytomic_deployment}-vector-daemonset"
+
+  policies = {
+    policy = aws_iam_policy.vector_s3[0].arn
+  }
+
+  oidc_providers = {
+    main = {
+      provider_arn               = var.oidc_provider_arn
+      namespace_service_accounts = ["polytomic:polytomic-vector"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "vector_s3" {
+  count = var.polytomic_use_logger && var.oidc_provider_arn != "" ? 1 : 0
+
+  name        = "${var.polytomic_deployment}-vector-s3"
+  description = "S3 access for Vector DaemonSet to write execution logs"
+  policy      = data.aws_iam_policy_document.vector_s3[0].json
+}
+
+data "aws_iam_policy_document" "vector_s3" {
+  count = var.polytomic_use_logger && var.oidc_provider_arn != "" ? 1 : 0
+
+  statement {
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+    ]
+    effect = "Allow"
+    resources = [
+      var.execution_log_bucket_arn != "" ? "${var.execution_log_bucket_arn}/*" : "arn:aws:s3:::${var.polytomic_bucket}/*"
+    ]
+  }
+}

@@ -160,6 +160,52 @@ polytomic:
 
   internal_execution_logs: false
 
+  # Vector logging configuration
+  vector:
+    # -- Disable sidecar (replaced by DaemonSet in Kubernetes)
+    # NOTE: Sidecar is still used in ECS deployments
+    enabled: false
+
+    # -- Vector DaemonSet for stdout/stderr log collection
+    # Collects container logs from all Polytomic pods on each node
+    # Default: true (matches ECS behavior where polytomic_use_logger defaults to true)
+    daemonset:
+      # -- Set to false to disable DaemonSet log collection
+      # Consider disabling for:
+      # - Development environments to save resources
+      # - Cost-sensitive deployments where only business logs are needed
+      # - When using alternative cluster-wide log collection
+      # - Security/compliance restrictions on DaemonSets
+      enabled: true
+
+      # -- MUST use Polytomic's Vector image with ptconf for secret decryption
+      image: 568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest
+
+      # -- Label selector to filter which pods to collect logs from
+      # Uses app.kubernetes.io/instance which is shared across all Polytomic deployments
+      # (each deployment has a different app.kubernetes.io/name: polytomic-web, polytomic-sync, etc.)
+      podLabelSelector: "app.kubernetes.io/instance=polytomic"
+
+      resources:
+        requests:
+          memory: "128Mi"
+          cpu: "100m"
+        limits:
+          memory: "256Mi"
+          cpu: "200m"
+
+      # -- ServiceAccount configuration for Vector DaemonSet
+      serviceAccount:
+        # -- IAM role ARN for IRSA (EKS only)
+        roleArn: ""
+
+    # -- Enable forwarding to Datadog Logs API
+    # When true, sets SEND_LOGS=true for both:
+    # - Embedded Vector (structured app logs)
+    # - DaemonSet Vector (stdout/stderr logs)
+    # Default: false (opt-in)
+    managedLogs: false
+
   # Integrations
   airtable_client_secret: ""
   asana_client_id: ""

@@ -435,8 +435,12 @@ ZENDESK_CLIENT_ID: {{ .Values.polytomic.zendesk_client_id | quote }}
 ZENDESK_CLIENT_SECRET: {{ .Values.polytomic.zendesk_client_secret | quote }}
 hubspot_scopes_v2: "true"
 VERNEUIL_CONFIG: "{\"replication_spooling_dir\":\"/tmp/verneuil\",\"replication_targets\":[{\"s3\":{\"region\":\"{{ .Values.polytomic.s3.region }}\",\"chunk_bucket\":\"{{ .Values.polytomic.s3.operational_bucket }}/chunks\",\"manifest_bucket\":\"{{ .Values.polytomic.s3.operational_bucket }}/manifests\",\"create_buckets_on_demand\":false,\"domain_addressing\":false}}]}"
-EXECUTION_LOGS_V2: {{ .Values.polytomic.internal_execution_logs | quote }}
+EXECUTION_LOGS_V2: {{ or .Values.polytomic.internal_execution_logs .Values.polytomic.vector.daemonset.enabled | quote }}
 INTERNAL_EXECUTION_LOGS: {{ .Values.polytomic.internal_execution_logs | quote }}
+
+{{- if .Values.polytomic.vector.managedLogs }}
+SEND_LOGS: "true"
+{{- end }}
 
 {{- if .Values.polytomic.s3.gcs }}
 POLYTOMIC_USE_GCS: "true"

@@ -210,6 +210,14 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.task_executor_cleanup_delay_seconds | int | `10` |  |
 | polytomic.tracing | bool | `false` |  |
 | polytomic.tx_buffer_size | int | `1000` |  |
+| polytomic.vector.daemonset | object | `{"enabled":true,"image":"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest","podLabelSelector":"app.kubernetes.io/instance=polytomic","resources":{"limits":{"cpu":"200m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"serviceAccount":{"roleArn":""}}` | Vector DaemonSet for stdout/stderr log collection Collects container logs from all Polytomic pods on each node Default: true (matches ECS behavior where polytomic_use_logger defaults to true) |
+| polytomic.vector.daemonset.enabled | bool | `true` | Set to false to disable DaemonSet log collection Consider disabling for: - Development environments to save resources - Cost-sensitive deployments where only business logs are needed - When using alternative cluster-wide log collection - Security/compliance restrictions on DaemonSets |
+| polytomic.vector.daemonset.image | string | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest"` | MUST use Polytomic's Vector image with ptconf for secret decryption |
+| polytomic.vector.daemonset.podLabelSelector | string | `"app.kubernetes.io/instance=polytomic"` | Label selector to filter which pods to collect logs from Uses app.kubernetes.io/instance which is shared across all Polytomic deployments (each deployment has a different app.kubernetes.io/name: polytomic-web, polytomic-sync, etc.) |
+| polytomic.vector.daemonset.serviceAccount | object | `{"roleArn":""}` | ServiceAccount configuration for Vector DaemonSet |
+| polytomic.vector.daemonset.serviceAccount.roleArn | string | `""` | IAM role ARN for IRSA (EKS only) |
+| polytomic.vector.enabled | bool | `false` | Disable sidecar (replaced by DaemonSet in Kubernetes) NOTE: Sidecar is still used in ECS deployments |
+| polytomic.vector.managedLogs | bool | `false` | Enable forwarding to Datadog Logs API When true, sets SEND_LOGS=true for both: - Embedded Vector (structured app logs) - DaemonSet Vector (stdout/stderr logs) Default: false (opt-in) |
 | polytomic.zendesk_client_id | string | `""` |  |
 | polytomic.zendesk_client_secret | string | `""` |  |
 | postgresql.auth.database | string | `"polytomic"` |  |
