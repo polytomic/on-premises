@@ -5,11 +5,12 @@ locals {
 }
 
 resource "helm_release" "polytomic" {
-  name       = "polytomic"
-  namespace  = "polytomic"
-  repository = local.use_repository ? var.chart_repository : null
-  chart      = local.use_repository ? "polytomic" : local.chart_path
-  version    = local.use_repository && var.chart_version != "" ? var.chart_version : null
+  name              = "polytomic"
+  namespace         = "polytomic"
+  dependency_update = true
+  repository        = local.use_repository ? var.chart_repository : null
+  chart             = local.use_repository ? "polytomic" : local.chart_path
+  version           = local.use_repository && var.chart_version != "" ? var.chart_version : null
 
   create_namespace = true
   wait             = false
