@@ -6,8 +6,8 @@ This repository contains multiple deployment components, each with its own chang
 
 ### Helm Chart
 See [helm/charts/polytomic/CHANGELOG.md](helm/charts/polytomic/CHANGELOG.md)
-- **Current Version**: 1.0.0
-- **Latest Tag**: `helm/v1.0.0`
+- **Current Version**: 1.0.2
+- **Latest Tag**: `polytomic-1.0.2`
 
 ### Terraform Modules
 
@@ -28,8 +28,8 @@ See [terraform/modules/eks-addons/CHANGELOG.md](terraform/modules/eks-addons/CHA
 
 #### EKS Helm Deployment Module
 See [terraform/modules/eks-helm/CHANGELOG.md](terraform/modules/eks-helm/CHANGELOG.md)
-- **Current Version**: 1.0.0
-- **Latest Tag**: `terraform/eks-helm/v1.0.0`
+- **Current Version**: 1.1.0
+- **Latest Tag**: `terraform/eks-helm/v1.1.0`
 
 #### GKE Infrastructure Module
 See [terraform/modules/gke/CHANGELOG.md](terraform/modules/gke/CHANGELOG.md)
