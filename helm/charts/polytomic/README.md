@@ -135,6 +135,15 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.auth.url | string | `"https://polytomic.mycompany.com"` | Base URL for accessing Polytomic; for example, https://polytomic.mycompany.com. This will be used when redirecting back from Google and other integrations after authenticating with OAuth. |
 | polytomic.auth.workos_api_key | string | `""` |  |
 | polytomic.auth.workos_client_id | string | `""` |  |
+| polytomic.datadog.daemonset.enabled | bool | `false` | Enable Datadog Agent DaemonSet for APM tracing When enabled, all Polytomic pods will have DD_AGENT_HOST set to the node IP |
+| polytomic.datadog.daemonset.image | string | `"polytomic-dd-agent"` | Image name for Datadog Agent DaemonSet (registry is set via imageRegistry). MUST use Polytomic's Datadog agent image with ptconf for secret decryption. |
+| polytomic.datadog.daemonset.imagePullPolicy | string | `"IfNotPresent"` |  |
+| polytomic.datadog.daemonset.resources.limits.cpu | string | `"500m"` |  |
+| polytomic.datadog.daemonset.resources.limits.memory | string | `"512Mi"` |  |
+| polytomic.datadog.daemonset.resources.requests.cpu | string | `"200m"` |  |
+| polytomic.datadog.daemonset.resources.requests.memory | string | `"256Mi"` |  |
+| polytomic.datadog.daemonset.tag | string | `""` | Tag for the Datadog agent image. Defaults to image.tag when not set. |
+| polytomic.datadog.daemonset.tolerations | list | `[]` | Additional tolerations for the Datadog DaemonSet pods. |
 | polytomic.default_org_features | list | `[]` |  |
 | polytomic.deployment.api_key | string | `""` | The global api key for your deployment, user provided. |
 | polytomic.deployment.key | string | `""` | The license key for your deployment, provided by Polytomic. |
