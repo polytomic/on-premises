@@ -24,7 +24,7 @@ spec:
       # No securityContext override is provided; the default (root) is required.
       initContainers:
       - name: init-vector-config
-        image: {{ .Values.imageRegistry }}/{{ .Values.polytomic.vector.daemonset.image }}:{{ .Values.polytomic.vector.daemonset.tag }}
+        image: {{ .Values.imageRegistry }}/{{ .Values.polytomic.vector.daemonset.image }}:{{ .Values.polytomic.vector.daemonset.tag | default .Values.image.tag }}
         imagePullPolicy: {{ .Values.polytomic.vector.daemonset.imagePullPolicy }}
         command: ['sh', '-c', 'cp /etc/vector-base/vector.toml /etc/vector/vector.toml']
         volumeMounts:
@@ -35,7 +35,7 @@ spec:
           mountPath: /etc/vector
       containers:
       - name: vector
-        image: {{ .Values.imageRegistry }}/{{ .Values.polytomic.vector.daemonset.image }}:{{ .Values.polytomic.vector.daemonset.tag }}
+        image: {{ .Values.imageRegistry }}/{{ .Values.polytomic.vector.daemonset.image }}:{{ .Values.polytomic.vector.daemonset.tag | default .Values.image.tag }}
         imagePullPolicy: {{ .Values.polytomic.vector.daemonset.imagePullPolicy }}
         command:
           - /entrypoint.sh

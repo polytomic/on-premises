@@ -182,7 +182,8 @@ polytomic:
       # -- Image name for Vector DaemonSet (registry is set via imageRegistry).
       # MUST use Polytomic's Vector image with ptconf for secret decryption.
       image: polytomic-vector
-      tag: build-213305
+      # -- Tag for the Vector image. Defaults to image.tag when not set.
+      tag: ""
       imagePullPolicy: IfNotPresent
 
       # -- Label selector to filter which pods to collect logs from.
