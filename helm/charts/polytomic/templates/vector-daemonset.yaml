@@ -20,6 +20,17 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ include "polytomic.fullname" . }}-vector
+      initContainers:
+      - name: init-vector-config
+        image: {{ .Values.polytomic.vector.daemonset.image }}
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c', 'cp /etc/vector-base/vector.toml /etc/vector/vector.toml']
+        volumeMounts:
+        - name: config-base
+          mountPath: /etc/vector-base
+          readOnly: true
+        - name: config-writable
+          mountPath: /etc/vector
       containers:
       - name: vector
         image: {{ .Values.polytomic.vector.daemonset.image }}
@@ -71,26 +82,28 @@ spec:
               {{- end }}
               key: DEPLOYMENT_KEY
         volumeMounts:
-        - name: config
+        - name: config-writable
           mountPath: /etc/vector
         - name: var-log
           mountPath: /var/log
           readOnly: true
-        - name: var-lib
-          mountPath: /var/lib
-          readOnly: true
+        - name: var-lib-vector
+          mountPath: /var/lib/vector
         resources:
           {{- toYaml .Values.polytomic.vector.daemonset.resources | nindent 10 }}
       volumes:
-      - name: config
+      - name: config-base
         configMap:
           name: {{ include "polytomic.fullname" . }}-vector
+      - name: config-writable
+        emptyDir: {}
       - name: var-log
         hostPath:
           path: /var/log
-      - name: var-lib
+      - name: var-lib-vector
         hostPath:
-          path: /var/lib
+          path: /var/lib/vector
+          type: DirectoryOrCreate
       tolerations:
       # Run on all nodes, including control plane
       - effect: NoSchedule
