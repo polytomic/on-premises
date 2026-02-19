@@ -38,7 +38,8 @@ spec:
         command:
           - /entrypoint.sh
         env:
-        # DaemonSet needs SEND_LOGS to conditionally add Datadog sink
+        # entrypoint.sh reads SEND_LOGS but detects Kubernetes via VECTOR_SELF_NODE_NAME
+        # and skips appending config; the Datadog sink is controlled by the ConfigMap instead.
         - name: SEND_LOGS
           value: {{ .Values.polytomic.vector.managedLogs | quote }}
         # Required by kubernetes_logs source to identify which node to collect from
