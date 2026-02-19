@@ -20,6 +20,8 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ include "polytomic.fullname" . }}-vector
+      # Vector must run as root to read /var/log/pods from the host.
+      # No securityContext override is provided; the default (root) is required.
       initContainers:
       - name: init-vector-config
         image: {{ .Values.polytomic.vector.daemonset.image }}:{{ .Values.polytomic.vector.daemonset.tag }}
