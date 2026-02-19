@@ -1,0 +1,24 @@
+{{- if .Values.polytomic.datadog.daemonset.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "polytomic.fullname" . }}-datadog
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+    app.kubernetes.io/component: datadog
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "polytomic.name" . }}-datadog
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  # Routes traffic only to the agent on the same node
+  internalTrafficPolicy: Local
+  ports:
+  - name: apm
+    port: 8126
+    targetPort: 8126
+    protocol: TCP
+  - name: dogstatsd
+    port: 8125
+    targetPort: 8125
+    protocol: UDP
+{{- end }}

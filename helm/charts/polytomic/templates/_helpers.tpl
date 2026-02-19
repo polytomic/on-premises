@@ -390,6 +390,9 @@ LOCAL_DATA: "0"
 {{- end }}
 LOCAL_DATA_PATH: {{ .Values.polytomic.sharedVolume.mountPath | quote }}
 METRICS: {{ or .Values.polytomic.metrics .Values.polytomic.datadog.daemonset.enabled | quote }}
+{{- if .Values.polytomic.datadog.daemonset.enabled }}
+DD_AGENT_HOST: {{ include "polytomic.fullname" . }}-datadog
+{{- end }}
 QUERY_WORKERS: {{ .Values.polytomic.query_workers | quote }}
 SYNC_RETRY_ERRORS: {{ .Values.polytomic.sync_retry_errors | quote }}
 SYNC_WORKERS: {{ .Values.polytomic.sync_workers | quote }}

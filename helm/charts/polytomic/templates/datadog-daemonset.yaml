@@ -28,11 +28,9 @@ spec:
         imagePullPolicy: {{ .Values.polytomic.datadog.daemonset.imagePullPolicy }}
         ports:
         - containerPort: 8126
-          hostPort: 8126
           name: apm
           protocol: TCP
         - containerPort: 8125
-          hostPort: 8125
           name: dogstatsd
           protocol: UDP
         env:
