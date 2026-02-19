@@ -1,0 +1,114 @@
+{{- if .Values.polytomic.vector.daemonset.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "polytomic.fullname" . }}-vector
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+    app.kubernetes.io/component: vector
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "polytomic.name" . }}-vector
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/vector-configmap.yaml") . | sha256sum }}
+      labels:
+        app.kubernetes.io/name: {{ include "polytomic.name" . }}-vector
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ include "polytomic.fullname" . }}-vector
+      # Vector must run as root to read /var/log/pods from the host.
+      # No securityContext override is provided; the default (root) is required.
+      initContainers:
+      - name: init-vector-config
+        image: {{ .Values.imageRegistry }}/{{ .Values.polytomic.vector.daemonset.image }}:{{ .Values.polytomic.vector.daemonset.tag | default .Values.image.tag }}
+        imagePullPolicy: {{ .Values.polytomic.vector.daemonset.imagePullPolicy }}
+        command: ['sh', '-c', 'cp /etc/vector-base/vector.toml /etc/vector/vector.toml']
+        volumeMounts:
+        - name: config-base
+          mountPath: /etc/vector-base
+          readOnly: true
+        - name: config-writable
+          mountPath: /etc/vector
+      containers:
+      - name: vector
+        image: {{ .Values.imageRegistry }}/{{ .Values.polytomic.vector.daemonset.image }}:{{ .Values.polytomic.vector.daemonset.tag | default .Values.image.tag }}
+        imagePullPolicy: {{ .Values.polytomic.vector.daemonset.imagePullPolicy }}
+        command:
+          - /entrypoint.sh
+        env:
+        # entrypoint.sh reads SEND_LOGS but detects Kubernetes via VECTOR_SELF_NODE_NAME
+        # and skips appending config; the Datadog sink is controlled by the ConfigMap instead.
+        - name: SEND_LOGS
+          value: {{ .Values.polytomic.vector.managedLogs | quote }}
+        # Required by kubernetes_logs source to identify which node to collect from
+        - name: VECTOR_SELF_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        # Pod label selector for filtering
+        - name: POD_LABEL_SELECTOR
+          value: {{ .Values.polytomic.vector.daemonset.podLabelSelector | quote }}
+        # S3 configuration
+        - name: EXECUTION_LOG_BUCKET
+          value: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | quote }}
+        - name: AWS_REGION
+          value: {{ .Values.polytomic.s3.region | quote }}
+        {{- if .Values.polytomic.s3.access_key_id }}
+        - name: AWS_ACCESS_KEY_ID
+          value: {{ .Values.polytomic.s3.access_key_id | quote }}
+        {{- end }}
+        {{- if .Values.polytomic.s3.secret_access_key }}
+        - name: AWS_SECRET_ACCESS_KEY
+          value: {{ .Values.polytomic.s3.secret_access_key | quote }}
+        {{- end }}
+        # All the same env vars as app pods for ptconf
+        - name: DEPLOYMENT
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.secret.name }}
+              name: {{ .Values.secret.name }}
+              {{- else }}
+              name: {{ include "polytomic.fullname" . }}-config
+              {{- end }}
+              key: DEPLOYMENT
+        - name: DEPLOYMENT_KEY
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.secret.name }}
+              name: {{ .Values.secret.name }}
+              {{- else }}
+              name: {{ include "polytomic.fullname" . }}-config
+              {{- end }}
+              key: DEPLOYMENT_KEY
+        volumeMounts:
+        - name: config-writable
+          mountPath: /etc/vector
+        - name: var-log
+          mountPath: /var/log
+          readOnly: true
+        - name: var-lib-vector
+          mountPath: /var/lib/vector
+        resources:
+          {{- toYaml .Values.polytomic.vector.daemonset.resources | nindent 10 }}
+      volumes:
+      - name: config-base
+        configMap:
+          name: {{ include "polytomic.fullname" . }}-vector
+      - name: config-writable
+        emptyDir: {}
+      - name: var-log
+        hostPath:
+          path: /var/log
+      - name: var-lib-vector
+        hostPath:
+          path: /var/lib/vector
+          type: DirectoryOrCreate
+      {{- with .Values.polytomic.vector.daemonset.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

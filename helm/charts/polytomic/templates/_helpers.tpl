@@ -24,6 +24,13 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
+Fully-qualified image reference for the main Polytomic container.
+*/}}
+{{- define "polytomic.image" -}}
+{{- printf "%s/%s:%s" .Values.imageRegistry .Values.image.repository (.Values.image.tag | required "image.tag must be set to a specific version tag") -}}
+{{- end }}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "polytomic.chart" -}}
@@ -359,7 +366,7 @@ EXECUTION_LOG_BUCKET: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s
 EXECUTION_LOG_REGION: {{ .Values.polytomic.s3.region | quote }}
 KUBERNETES: "true"
 KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
-KUBERNETES_IMAGE: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+KUBERNETES_IMAGE: {{ include "polytomic.image" . }}
 KUBERNETES_VOLUME: {{ .Values.polytomic.sharedVolume.volumeName }}
 {{- if .Values.secret.name }}
 KUBERNETES_SECRET: {{ .Values.secret.name }}
@@ -522,8 +529,12 @@ WORKOS_API_KEY: {{ .Values.polytomic.auth.workos_api_key | quote }}
 WORKOS_CLIENT_ID: {{ .Values.polytomic.auth.workos_client_id | quote }}
 hubspot_scopes_v2: "true"
 VERNEUIL_CONFIG: "{\"replication_spooling_dir\":\"/tmp/verneuil\",\"replication_targets\":[{\"s3\":{\"region\":\"{{ .Values.polytomic.s3.region }}\",\"chunk_bucket\":\"{{ .Values.polytomic.s3.operational_bucket }}/chunks\",\"manifest_bucket\":\"{{ .Values.polytomic.s3.operational_bucket }}/manifests\",\"create_buckets_on_demand\":false,\"domain_addressing\":false}}]}"
-EXECUTION_LOGS_V2: {{ .Values.polytomic.internal_execution_logs | quote }}
+EXECUTION_LOGS_V2: {{ or .Values.polytomic.internal_execution_logs .Values.polytomic.vector.daemonset.enabled | quote }}
 INTERNAL_EXECUTION_LOGS: {{ .Values.polytomic.internal_execution_logs | quote }}
+
+{{- if .Values.polytomic.vector.managedLogs }}
+SEND_LOGS: "true"
+{{- end }}
 
 {{- if .Values.polytomic.s3.gcs }}
 POLYTOMIC_USE_GCS: "true"

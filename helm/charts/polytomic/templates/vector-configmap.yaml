@@ -1,0 +1,76 @@
+{{- if .Values.polytomic.vector.daemonset.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "polytomic.fullname" . }}-vector
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+    app.kubernetes.io/component: vector
+data:
+  vector.toml: |
+    [secret]
+    [secret.dd_secret]
+    type = "exec"
+    command = [
+        "/bin/ptconf",
+        "get",
+        "-f",
+        "vector",
+        "-"
+    ]
+
+    # Kubernetes logs source - collects from /var/log/pods
+    [sources.kubernetes_logs]
+    type = "kubernetes_logs"
+    # Only collect from Polytomic pods; all pod templates set vector.dev/include=true
+    extra_label_selector = "${POD_LABEL_SELECTOR:-vector.dev/include=true}"
+    self_node_name = "${VECTOR_SELF_NODE_NAME}"
+    # Read from /var/log/pods
+    glob_minimum_cooldown_ms = 1000
+    # Exclude Vector's own logs to prevent recursive collection loop
+    exclude_paths_glob_patterns = ["/var/log/pods/*_{{ include "polytomic.fullname" . }}-vector-*_*/**"]
+
+    # Parse JSON logs
+    [transforms.parse]
+    type = "remap"
+    inputs = [ "kubernetes_logs" ]
+    source = ". |= object!(parse_json!(.message))"
+
+    # Filter for execution logs
+    [transforms.filter]
+    type = "filter"
+    inputs = [ "parse" ]
+    condition = 'exists(.execution_id) && exists(.organization_id) && exists(.sync_id)'
+
+    # S3 sink (always enabled)
+    [sinks.s3]
+    type = "aws_s3"
+    inputs = [ "filter" ]
+    bucket =  "${EXECUTION_LOG_BUCKET:?err}"
+    key_prefix = "{{ "{{" }} organization_id  {{ "}}" }}/execution_logs/{{ "{{" }} sync_id {{ "}}" }}/{{ "{{" }} execution_id {{ "}}" }}"
+    region = "${AWS_REGION:?err}"
+    filename_append_uuid = true
+    filename_time_format = "%s"
+    filename_extension = "json"
+    [sinks.s3.encoding]
+    codec = "json"
+    [sinks.s3.batch]
+    timeout_secs = 10
+
+{{- if .Values.polytomic.vector.managedLogs }}
+
+    [transforms.datadog_metadata]
+    type = "remap"
+    inputs = [ "parse" ]
+    source = """
+    .deployment = get_env_var!("DEPLOYMENT")
+    .ddsource = get_env_var!("DEPLOYMENT")
+    """
+
+    [sinks.datadog_logs]
+    type = "datadog_logs"
+    inputs = [ "datadog_metadata" ]
+    default_api_key = "SECRET[dd_secret.DD_API_KEY]"
+    compression = "gzip"
+{{- end }}
+{{- end }}

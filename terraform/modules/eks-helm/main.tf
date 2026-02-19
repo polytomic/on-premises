@@ -2,20 +2,26 @@ locals {
   # Determine chart source based on configuration
   use_repository = var.chart_repository != ""
   chart_path     = var.chart_path != "" ? var.chart_path : "${path.module}/../../../helm/charts/polytomic"
+
+  # Use explicit logger tag if provided, otherwise match the main Polytomic image tag
+  vector_image_tag = coalesce(var.polytomic_logger_image_tag, var.polytomic_image_tag)
 }
 
 resource "helm_release" "polytomic" {
-  name       = "polytomic"
-  namespace  = "polytomic"
-  repository = local.use_repository ? var.chart_repository : null
-  chart      = local.use_repository ? "polytomic" : local.chart_path
-  version    = local.use_repository && var.chart_version != "" ? var.chart_version : null
+  name              = "polytomic"
+  namespace         = "polytomic"
+  dependency_update = true
+  repository        = local.use_repository ? var.chart_repository : null
+  chart             = local.use_repository ? "polytomic" : local.chart_path
+  version           = local.use_repository && var.chart_version != "" ? var.chart_version : null
 
   create_namespace = true
   wait             = false
 
 
   values = [<<EOF
+imageRegistry: ${var.ecr_registry}
+
 ingress:
   enabled: true
   annotations:
@@ -59,8 +65,16 @@ polytomic:
     operational_bucket: "s3://${var.polytomic_bucket}"
     region: "${var.polytomic_bucket_region}"
 
-  jobs:
-    image: ${var.polytomic_image}
+  # Vector logging configuration
+  internal_execution_logs: ${var.polytomic_use_logger}
+  vector:
+    daemonset:
+      enabled: ${var.polytomic_use_logger}
+      image: ${var.polytomic_logger_image}
+      tag: ${local.vector_image_tag}
+      serviceAccount:
+        roleArn: ${var.polytomic_use_logger && var.oidc_provider_arn != "" ? module.vector_role[0].arn : ""}
+    managedLogs: ${var.polytomic_managed_logs}
 
   sharedVolume:
     enabled: true
@@ -111,3 +125,44 @@ EOF
 
 }
 
+# IAM role for Vector DaemonSet (IRSA)
+module "vector_role" {
+  count   = var.polytomic_use_logger && var.oidc_provider_arn != "" ? 1 : 0
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
+
+  name = "${var.polytomic_deployment}-vector-daemonset"
+
+  policies = {
+    policy = aws_iam_policy.vector_s3[0].arn
+  }
+
+  oidc_providers = {
+    main = {
+      provider_arn               = var.oidc_provider_arn
+      namespace_service_accounts = ["polytomic:polytomic-vector"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "vector_s3" {
+  count = var.polytomic_use_logger && var.oidc_provider_arn != "" ? 1 : 0
+
+  name        = "${var.polytomic_deployment}-vector-s3"
+  description = "S3 access for Vector DaemonSet to write execution logs"
+  policy      = data.aws_iam_policy_document.vector_s3[0].json
+}
+
+data "aws_iam_policy_document" "vector_s3" {
+  count = var.polytomic_use_logger && var.oidc_provider_arn != "" ? 1 : 0
+
+  statement {
+    actions = [
+      "s3:PutObject",
+    ]
+    effect = "Allow"
+    resources = [
+      var.execution_log_bucket_arn != "" ? "${var.execution_log_bucket_arn}/*" : "arn:aws:s3:::${var.polytomic_bucket}/*"
+    ]
+  }
+}

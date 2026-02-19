@@ -1,5 +1,13 @@
+variable "ecr_registry" {
+  description = "ECR registry base URL for all Polytomic images (e.g., 568237466542.dkr.ecr.us-east-1.amazonaws.com). Defaults to us-west-2."
+  type        = string
+  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com"
+}
+
 variable "polytomic_image" {
-  description = "The image to use for the polytomic container"
+  description = "Image name for the Polytomic container. Defaults to polytomic-onprem; override only when using a custom image."
+  type        = string
+  default     = "polytomic-onprem"
 }
 
 variable "polytomic_image_tag" {
@@ -99,6 +107,42 @@ variable "chart_version" {
 
 variable "chart_path" {
   description = "Path to local Helm chart. Only used when chart_repository is empty. Defaults to relative path to chart in this repository."
+  type        = string
+  default     = ""
+}
+
+variable "polytomic_logger_image" {
+  description = "Image name for the Vector DaemonSet. Defaults to polytomic-vector; override only when using a custom image."
+  type        = string
+  default     = "polytomic-vector"
+}
+
+variable "polytomic_logger_image_tag" {
+  description = "Tag for the Vector DaemonSet image. Defaults to polytomic_image_tag when not set."
+  type        = string
+  default     = null
+}
+
+variable "polytomic_use_logger" {
+  description = "Deploy Vector DaemonSet for stdout/stderr log collection. Disable to reduce costs in dev environments or if using alternative log collection. Matches ECS module variable."
+  type        = bool
+  default     = true
+}
+
+variable "polytomic_managed_logs" {
+  description = "Enable Datadog log forwarding for both embedded Vector and DaemonSet. Matches ECS module variable."
+  type        = bool
+  default     = false
+}
+
+variable "oidc_provider_arn" {
+  description = "OIDC provider ARN for IRSA (IAM Roles for Service Accounts). Required for Vector DaemonSet IAM role."
+  type        = string
+  default     = ""
+}
+
+variable "execution_log_bucket_arn" {
+  description = "ARN of the S3 bucket for execution logs. Used for Vector DaemonSet IAM permissions."
   type        = string
   default     = ""
 }
