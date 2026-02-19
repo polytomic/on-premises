@@ -28,6 +28,8 @@ data:
     self_node_name = "${VECTOR_SELF_NODE_NAME}"
     # Read from /var/log/pods
     glob_minimum_cooldown_ms = 1000
+    # Exclude Vector's own logs to prevent recursive collection loop
+    exclude_paths_glob_patterns = ["/var/log/pods/*_{{ include "polytomic.fullname" . }}-vector-*_*/**"]
 
     # Parse JSON logs
     [transforms.parse]
