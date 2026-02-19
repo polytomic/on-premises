@@ -76,7 +76,61 @@ polytomic:
   query_workers: 10
   sync_retry_errors: true
   sync_workers: 10
-  task_executor_cleanup_delay_seconds: 10
+  # -- Per-role executor configuration.
+  # Fields map to the {prefix}_* environment variables read by the application.
+  # Prefixes: task → TASK_EXECUTOR, bulk → BULK_EXECUTOR, ingest → INGEST_EXECUTOR,
+  #           proxy → PROXY_EXECUTOR, scheduler → SCHEDULER_ROLE.
+  #
+  # The task role is the base: any field left at 0/"" in bulk/ingest/proxy/scheduler
+  # will inherit the corresponding task value at runtime (setDefaultRoleConfig).
+  # Only override the other roles when you need role-specific values.
+  roles:
+    task:
+      # -- Seconds to sleep after task completion before cleaning up
+      cleanup_delay_seconds: 10
+      cpu: 0
+      memory_reservation: 0
+      memory_maximum: 0
+      memory_mega: 0
+      database_pool_size: 0
+      redis_pool_size: 0
+      tags: ""
+    bulk:
+      cleanup_delay_seconds: 0
+      cpu: 0
+      memory_reservation: 0
+      memory_maximum: 0
+      memory_mega: 0
+      database_pool_size: 0
+      redis_pool_size: 0
+      tags: ""
+    ingest:
+      cleanup_delay_seconds: 0
+      cpu: 0
+      memory_reservation: 0
+      memory_maximum: 0
+      memory_mega: 0
+      database_pool_size: 0
+      redis_pool_size: 0
+      tags: ""
+    proxy:
+      cleanup_delay_seconds: 0
+      cpu: 0
+      memory_reservation: 0
+      memory_maximum: 0
+      memory_mega: 0
+      database_pool_size: 0
+      redis_pool_size: 0
+      tags: ""
+    scheduler:
+      cleanup_delay_seconds: 0
+      cpu: 0
+      memory_reservation: 0
+      memory_maximum: 0
+      memory_mega: 0
+      database_pool_size: 0
+      redis_pool_size: 0
+      tags: ""
   tx_buffer_size: 1000
 
   auth:

@@ -426,7 +426,136 @@ SMARTSHEET_CLIENT_SECRET: {{ .Values.polytomic.smartsheet_client_secret | quote 
 STRIPE_SECRET_KEY: {{ .Values.polytomic.stripe_secret_key | quote }}
 SYNC_RETRY_ERRORS: {{ .Values.polytomic.sync_retry_errors | quote }}
 SYNC_WORKERS: {{ .Values.polytomic.sync_workers | quote }}
-TASK_EXECUTOR_CLEANUP_DELAY_SECONDS: {{ .Values.polytomic.task_executor_cleanup_delay_seconds | quote }}
+{{- with .Values.polytomic.roles }}
+{{- with .task }}
+TASK_EXECUTOR_CLEANUP_DELAY_SECONDS: {{ .cleanup_delay_seconds | quote }}
+{{- if .cpu }}
+TASK_EXECUTOR_CPU: {{ .cpu | quote }}
+{{- end }}
+{{- if .memory_reservation }}
+TASK_EXECUTOR_MEMORY_RESERVATION: {{ .memory_reservation | quote }}
+{{- end }}
+{{- if .memory_maximum }}
+TASK_EXECUTOR_MEMORY_MAXIMUM: {{ .memory_maximum | quote }}
+{{- end }}
+{{- if .memory_mega }}
+TASK_EXECUTOR_MEMORY_MEGA: {{ .memory_mega | quote }}
+{{- end }}
+{{- if .database_pool_size }}
+TASK_EXECUTOR_DATABASE_POOL_SIZE: {{ .database_pool_size | quote }}
+{{- end }}
+{{- if .redis_pool_size }}
+TASK_EXECUTOR_REDIS_POOL_SIZE: {{ .redis_pool_size | quote }}
+{{- end }}
+{{- if .tags }}
+TASK_EXECUTOR_TAGS: {{ .tags | quote }}
+{{- end }}
+{{- end }}
+{{- with .bulk }}
+{{- if .cleanup_delay_seconds }}
+BULK_EXECUTOR_CLEANUP_DELAY_SECONDS: {{ .cleanup_delay_seconds | quote }}
+{{- end }}
+{{- if .cpu }}
+BULK_EXECUTOR_CPU: {{ .cpu | quote }}
+{{- end }}
+{{- if .memory_reservation }}
+BULK_EXECUTOR_MEMORY_RESERVATION: {{ .memory_reservation | quote }}
+{{- end }}
+{{- if .memory_maximum }}
+BULK_EXECUTOR_MEMORY_MAXIMUM: {{ .memory_maximum | quote }}
+{{- end }}
+{{- if .memory_mega }}
+BULK_EXECUTOR_MEMORY_MEGA: {{ .memory_mega | quote }}
+{{- end }}
+{{- if .database_pool_size }}
+BULK_EXECUTOR_DATABASE_POOL_SIZE: {{ .database_pool_size | quote }}
+{{- end }}
+{{- if .redis_pool_size }}
+BULK_EXECUTOR_REDIS_POOL_SIZE: {{ .redis_pool_size | quote }}
+{{- end }}
+{{- if .tags }}
+BULK_TASK_EXECUTOR_TAGS: {{ .tags | quote }}
+{{- end }}
+{{- end }}
+{{- with .ingest }}
+{{- if .cleanup_delay_seconds }}
+INGEST_EXECUTOR_CLEANUP_DELAY_SECONDS: {{ .cleanup_delay_seconds | quote }}
+{{- end }}
+{{- if .cpu }}
+INGEST_EXECUTOR_CPU: {{ .cpu | quote }}
+{{- end }}
+{{- if .memory_reservation }}
+INGEST_EXECUTOR_MEMORY_RESERVATION: {{ .memory_reservation | quote }}
+{{- end }}
+{{- if .memory_maximum }}
+INGEST_EXECUTOR_MEMORY_MAXIMUM: {{ .memory_maximum | quote }}
+{{- end }}
+{{- if .memory_mega }}
+INGEST_EXECUTOR_MEMORY_MEGA: {{ .memory_mega | quote }}
+{{- end }}
+{{- if .database_pool_size }}
+INGEST_EXECUTOR_DATABASE_POOL_SIZE: {{ .database_pool_size | quote }}
+{{- end }}
+{{- if .redis_pool_size }}
+INGEST_EXECUTOR_REDIS_POOL_SIZE: {{ .redis_pool_size | quote }}
+{{- end }}
+{{- if .tags }}
+INGEST_TASK_EXECUTOR_TAGS: {{ .tags | quote }}
+{{- end }}
+{{- end }}
+{{- with .proxy }}
+{{- if .cleanup_delay_seconds }}
+PROXY_EXECUTOR_CLEANUP_DELAY_SECONDS: {{ .cleanup_delay_seconds | quote }}
+{{- end }}
+{{- if .cpu }}
+PROXY_EXECUTOR_CPU: {{ .cpu | quote }}
+{{- end }}
+{{- if .memory_reservation }}
+PROXY_EXECUTOR_MEMORY_RESERVATION: {{ .memory_reservation | quote }}
+{{- end }}
+{{- if .memory_maximum }}
+PROXY_EXECUTOR_MEMORY_MAXIMUM: {{ .memory_maximum | quote }}
+{{- end }}
+{{- if .memory_mega }}
+PROXY_EXECUTOR_MEMORY_MEGA: {{ .memory_mega | quote }}
+{{- end }}
+{{- if .database_pool_size }}
+PROXY_EXECUTOR_DATABASE_POOL_SIZE: {{ .database_pool_size | quote }}
+{{- end }}
+{{- if .redis_pool_size }}
+PROXY_EXECUTOR_REDIS_POOL_SIZE: {{ .redis_pool_size | quote }}
+{{- end }}
+{{- if .tags }}
+PROXY_TASK_EXECUTOR_TAGS: {{ .tags | quote }}
+{{- end }}
+{{- end }}
+{{- with .scheduler }}
+{{- if .cleanup_delay_seconds }}
+SCHEDULER_ROLE_CLEANUP_DELAY_SECONDS: {{ .cleanup_delay_seconds | quote }}
+{{- end }}
+{{- if .cpu }}
+SCHEDULER_ROLE_CPU: {{ .cpu | quote }}
+{{- end }}
+{{- if .memory_reservation }}
+SCHEDULER_ROLE_MEMORY_RESERVATION: {{ .memory_reservation | quote }}
+{{- end }}
+{{- if .memory_maximum }}
+SCHEDULER_ROLE_MEMORY_MAXIMUM: {{ .memory_maximum | quote }}
+{{- end }}
+{{- if .memory_mega }}
+SCHEDULER_ROLE_MEMORY_MEGA: {{ .memory_mega | quote }}
+{{- end }}
+{{- if .database_pool_size }}
+SCHEDULER_ROLE_DATABASE_POOL_SIZE: {{ .database_pool_size | quote }}
+{{- end }}
+{{- if .redis_pool_size }}
+SCHEDULER_ROLE_REDIS_POOL_SIZE: {{ .redis_pool_size | quote }}
+{{- end }}
+{{- if .tags }}
+SCHEDULER_TASK_EXECUTOR_TAGS: {{ .tags | quote }}
+{{- end }}
+{{- end }}
+{{- end }}
 TRACING: {{ .Values.polytomic.tracing | quote }}
 TX_BUFFER_SIZE: {{ .Values.polytomic.tx_buffer_size | quote }}
 WORKOS_API_KEY: {{ .Values.polytomic.auth.workos_api_key | quote }}
