@@ -63,9 +63,9 @@ data:
     type = "remap"
     inputs = [ "parse" ]
     source = """
-.deployment = get_env_var!("DEPLOYMENT")
-.ddsource = get_env_var!("DEPLOYMENT")
-"""
+    .deployment = get_env_var!("DEPLOYMENT")
+    .ddsource = get_env_var!("DEPLOYMENT")
+    """
 
     [sinks.datadog_logs]
     type = "datadog_logs"
