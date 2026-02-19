@@ -30,6 +30,11 @@ spec:
         # DaemonSet needs SEND_LOGS to conditionally add Datadog sink
         - name: SEND_LOGS
           value: {{ .Values.polytomic.vector.managedLogs | quote }}
+        # Required by kubernetes_logs source to identify which node to collect from
+        - name: VECTOR_SELF_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
         # Pod label selector for filtering
         - name: POD_LABEL_SELECTOR
           value: {{ .Values.polytomic.vector.daemonset.podLabelSelector | quote }}
@@ -68,7 +73,6 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /etc/vector
-          readOnly: true
         - name: var-log
           mountPath: /var/log
           readOnly: true

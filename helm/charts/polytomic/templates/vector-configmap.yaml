@@ -25,6 +25,7 @@ data:
     # Only collect from Polytomic pods using instance label
     # (each deployment has different app.kubernetes.io/name: polytomic-web, polytomic-sync, etc.)
     extra_label_selector = "${POD_LABEL_SELECTOR:-app.kubernetes.io/instance=polytomic}"
+    self_node_name = "${VECTOR_SELF_NODE_NAME}"
     # Read from /var/log/pods
     glob_minimum_cooldown_ms = 1000
 
