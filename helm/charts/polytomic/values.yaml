@@ -269,6 +269,32 @@ polytomic:
     # - DaemonSet Vector (stdout/stderr logs)
     # Default: false (opt-in)
     managedLogs: false
+
+  # Datadog Agent DaemonSet for APM and metrics collection
+  datadog:
+    daemonset:
+      # -- Enable Datadog Agent DaemonSet for APM tracing
+      # When enabled, all Polytomic pods will have DD_AGENT_HOST set to the node IP
+      enabled: false
+
+      # -- Image name for Datadog Agent DaemonSet (registry is set via imageRegistry).
+      # MUST use Polytomic's Datadog agent image with ptconf for secret decryption.
+      image: polytomic-dd-agent
+      # -- Tag for the Datadog agent image. Defaults to image.tag when not set.
+      tag: ""
+      imagePullPolicy: IfNotPresent
+
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "200m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+
+      # -- Additional tolerations for the Datadog DaemonSet pods.
+      tolerations: []
+
   # -- Integration credentials
   # Configure OAuth credentials and API keys for third-party integrations.
   # Only non-empty values will be included in the deployment secret.

@@ -58,6 +58,12 @@ spec:
                 name: {{ include "polytomic.redis.secretName" . }}
                 key: {{ include "polytomic.redis.secretKey" . }}
           {{- end }}
+          {{- if .Values.polytomic.datadog.daemonset.enabled }}
+          - name: DD_AGENT_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+          {{- end }}
           volumeMounts:
           - mountPath: /etc/podinfo
             name: podinfo

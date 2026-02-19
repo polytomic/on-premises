@@ -76,6 +76,13 @@ polytomic:
         roleArn: ${var.polytomic_use_logger && var.oidc_provider_arn != "" ? module.vector_role[0].arn : ""}
     managedLogs: ${var.polytomic_managed_logs}
 
+  # Datadog Agent DaemonSet for APM
+  datadog:
+    daemonset:
+      enabled: ${var.polytomic_use_dd_agent}
+      image: ${var.polytomic_dd_agent_image}
+      tag: ${coalesce(var.polytomic_dd_agent_image_tag, var.polytomic_image_tag)}
+
   sharedVolume:
     enabled: true
     mode: static

@@ -146,3 +146,21 @@ variable "execution_log_bucket_arn" {
   type        = string
   default     = ""
 }
+
+variable "polytomic_use_dd_agent" {
+  description = "Deploy Datadog Agent DaemonSet for APM tracing. Matches ECS module variable."
+  type        = bool
+  default     = false
+}
+
+variable "polytomic_dd_agent_image" {
+  description = "Image name for the Datadog Agent DaemonSet. Defaults to polytomic-dd-agent."
+  type        = string
+  default     = "polytomic-dd-agent"
+}
+
+variable "polytomic_dd_agent_image_tag" {
+  description = "Tag for the Datadog Agent DaemonSet image. Defaults to polytomic_image_tag when not set."
+  type        = string
+  default     = null
+}

@@ -1,0 +1,39 @@
+{{- if .Values.polytomic.datadog.daemonset.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "polytomic.fullname" . }}-datadog
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+    app.kubernetes.io/component: datadog
+rules:
+# Core API resources for discovery
+- apiGroups: [""]
+  resources:
+  - pods
+  - nodes
+  - services
+  - events
+  - endpoints
+  - componentstatuses
+  verbs:
+  - get
+  - list
+  - watch
+# Kubelet connectivity for metrics
+- apiGroups: [""]
+  resources:
+  - nodes/metrics
+  - nodes/spec
+  - nodes/proxy
+  - nodes/stats
+  verbs:
+  - get
+# Non-resource URLs
+- nonResourceURLs:
+  - "/version"
+  - "/healthz"
+  - "/metrics"
+  verbs:
+  - get
+{{- end }}

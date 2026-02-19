@@ -389,7 +389,7 @@ LOCAL_DATA: "1"
 LOCAL_DATA: "0"
 {{- end }}
 LOCAL_DATA_PATH: {{ .Values.polytomic.sharedVolume.mountPath | quote }}
-METRICS: {{ .Values.polytomic.metrics | quote }}
+METRICS: {{ or .Values.polytomic.metrics .Values.polytomic.datadog.daemonset.enabled | quote }}
 QUERY_WORKERS: {{ .Values.polytomic.query_workers | quote }}
 SYNC_RETRY_ERRORS: {{ .Values.polytomic.sync_retry_errors | quote }}
 SYNC_WORKERS: {{ .Values.polytomic.sync_workers | quote }}

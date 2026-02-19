@@ -64,6 +64,12 @@ spec:
             value: "true"
           - name: SENTRY_DSN
             value: ""
+          {{- if .Values.polytomic.datadog.daemonset.enabled }}
+          - name: DD_AGENT_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+          {{- end }}
           ports:
             - name: http
               containerPort: 5100
