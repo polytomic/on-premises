@@ -1,5 +1,13 @@
+variable "ecr_registry" {
+  description = "ECR registry base URL for all Polytomic images (e.g., 568237466542.dkr.ecr.us-east-1.amazonaws.com). Defaults to us-west-2."
+  type        = string
+  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com"
+}
+
 variable "polytomic_image" {
-  description = "The image to use for the polytomic container"
+  description = "Image name for the Polytomic container. Defaults to polytomic-onprem; override only when using a custom image."
+  type        = string
+  default     = "polytomic-onprem"
 }
 
 variable "polytomic_image_tag" {
@@ -104,9 +112,9 @@ variable "chart_path" {
 }
 
 variable "polytomic_logger_image" {
-  description = "Docker image repository for Vector DaemonSet with ptconf for secret decryption"
+  description = "Image name for the Vector DaemonSet. Defaults to polytomic-vector; override only when using a custom image."
   type        = string
-  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector"
+  default     = "polytomic-vector"
 }
 
 variable "polytomic_logger_image_tag" {

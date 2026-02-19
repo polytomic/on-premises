@@ -20,6 +20,8 @@ resource "helm_release" "polytomic" {
 
 
   values = [<<EOF
+imageRegistry: ${var.ecr_registry}
+
 ingress:
   enabled: true
   annotations:
@@ -73,9 +75,6 @@ polytomic:
       serviceAccount:
         roleArn: ${var.polytomic_use_logger && var.oidc_provider_arn != "" ? module.vector_role[0].arn : ""}
     managedLogs: ${var.polytomic_managed_logs}
-
-  jobs:
-    image: ${var.polytomic_image}
 
   sharedVolume:
     enabled: true

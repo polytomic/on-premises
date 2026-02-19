@@ -2,9 +2,14 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# -- Registry prefix for all Polytomic images.
+# Override to use a different ECR region, e.g.:
+#   imageRegistry: "568237466542.dkr.ecr.us-east-1.amazonaws.com"
+imageRegistry: "568237466542.dkr.ecr.us-west-2.amazonaws.com"
+
 image:
-  # -- Image repository
-  repository: 568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem
+  # -- Image name (registry is set via imageRegistry)
+  repository: polytomic-onprem
   # -- Image pull policy
   pullPolicy: IfNotPresent
   # -- Image tag. Defaults to Chart.appVersion if not specified.
@@ -174,8 +179,9 @@ polytomic:
       # - Security/compliance restrictions on DaemonSets
       enabled: true
 
-      # -- MUST use Polytomic's Vector image with ptconf for secret decryption
-      image: 568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector
+      # -- Image name for Vector DaemonSet (registry is set via imageRegistry).
+      # MUST use Polytomic's Vector image with ptconf for secret decryption.
+      image: polytomic-vector
       tag: build-213305
       imagePullPolicy: IfNotPresent
 

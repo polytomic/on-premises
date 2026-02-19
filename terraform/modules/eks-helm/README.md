@@ -34,6 +34,7 @@
 | <a name="input_chart_path"></a> [chart\_path](#input\_chart\_path) | Path to local Helm chart. Only used when chart\_repository is empty. Defaults to relative path to chart in this repository. | `string` | `""` | no |
 | <a name="input_chart_repository"></a> [chart\_repository](#input\_chart\_repository) | The Helm chart repository URL. Leave empty to use local chart. | `string` | `"https://charts.polytomic.com"` | no |
 | <a name="input_chart_version"></a> [chart\_version](#input\_chart\_version) | The version of the Polytomic Helm chart to install. Only used when chart\_repository is set. | `string` | `""` | no |
+| <a name="input_ecr_registry"></a> [ecr\_registry](#input\_ecr\_registry) | ECR registry base URL for all Polytomic images (e.g., 568237466542.dkr.ecr.us-east-1.amazonaws.com). Defaults to us-west-2. | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com"` | no |
 | <a name="input_efs_id"></a> [efs\_id](#input\_efs\_id) | ID of the EFS volume to use for the polytomic deployment | `any` | n/a | yes |
 | <a name="input_execution_log_bucket_arn"></a> [execution\_log\_bucket\_arn](#input\_execution\_log\_bucket\_arn) | ARN of the S3 bucket for execution logs. Used for Vector DaemonSet IAM permissions. | `string` | `""` | no |
 | <a name="input_oidc_provider_arn"></a> [oidc\_provider\_arn](#input\_oidc\_provider\_arn) | OIDC provider ARN for IRSA (IAM Roles for Service Accounts). Required for Vector DaemonSet IAM role. | `string` | `""` | no |
@@ -44,9 +45,9 @@
 | <a name="input_polytomic_deployment_key"></a> [polytomic\_deployment\_key](#input\_polytomic\_deployment\_key) | The key for the polytomic deployment | `any` | n/a | yes |
 | <a name="input_polytomic_google_client_id"></a> [polytomic\_google\_client\_id](#input\_polytomic\_google\_client\_id) | The google client id for the polytomic deployment | `any` | n/a | yes |
 | <a name="input_polytomic_google_client_secret"></a> [polytomic\_google\_client\_secret](#input\_polytomic\_google\_client\_secret) | The google client secret for the polytomic deployment | `any` | n/a | yes |
-| <a name="input_polytomic_image"></a> [polytomic\_image](#input\_polytomic\_image) | The image to use for the polytomic container | `any` | n/a | yes |
+| <a name="input_polytomic_image"></a> [polytomic\_image](#input\_polytomic\_image) | Image name for the Polytomic container. Defaults to polytomic-onprem; override only when using a custom image. | `string` | `"polytomic-onprem"` | no |
 | <a name="input_polytomic_image_tag"></a> [polytomic\_image\_tag](#input\_polytomic\_image\_tag) | The tag to use for the polytomic container | `any` | n/a | yes |
-| <a name="input_polytomic_logger_image"></a> [polytomic\_logger\_image](#input\_polytomic\_logger\_image) | Docker image repository for Vector DaemonSet with ptconf for secret decryption | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector"` | no |
+| <a name="input_polytomic_logger_image"></a> [polytomic\_logger\_image](#input\_polytomic\_logger\_image) | Image name for the Vector DaemonSet. Defaults to polytomic-vector; override only when using a custom image. | `string` | `"polytomic-vector"` | no |
 | <a name="input_polytomic_logger_image_tag"></a> [polytomic\_logger\_image\_tag](#input\_polytomic\_logger\_image\_tag) | Tag for the Vector DaemonSet image. Defaults to polytomic\_image\_tag when not set. | `string` | `null` | no |
 | <a name="input_polytomic_managed_logs"></a> [polytomic\_managed\_logs](#input\_polytomic\_managed\_logs) | Enable Datadog log forwarding for both embedded Vector and DaemonSet. Matches ECS module variable. | `bool` | `false` | no |
 | <a name="input_polytomic_root_user"></a> [polytomic\_root\_user](#input\_polytomic\_root\_user) | The root user for the polytomic deployment | `string` | `"root"` | no |

@@ -77,9 +77,10 @@ Kubernetes: `>=1.34.0-0`
 | healthcheck.sidecarContainers | list | `[]` |  |
 | healthcheck.tolerations | list | `[]` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
-| image.repository | string | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"` | Image repository |
+| image.repository | string | `"polytomic-onprem"` | Image name (registry is set via imageRegistry) |
 | image.tag | string | `""` | Image tag. Defaults to Chart.appVersion if not specified. For production, always specify a concrete version (e.g., "rel2021.11.04") See https://docs.polytomic.com/changelog for available versions |
 | imagePullSecrets | list | `[]` | Reference to one or more secrets to be used when pulling images Used both for chart-managed pods and passed to Polytomic for dynamically created job pods Example: imagePullSecrets:   - name: polytomic-ecr |
+| imageRegistry | string | `"568237466542.dkr.ecr.us-west-2.amazonaws.com"` | Registry prefix for all Polytomic images. Override to use a different ECR region, e.g.:   imageRegistry: "568237466542.dkr.ecr.us-east-1.amazonaws.com" |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `"nginx"` | Name of the ingress class to route through this controller |
 | ingress.enabled | bool | `true` |  |
@@ -210,9 +211,9 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.task_executor_cleanup_delay_seconds | int | `10` |  |
 | polytomic.tracing | bool | `false` |  |
 | polytomic.tx_buffer_size | int | `1000` |  |
-| polytomic.vector.daemonset | object | `{"enabled":true,"image":"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector","imagePullPolicy":"IfNotPresent","podLabelSelector":"vector.dev/include=true","resources":{"limits":{"cpu":"200m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"serviceAccount":{"roleArn":""},"tag":"build-213305","tolerations":[]}` | Vector DaemonSet for stdout/stderr log collection Collects container logs from all Polytomic pods on each node Default: true (matches ECS behavior where polytomic_use_logger defaults to true) |
+| polytomic.vector.daemonset | object | `{"enabled":true,"image":"polytomic-vector","imagePullPolicy":"IfNotPresent","podLabelSelector":"vector.dev/include=true","resources":{"limits":{"cpu":"200m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"serviceAccount":{"roleArn":""},"tag":"build-213305","tolerations":[]}` | Vector DaemonSet for stdout/stderr log collection Collects container logs from all Polytomic pods on each node Default: true (matches ECS behavior where polytomic_use_logger defaults to true) |
 | polytomic.vector.daemonset.enabled | bool | `true` | Set to false to disable DaemonSet log collection Consider disabling for: - Development environments to save resources - Cost-sensitive deployments where only business logs are needed - When using alternative cluster-wide log collection - Security/compliance restrictions on DaemonSets |
-| polytomic.vector.daemonset.image | string | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector"` | MUST use Polytomic's Vector image with ptconf for secret decryption |
+| polytomic.vector.daemonset.image | string | `"polytomic-vector"` | Image name for Vector DaemonSet (registry is set via imageRegistry). MUST use Polytomic's Vector image with ptconf for secret decryption. |
 | polytomic.vector.daemonset.podLabelSelector | string | `"vector.dev/include=true"` | Label selector to filter which pods to collect logs from. Uses vector.dev/include=true which is set on all Polytomic pod templates, making collection independent of the Helm release name. |
 | polytomic.vector.daemonset.serviceAccount | object | `{"roleArn":""}` | ServiceAccount configuration for Vector DaemonSet |
 | polytomic.vector.daemonset.serviceAccount.roleArn | string | `""` | IAM role ARN for IRSA (EKS only) |

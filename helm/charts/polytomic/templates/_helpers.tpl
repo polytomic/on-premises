@@ -24,6 +24,13 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
+Fully-qualified image reference for the main Polytomic container.
+*/}}
+{{- define "polytomic.image" -}}
+{{- printf "%s/%s:%s" .Values.imageRegistry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) -}}
+{{- end }}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "polytomic.chart" -}}
