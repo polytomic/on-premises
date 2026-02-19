@@ -22,8 +22,8 @@ spec:
       serviceAccountName: {{ include "polytomic.fullname" . }}-vector
       initContainers:
       - name: init-vector-config
-        image: {{ .Values.polytomic.vector.daemonset.image }}
-        imagePullPolicy: IfNotPresent
+        image: {{ .Values.polytomic.vector.daemonset.image }}:{{ .Values.polytomic.vector.daemonset.tag }}
+        imagePullPolicy: {{ .Values.polytomic.vector.daemonset.imagePullPolicy }}
         command: ['sh', '-c', 'cp /etc/vector-base/vector.toml /etc/vector/vector.toml']
         volumeMounts:
         - name: config-base
@@ -33,8 +33,8 @@ spec:
           mountPath: /etc/vector
       containers:
       - name: vector
-        image: {{ .Values.polytomic.vector.daemonset.image }}
-        imagePullPolicy: IfNotPresent
+        image: {{ .Values.polytomic.vector.daemonset.image }}:{{ .Values.polytomic.vector.daemonset.tag }}
+        imagePullPolicy: {{ .Values.polytomic.vector.daemonset.imagePullPolicy }}
         command:
           - /entrypoint.sh
         env:
@@ -104,8 +104,8 @@ spec:
         hostPath:
           path: /var/lib/vector
           type: DirectoryOrCreate
+      {{- with .Values.polytomic.vector.daemonset.tolerations }}
       tolerations:
-      # Run on all nodes, including control plane
-      - effect: NoSchedule
-        operator: Exists
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}

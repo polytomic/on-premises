@@ -65,6 +65,20 @@ data:
     target = "stdout"
     [sinks.debug.encoding]
     codec = "json"
+{{- if .Values.polytomic.vector.managedLogs }}
 
-    # Note: Datadog sink is added by entrypoint.sh when SEND_LOGS=true
+    [transforms.datadog_metadata]
+    type = "remap"
+    inputs = [ "parse" ]
+    source = """
+.deployment = get_env_var!("DEPLOYMENT")
+.ddsource = get_env_var!("DEPLOYMENT")
+"""
+
+    [sinks.datadog_logs]
+    type = "datadog_logs"
+    inputs = [ "datadog_metadata" ]
+    default_api_key = "SECRET[dd_secret.DD_API_KEY]"
+    compression = "gzip"
+{{- end }}
 {{- end }}
