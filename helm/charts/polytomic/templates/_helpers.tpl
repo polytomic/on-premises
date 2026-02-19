@@ -377,39 +377,12 @@ KUBERNETES_SERVICE_ACCOUNT: {{ include "polytomic.serviceAccountName" . | quote 
 {{- if .Values.imagePullSecrets }}
 KUBERNETES_IMAGE_PULL_SECRET: {{ (index .Values.imagePullSecrets 0).name | quote }}
 {{- end }}
-AIRTABLE_CLIENT_SECRET: {{ .Values.polytomic.airtable_client_secret | quote }}
-ASANA_CLIENT_ID: {{ .Values.polytomic.asana_client_id | quote }}
-ASANA_CLIENT_SECRET: {{ .Values.polytomic.asana_client_secret | quote }}
-BINGADS_CLIENT_ID: {{ .Values.polytomic.bingads_client_id | quote }}
-BINGADS_CLIENT_SECRET: {{ .Values.polytomic.bingads_client_secret | quote }}
-BINGADS_DEVELOPER_TOKEN: {{ .Values.polytomic.bingads_developer_token | quote }}
-CCLOUD_API_KEY: {{ .Values.polytomic.ccloud_api_key | quote }}
-CCLOUD_API_SECRET: {{ .Values.polytomic.ccloud_api_secret | quote }}
-FBAUDIENCE_CLIENT_ID: {{ .Values.polytomic.fbaudience_client_id | quote }}
-FBAUDIENCE_CLIENT_SECRET: {{ .Values.polytomic.fbaudience_client_secret | quote }}
-FB_LOGIN_CONFIGURATION_ID: {{ .Values.polytomic.fb_login_configuration_id | quote }}
-FRONT_CLIENT_ID: {{ .Values.polytomic.front_client_id | quote }}
-FRONT_CLIENT_SECRET: {{ .Values.polytomic.front_client_secret | quote }}
-GITHUB_CLIENT_ID: {{ .Values.polytomic.github_client_id | quote }}
-GITHUB_CLIENT_SECRET: {{ .Values.polytomic.github_client_secret | quote }}
-GITHUB_DEPLOY_KEY: {{ .Values.polytomic.github_deploy_key | quote }}
-GOOGLEADS_CLIENT_ID: {{ .Values.polytomic.googleads_client_id | quote }}
-GOOGLEADS_CLIENT_SECRET: {{ .Values.polytomic.googleads_client_secret | quote }}
-GOOGLEADS_DEVELOPER_TOKEN: {{ .Values.polytomic.googleads_developer_token | quote }}
-GOOGLESEARCHCONSOLE_CLIENT_ID: {{ .Values.polytomic.googlesearchconsole_client_id | quote }}
-GOOGLESEARCHCONSOLE_CLIENT_SECRET: {{ .Values.polytomic.googlesearchconsole_client_secret | quote }}
-GOOGLEWORKSPACE_CLIENT_ID: {{ .Values.polytomic.googleworkspace_client_id | quote }}
-GOOGLEWORKSPACE_CLIENT_SECRET: {{ .Values.polytomic.googleworkspace_client_secret | quote }}
-GSHEETS_API_KEY: {{ .Values.polytomic.gsheets_api_key | quote }}
-GSHEETS_APP_ID: {{ .Values.polytomic.gsheets_app_id | quote }}
-GSHEETS_CLIENT_ID: {{ .Values.polytomic.gsheets_client_id | quote }}
-GSHEETS_CLIENT_SECRET: {{ .Values.polytomic.gsheets_client_secret | quote }}
-HUBSPOT_CLIENT_ID: {{ .Values.polytomic.hubspot_client_id | quote }}
-HUBSPOT_CLIENT_SECRET: {{ .Values.polytomic.hubspot_client_secret | quote }}
-INTERCOM_CLIENT_ID: {{ .Values.polytomic.intercom_client_id | quote }}
-INTERCOM_CLIENT_SECRET: {{ .Values.polytomic.intercom_client_secret | quote }}
-LINKEDINADS_CLIENT_ID: {{ .Values.polytomic.linkedinads_client_id | quote }}
-LINKEDINADS_CLIENT_SECRET: {{ .Values.polytomic.linkedinads_client_secret | quote }}
+{{- /* Integration credentials - only output non-empty values */ -}}
+{{- range $key, $value := .Values.polytomic.integrations }}
+{{- if $value }}
+{{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}
 {{- if and .Values.polytomic.sharedVolume.enabled (ne .Values.polytomic.sharedVolume.mode "emptyDir") }}
 LOCAL_DATA: "1"
 {{- else }}
@@ -417,20 +390,7 @@ LOCAL_DATA: "0"
 {{- end }}
 LOCAL_DATA_PATH: {{ .Values.polytomic.sharedVolume.mountPath | quote }}
 METRICS: {{ .Values.polytomic.metrics | quote }}
-OUTREACH_CLIENT_ID: {{ .Values.polytomic.outreach_client_id | quote }}
-OUTREACH_CLIENT_SECRET: {{ .Values.polytomic.outreach_client_secret | quote }}
-PARDOT_CLIENT_ID: {{ .Values.polytomic.pardot_client_id | quote }}
-PARDOT_CLIENT_SECRET: {{ .Values.polytomic.pardot_client_secret | quote }}
 QUERY_WORKERS: {{ .Values.polytomic.query_workers | quote }}
-SALESFORCE_CLIENT_ID: {{ .Values.polytomic.salesforce_client_id | quote }}
-SALESFORCE_CLIENT_SECRET: {{ .Values.polytomic.salesforce_client_secret | quote }}
-SHIPBOB_CLIENT_ID: {{ .Values.polytomic.shipbob_client_id | quote }}
-SHIPBOB_CLIENT_SECRET: {{ .Values.polytomic.shipbob_client_secret | quote }}
-SHOPIFY_CLIENT_ID: {{ .Values.polytomic.shopify_client_id | quote }}
-SHOPIFY_CLIENT_SECRET: {{ .Values.polytomic.shopify_client_secret | quote }}
-SMARTSHEET_CLIENT_ID: {{ .Values.polytomic.smartsheet_client_id | quote }}
-SMARTSHEET_CLIENT_SECRET: {{ .Values.polytomic.smartsheet_client_secret | quote }}
-STRIPE_SECRET_KEY: {{ .Values.polytomic.stripe_secret_key | quote }}
 SYNC_RETRY_ERRORS: {{ .Values.polytomic.sync_retry_errors | quote }}
 SYNC_WORKERS: {{ .Values.polytomic.sync_workers | quote }}
 TASK_EXECUTOR_CLEANUP_DELAY_SECONDS: {{ .Values.polytomic.task_executor_cleanup_delay_seconds | quote }}
@@ -438,8 +398,6 @@ TRACING: {{ .Values.polytomic.tracing | quote }}
 TX_BUFFER_SIZE: {{ .Values.polytomic.tx_buffer_size | quote }}
 WORKOS_API_KEY: {{ .Values.polytomic.auth.workos_api_key | quote }}
 WORKOS_CLIENT_ID: {{ .Values.polytomic.auth.workos_client_id | quote }}
-ZENDESK_CLIENT_ID: {{ .Values.polytomic.zendesk_client_id | quote }}
-ZENDESK_CLIENT_SECRET: {{ .Values.polytomic.zendesk_client_secret | quote }}
 hubspot_scopes_v2: "true"
 VERNEUIL_CONFIG: "{\"replication_spooling_dir\":\"/tmp/verneuil\",\"replication_targets\":[{\"s3\":{\"region\":\"{{ .Values.polytomic.s3.region }}\",\"chunk_bucket\":\"{{ .Values.polytomic.s3.operational_bucket }}/chunks\",\"manifest_bucket\":\"{{ .Values.polytomic.s3.operational_bucket }}/manifests\",\"create_buckets_on_demand\":false,\"domain_addressing\":false}}]}"
 EXECUTION_LOGS_V2: {{ or .Values.polytomic.internal_execution_logs .Values.polytomic.vector.daemonset.enabled | quote }}
