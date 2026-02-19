@@ -366,7 +366,7 @@ EXECUTION_LOG_BUCKET: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s
 EXECUTION_LOG_REGION: {{ .Values.polytomic.s3.region | quote }}
 KUBERNETES: "true"
 KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
-KUBERNETES_IMAGE: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+KUBERNETES_IMAGE: {{ include "polytomic.image" . }}
 KUBERNETES_VOLUME: {{ .Values.polytomic.sharedVolume.volumeName }}
 {{- if .Values.secret.name }}
 KUBERNETES_SECRET: {{ .Values.secret.name }}
