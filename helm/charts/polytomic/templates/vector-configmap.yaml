@@ -22,9 +22,8 @@ data:
     # Kubernetes logs source - collects from /var/log/pods
     [sources.kubernetes_logs]
     type = "kubernetes_logs"
-    # Only collect from Polytomic pods using instance label
-    # (each deployment has different app.kubernetes.io/name: polytomic-web, polytomic-sync, etc.)
-    extra_label_selector = "${POD_LABEL_SELECTOR:-app.kubernetes.io/instance=polytomic}"
+    # Only collect from Polytomic pods; all pod templates set vector.dev/include=true
+    extra_label_selector = "${POD_LABEL_SELECTOR:-vector.dev/include=true}"
     self_node_name = "${VECTOR_SELF_NODE_NAME}"
     # Read from /var/log/pods
     glob_minimum_cooldown_ms = 1000

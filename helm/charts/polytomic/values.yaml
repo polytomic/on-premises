@@ -183,10 +183,10 @@ polytomic:
       tag: build-213305
       imagePullPolicy: IfNotPresent
 
-      # -- Label selector to filter which pods to collect logs from
-      # Uses app.kubernetes.io/instance which is shared across all Polytomic deployments
-      # (each deployment has a different app.kubernetes.io/name: polytomic-web, polytomic-sync, etc.)
-      podLabelSelector: "app.kubernetes.io/instance=polytomic"
+      # -- Label selector to filter which pods to collect logs from.
+      # Uses vector.dev/include=true which is set on all Polytomic pod templates,
+      # making collection independent of the Helm release name.
+      podLabelSelector: "vector.dev/include=true"
 
       resources:
         requests:
