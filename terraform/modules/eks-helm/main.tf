@@ -64,7 +64,7 @@ polytomic:
     region: "${var.polytomic_bucket_region}"
 
   # Vector logging configuration
-  internal_execution_logs: true
+  internal_execution_logs: ${var.polytomic_use_logger}
   vector:
     daemonset:
       enabled: ${var.polytomic_use_logger}
