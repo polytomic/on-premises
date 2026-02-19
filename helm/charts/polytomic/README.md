@@ -145,6 +145,8 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.log_level | string | `"info"` |  |
 | polytomic.metrics | bool | `false` | Telemetry |
 | polytomic.query_workers | int | `10` |  |
+| polytomic.roles | object | `{"bulk":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"ingest":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"proxy":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"scheduler":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"task":{"cleanup_delay_seconds":10,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""}}` | Per-role executor configuration. Fields map to the {prefix}_* environment variables read by the application. Prefixes: task → TASK_EXECUTOR, bulk → BULK_EXECUTOR, ingest → INGEST_EXECUTOR,           proxy → PROXY_EXECUTOR, scheduler → SCHEDULER_ROLE.  The task role is the base: any field left at 0/"" in bulk/ingest/proxy/scheduler will inherit the corresponding task value at runtime (setDefaultRoleConfig). Only override the other roles when you need role-specific values. |
+| polytomic.roles.task.cleanup_delay_seconds | int | `10` | Seconds to sleep after task completion before cleaning up |
 | polytomic.s3.access_key_id | string | `""` | Access key ID |
 | polytomic.s3.operational_bucket | string | `"s3://operations"` |  |
 | polytomic.s3.region | string | `"us-east-1"` | S3 region e.g. us-east-1 |
@@ -162,7 +164,6 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.sharedVolume.volumeName | string | `"polytomic-shared"` | Volume name for PV/PVC |
 | polytomic.sync_retry_errors | bool | `true` |  |
 | polytomic.sync_workers | int | `10` |  |
-| polytomic.task_executor_cleanup_delay_seconds | int | `10` |  |
 | polytomic.tracing | bool | `false` |  |
 | polytomic.tx_buffer_size | int | `1000` |  |
 | postgresql.auth.database | string | `"polytomic"` |  |
