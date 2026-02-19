@@ -104,9 +104,15 @@ variable "chart_path" {
 }
 
 variable "polytomic_logger_image" {
-  description = "Docker image for Vector DaemonSet with ptconf for secret decryption"
+  description = "Docker image repository for Vector DaemonSet with ptconf for secret decryption"
   type        = string
-  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest"
+  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector"
+}
+
+variable "polytomic_logger_image_tag" {
+  description = "Tag for the Vector DaemonSet image. Defaults to polytomic_image_tag when not set."
+  type        = string
+  default     = null
 }
 
 variable "polytomic_use_logger" {

@@ -46,7 +46,8 @@
 | <a name="input_polytomic_google_client_secret"></a> [polytomic\_google\_client\_secret](#input\_polytomic\_google\_client\_secret) | The google client secret for the polytomic deployment | `any` | n/a | yes |
 | <a name="input_polytomic_image"></a> [polytomic\_image](#input\_polytomic\_image) | The image to use for the polytomic container | `any` | n/a | yes |
 | <a name="input_polytomic_image_tag"></a> [polytomic\_image\_tag](#input\_polytomic\_image\_tag) | The tag to use for the polytomic container | `any` | n/a | yes |
-| <a name="input_polytomic_logger_image"></a> [polytomic\_logger\_image](#input\_polytomic\_logger\_image) | Docker image for Vector DaemonSet with ptconf for secret decryption | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest"` | no |
+| <a name="input_polytomic_logger_image"></a> [polytomic\_logger\_image](#input\_polytomic\_logger\_image) | Docker image repository for Vector DaemonSet with ptconf for secret decryption | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector"` | no |
+| <a name="input_polytomic_logger_image_tag"></a> [polytomic\_logger\_image\_tag](#input\_polytomic\_logger\_image\_tag) | Tag for the Vector DaemonSet image. Defaults to polytomic\_image\_tag when not set. | `string` | `null` | no |
 | <a name="input_polytomic_managed_logs"></a> [polytomic\_managed\_logs](#input\_polytomic\_managed\_logs) | Enable Datadog log forwarding for both embedded Vector and DaemonSet. Matches ECS module variable. | `bool` | `false` | no |
 | <a name="input_polytomic_root_user"></a> [polytomic\_root\_user](#input\_polytomic\_root\_user) | The root user for the polytomic deployment | `string` | `"root"` | no |
 | <a name="input_polytomic_service_account_role_arn"></a> [polytomic\_service\_account\_role\_arn](#input\_polytomic\_service\_account\_role\_arn) | ARN of the role to use for the polytomic deployment service account | `any` | n/a | yes |

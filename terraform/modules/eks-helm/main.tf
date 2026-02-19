@@ -2,6 +2,9 @@ locals {
   # Determine chart source based on configuration
   use_repository = var.chart_repository != ""
   chart_path     = var.chart_path != "" ? var.chart_path : "${path.module}/../../../helm/charts/polytomic"
+
+  # Use explicit logger tag if provided, otherwise match the main Polytomic image tag
+  vector_image_tag = coalesce(var.polytomic_logger_image_tag, var.polytomic_image_tag)
 }
 
 resource "helm_release" "polytomic" {
@@ -67,6 +70,7 @@ polytomic:
     daemonset:
       enabled: ${var.polytomic_use_logger}
       image: ${var.polytomic_logger_image}
+      tag: ${local.vector_image_tag}
       serviceAccount:
         roleArn: ${var.polytomic_use_logger && var.oidc_provider_arn != "" ? module.vector_role[0].arn : ""}
     managedLogs: ${var.polytomic_managed_logs}
