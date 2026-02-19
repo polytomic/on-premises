@@ -162,10 +162,6 @@ polytomic:
 
   # Vector logging configuration
   vector:
-    # -- Disable sidecar (replaced by DaemonSet in Kubernetes)
-    # NOTE: Sidecar is still used in ECS deployments
-    enabled: false
-
     # -- Vector DaemonSet for stdout/stderr log collection
     # Collects container logs from all Polytomic pods on each node
     # Default: true (matches ECS behavior where polytomic_use_logger defaults to true)

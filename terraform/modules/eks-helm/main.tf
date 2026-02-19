@@ -66,7 +66,6 @@ polytomic:
   # Vector logging configuration
   internal_execution_logs: true
   vector:
-    enabled: false  # Sidecar disabled in Kubernetes
     daemonset:
       enabled: ${var.polytomic_use_logger}
       image: ${var.polytomic_logger_image}

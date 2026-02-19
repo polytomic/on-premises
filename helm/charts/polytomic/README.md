@@ -217,7 +217,6 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.vector.daemonset.serviceAccount | object | `{"roleArn":""}` | ServiceAccount configuration for Vector DaemonSet |
 | polytomic.vector.daemonset.serviceAccount.roleArn | string | `""` | IAM role ARN for IRSA (EKS only) |
 | polytomic.vector.daemonset.tolerations | list | `[]` | Additional tolerations for the Vector DaemonSet pods. By default no tolerations are set, so Vector only runs on schedulable worker nodes. Add tolerations here if your nodes have custom taints that Polytomic pods also tolerate. |
-| polytomic.vector.enabled | bool | `false` | Disable sidecar (replaced by DaemonSet in Kubernetes) NOTE: Sidecar is still used in ECS deployments |
 | polytomic.vector.managedLogs | bool | `false` | Enable forwarding to Datadog Logs API When true, sets SEND_LOGS=true for both: - Embedded Vector (structured app logs) - DaemonSet Vector (stdout/stderr logs) Default: false (opt-in) |
 | polytomic.zendesk_client_id | string | `""` |  |
 | polytomic.zendesk_client_secret | string | `""` |  |
