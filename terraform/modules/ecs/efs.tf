@@ -1,6 +1,6 @@
 module "efs" {
   source  = "cloudposse/efs/aws"
-  version = "~> 0.35.0"
+  version = "~> 1.1"
 
   name    = "${var.prefix}-efs"
   subnets = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids

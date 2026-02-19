@@ -1,6 +1,6 @@
 module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.11.0"
+  version = "~> 5.0"
 
   for_each = {
     exports    = local.polytomic_export_bucket,
