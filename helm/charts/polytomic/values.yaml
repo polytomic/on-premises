@@ -180,7 +180,7 @@ polytomic:
 
       # -- MUST use Polytomic's Vector image with ptconf for secret decryption
       image: 568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector
-      tag: latest
+      tag: build-213305
       imagePullPolicy: IfNotPresent
 
       # -- Label selector to filter which pods to collect logs from
