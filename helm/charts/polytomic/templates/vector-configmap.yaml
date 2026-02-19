@@ -57,13 +57,6 @@ data:
     [sinks.s3.batch]
     timeout_secs = 10
 
-    # Debug sink (optional)
-    [sinks.debug]
-    type = "console"
-    inputs = [ "kubernetes_logs" ]
-    target = "stdout"
-    [sinks.debug.encoding]
-    codec = "json"
 {{- if .Values.polytomic.vector.managedLogs }}
 
     [transforms.datadog_metadata]
