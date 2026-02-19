@@ -6,18 +6,22 @@ This repository uses component-specific tags for releases. Each Terraform module
 
 ## Tag Format
 
-Tags follow the pattern: `<component>/v<version>`
+**Helm Chart:**
+Tags follow the pattern: `polytomic-<version>` (required by chart-releaser)
+
+**Terraform Modules:**
+Tags follow the pattern: `terraform/<module>/v<version>`
 
 **Examples:**
 ```
-helm/v1.0.0
+polytomic-1.0.2
 terraform/ecs/v2.7.0
 terraform/eks/v1.0.0
 terraform/gke/v1.0.0
 ```
 
 **Component prefixes:**
-- `helm/` - Helm chart
+- `polytomic-` - Helm chart (no v prefix)
 - `terraform/ecs/` - ECS module
 - `terraform/eks/` - EKS module
 - `terraform/eks-addons/` - EKS addons module
@@ -85,8 +89,9 @@ git tag -a terraform/eks/v1.2.0 -m "Release EKS module v1.2.0"
 git push origin terraform/eks/v1.2.0
 
 # For Helm chart (triggers automatic GitHub release)
-git tag -a helm/v1.2.0 -m "Release Helm chart v1.2.0"
-git push origin helm/v1.2.0
+# Note: Must match chart name-version format for chart-releaser
+git tag -a polytomic-1.2.0 -m "Release Helm chart v1.2.0"
+git push origin polytomic-1.2.0
 ```
 
 ## 5. Update root CHANGELOG.md
@@ -107,7 +112,7 @@ git push origin master
 Done!
 
 **Note:**
-- **Helm charts**: GitHub Release is created automatically when you push the `helm/v*` tag
+- **Helm charts**: GitHub Release is created automatically when you push the `polytomic-*` tag
 - **Terraform modules**: Optionally create a manual GitHub Release at https://github.com/polytomic/on-premises/releases
 
 ---
@@ -120,7 +125,7 @@ git log terraform/eks/v1.0.0..HEAD -- terraform/modules/eks/
 
 # See existing tags
 git tag -l "terraform/eks/*"
-git tag -l "helm/*"
+git tag -l "polytomic-*"
 
 # Delete a tag (if you messed up)
 git tag -d terraform/eks/v1.2.0

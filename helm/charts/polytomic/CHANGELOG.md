@@ -5,11 +5,75 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - Unreleased
+## [1.2.0] - 2026-02-19
+
+### Added
+
+- **Vector DaemonSet for log collection**: A Vector DaemonSet is now deployed by
+  default to collect stdout/stderr container logs from all Polytomic pods on
+  each node. Logs are filtered by the `vector.dev/include=true` label, which is
+  automatically applied to all Polytomic pod templates. When
+  `polytomic.vector.managedLogs` is enabled, logs are forwarded to Datadog. This
+  matches ECS deployment behavior where `polytomic_use_logger` defaults to
+  `true`.
+
+- **`imageRegistry` value**: A new top-level `imageRegistry` value controls the
+  ECR registry prefix (e.g. `568237466542.dkr.ecr.us-west-2.amazonaws.com`)
+  separately from the image name. Defaults to the us-west-2 ECR registry.
+  Override to use a different AWS region without needing to change each image's
+  repository path.
+
+- **`image.tag` is now required**: `image.tag` must be set explicitly. It no
+  longer falls back to `Chart.appVersion`.
+
+### Changed
+
+- `image.repository` now contains only the image name (`polytomic-onprem`)
+  rather than the full ECR URL. The registry prefix is now controlled by
+  `imageRegistry`.
+
+### Upgrade Notes
+
+**`image.repository` format change (action required):** If you have set
+`image.repository` to a full ECR URL (e.g.
+`568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem`), you must split
+it into two values:
+
+```yaml
+imageRegistry: "568237466542.dkr.ecr.us-west-2.amazonaws.com"
+image:
+  repository: polytomic-onprem
+```
+
+Leaving the old full URL in `image.repository` will result in an incorrectly
+constructed image reference.
+
+**Vector DaemonSet is enabled by default.** The DaemonSet requires elevated
+privileges (root) to read container log files from the host node. To disable it:
+
+```yaml
+polytomic:
+  vector:
+    daemonset:
+      enabled: false
+```
+
+**New `polytomic.vector` values:**
+
+| Value                                               | Default                     | Description                                   |
+| --------------------------------------------------- | --------------------------- | --------------------------------------------- |
+| `polytomic.vector.daemonset.enabled`                | `true`                      | Deploy the Vector DaemonSet                   |
+| `polytomic.vector.daemonset.image`                  | `polytomic-vector`          | Image name (registry set via `imageRegistry`) |
+| `polytomic.vector.daemonset.tag`                    | `""` (inherits `image.tag`) | Image tag override                            |
+| `polytomic.vector.daemonset.tolerations`            | `[]`                        | Additional tolerations for Vector pods        |
+| `polytomic.vector.daemonset.serviceAccount.roleArn` | `""`                        | IAM role ARN for IRSA (EKS)                   |
+| `polytomic.vector.managedLogs`                      | `false`                     | Forward logs to Datadog                       |
+
+---
+
+## [1.0.2] - 2026-01-21
 
 **BREAKING CHANGES**: This is a major modernization of the Helm chart with several breaking changes.
-
-**Note**: This version is currently in the `eks-module-versions` branch and has not yet been merged to master.
 
 ### Changed
 
