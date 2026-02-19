@@ -126,9 +126,6 @@ Kubernetes: `>=1.34.0-0`
 | nfs-server-provisioner.storageClass.parameters | object | `{}` |  |
 | podDisruptionBudget.enabled | bool | `false` |  |
 | podDisruptionBudget.minAvailable | int | `1` |  |
-| polytomic.airtable_client_secret | string | `""` |  |
-| polytomic.asana_client_id | string | `""` |  |
-| polytomic.asana_client_secret | string | `""` |  |
 | polytomic.auth.google_client_id | string | `""` | Google OAuth Client ID, obtained by creating a OAuth 2.0 Client ID |
 | polytomic.auth.google_client_secret | string | `""` | Google OAuth Client Secret, obtained by creating a OAuth 2.0 Client ID |
 | polytomic.auth.methods | list | `[]` |  |
@@ -137,49 +134,16 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.auth.url | string | `"https://polytomic.mycompany.com"` | Base URL for accessing Polytomic; for example, https://polytomic.mycompany.com. This will be used when redirecting back from Google and other integrations after authenticating with OAuth. |
 | polytomic.auth.workos_api_key | string | `""` |  |
 | polytomic.auth.workos_client_id | string | `""` |  |
-| polytomic.bingads_client_id | string | `""` |  |
-| polytomic.bingads_client_secret | string | `""` |  |
-| polytomic.bingads_developer_token | string | `""` |  |
-| polytomic.ccloud_api_key | string | `""` |  |
-| polytomic.ccloud_api_secret | string | `""` |  |
 | polytomic.default_org_features | list | `[]` |  |
 | polytomic.deployment.api_key | string | `""` | The global api key for your deployment, user provided. |
 | polytomic.deployment.key | string | `""` | The license key for your deployment, provided by Polytomic. |
 | polytomic.deployment.name | string | `""` | A unique identifier for your on premises deploy, provided by Polytomic. |
 | polytomic.env | string | `""` |  |
-| polytomic.fb_login_configuration_id | string | `""` |  |
-| polytomic.fbaudience_client_id | string | `""` |  |
-| polytomic.fbaudience_client_secret | string | `""` |  |
 | polytomic.field_change_tracking | bool | `true` |  |
-| polytomic.front_client_id | string | `""` |  |
-| polytomic.front_client_secret | string | `""` |  |
-| polytomic.github_client_id | string | `""` |  |
-| polytomic.github_client_secret | string | `""` |  |
-| polytomic.github_deploy_key | string | `""` |  |
-| polytomic.googleads_client_id | string | `""` |  |
-| polytomic.googleads_client_secret | string | `""` |  |
-| polytomic.googleads_developer_token | string | `""` |  |
-| polytomic.googlesearchconsole_client_id | string | `""` |  |
-| polytomic.googlesearchconsole_client_secret | string | `""` |  |
-| polytomic.googleworkspace_client_id | string | `""` |  |
-| polytomic.googleworkspace_client_secret | string | `""` |  |
-| polytomic.gsheets_api_key | string | `""` |  |
-| polytomic.gsheets_app_id | string | `""` |  |
-| polytomic.gsheets_client_id | string | `""` |  |
-| polytomic.gsheets_client_secret | string | `""` |  |
-| polytomic.hubspot_client_id | string | `""` |  |
-| polytomic.hubspot_client_secret | string | `""` |  |
-| polytomic.intercom_client_id | string | `""` |  |
-| polytomic.intercom_client_secret | string | `""` |  |
+| polytomic.integrations | object | `{}` | Integration credentials Configure OAuth credentials and API keys for third-party integrations. Only non-empty values will be included in the deployment secret. Supports all integration environment variables in UPPER_CASE format.  Common integrations:   SALESFORCE_CLIENT_ID / SALESFORCE_CLIENT_SECRET   HUBSPOT_CLIENT_ID / HUBSPOT_CLIENT_SECRET   GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET / GITHUB_DEPLOY_KEY   SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET   STRIPE_SECRET_KEY   GOOGLEADS_CLIENT_ID / GOOGLEADS_CLIENT_SECRET / GOOGLEADS_DEVELOPER_TOKEN   GSHEETS_API_KEY / GSHEETS_APP_ID / GSHEETS_CLIENT_ID / GSHEETS_CLIENT_SECRET   And many more - see documentation for full list  Example:   integrations:     SALESFORCE_CLIENT_ID: "your-client-id"     SALESFORCE_CLIENT_SECRET: "your-client-secret"     HUBSPOT_CLIENT_ID: "your-hubspot-id"     HUBSPOT_CLIENT_SECRET: "your-hubspot-secret" |
 | polytomic.internal_execution_logs | bool | `false` |  |
-| polytomic.linkedinads_client_id | string | `""` |  |
-| polytomic.linkedinads_client_secret | string | `""` |  |
 | polytomic.log_level | string | `"info"` |  |
 | polytomic.metrics | bool | `false` | Telemetry |
-| polytomic.outreach_client_id | string | `""` |  |
-| polytomic.outreach_client_secret | string | `""` |  |
-| polytomic.pardot_client_id | string | `""` |  |
-| polytomic.pardot_client_secret | string | `""` |  |
 | polytomic.query_workers | int | `10` |  |
 | polytomic.roles | object | `{"bulk":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"ingest":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"proxy":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"scheduler":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"task":{"cleanup_delay_seconds":10,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""}}` | Per-role executor configuration. Fields map to the {prefix}_* environment variables read by the application. Prefixes: task → TASK_EXECUTOR, bulk → BULK_EXECUTOR, ingest → INGEST_EXECUTOR,           proxy → PROXY_EXECUTOR, scheduler → SCHEDULER_ROLE.  The task role is the base: any field left at 0/"" in bulk/ingest/proxy/scheduler will inherit the corresponding task value at runtime (setDefaultRoleConfig). Only override the other roles when you need role-specific values. |
 | polytomic.roles.task.cleanup_delay_seconds | int | `10` | Seconds to sleep after task completion before cleaning up |
@@ -187,8 +151,6 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.s3.operational_bucket | string | `"s3://operations"` |  |
 | polytomic.s3.region | string | `"us-east-1"` | S3 region e.g. us-east-1 |
 | polytomic.s3.secret_access_key | string | `""` | Secret access key |
-| polytomic.salesforce_client_id | string | `""` |  |
-| polytomic.salesforce_client_secret | string | `""` |  |
 | polytomic.sharedVolume.accessModes | list | `["ReadWriteMany"]` | Access modes |
 | polytomic.sharedVolume.dynamic.storageClassName | string | `""` | Storage class name (empty = cluster default) |
 | polytomic.sharedVolume.enabled | bool | `true` | Enable shared volume (if false, uses emptyDir) |
@@ -200,19 +162,10 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.sharedVolume.static.volumeHandle | string | `""` | Volume handle (e.g., EFS filesystem ID: fs-12345678) |
 | polytomic.sharedVolume.subPath | string | `""` | Optional subPath within the volume |
 | polytomic.sharedVolume.volumeName | string | `"polytomic-shared"` | Volume name for PV/PVC |
-| polytomic.shipbob_client_id | string | `""` |  |
-| polytomic.shipbob_client_secret | string | `""` |  |
-| polytomic.shopify_client_id | string | `""` |  |
-| polytomic.shopify_client_secret | string | `""` |  |
-| polytomic.smartsheet_client_id | string | `""` |  |
-| polytomic.smartsheet_client_secret | string | `""` |  |
-| polytomic.stripe_secret_key | string | `""` |  |
 | polytomic.sync_retry_errors | bool | `true` |  |
 | polytomic.sync_workers | int | `10` |  |
 | polytomic.tracing | bool | `false` |  |
 | polytomic.tx_buffer_size | int | `1000` |  |
-| polytomic.zendesk_client_id | string | `""` |  |
-| polytomic.zendesk_client_secret | string | `""` |  |
 | postgresql.auth.database | string | `"polytomic"` |  |
 | postgresql.auth.password | string | `"polytomic"` |  |
 | postgresql.auth.username | string | `"polytomic"` |  |
