@@ -107,6 +107,14 @@ spec:
         hostPath:
           path: /var/lib/vector
           type: DirectoryOrCreate
+      {{- with .Values.polytomic.vector.daemonset.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.polytomic.vector.daemonset.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.polytomic.vector.daemonset.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}

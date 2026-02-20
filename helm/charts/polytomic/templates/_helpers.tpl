@@ -377,6 +377,12 @@ KUBERNETES_SERVICE_ACCOUNT: {{ include "polytomic.serviceAccountName" . | quote 
 {{- if .Values.imagePullSecrets }}
 KUBERNETES_IMAGE_PULL_SECRET: {{ (index .Values.imagePullSecrets 0).name | quote }}
 {{- end }}
+{{- if .Values.polytomic.kubernetes.nodeSelectors }}
+KUBERNETES_NODE_SELECTORS: {{ .Values.polytomic.kubernetes.nodeSelectors | quote }}
+{{- end }}
+{{- if .Values.polytomic.kubernetes.tolerations }}
+KUBERNETES_TOLERATIONS: {{ .Values.polytomic.kubernetes.tolerations | quote }}
+{{- end }}
 {{- /* Integration credentials - only output non-empty values */ -}}
 {{- range $key, $value := .Values.polytomic.integrations }}
 {{- if $value }}
