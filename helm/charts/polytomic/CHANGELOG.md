@@ -5,6 +5,23 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-02-20
+
+### Added
+
+- **Kubernetes task executor scheduling options**: New `polytomic.kubernetes.nodeSelectors` and `polytomic.kubernetes.tolerations` values allow scheduling dynamically created task executor pods on specific nodes. These are passed to the application as `KUBERNETES_NODE_SELECTORS` and `KUBERNETES_TOLERATIONS` environment variables.
+
+- **Vector DaemonSet scheduling options**: New `polytomic.vector.daemonset.nodeSelector` and `polytomic.vector.daemonset.affinity` values allow scheduling Vector DaemonSet pods on specific nodes, complementing the existing `tolerations` option.
+
+| Value                                    | Default | Description                                                |
+| ---------------------------------------- | ------- | ---------------------------------------------------------- |
+| `polytomic.kubernetes.nodeSelectors`     | `""`    | Node selectors for task pods (format: `key=value,key=value`) |
+| `polytomic.kubernetes.tolerations`       | `""`    | Tolerations for task pods (format: `key:operator:value:effect`) |
+| `polytomic.vector.daemonset.nodeSelector`| `{}`    | Node selector for Vector DaemonSet pods                    |
+| `polytomic.vector.daemonset.affinity`    | `{}`    | Affinity rules for Vector DaemonSet pods                   |
+
+---
+
 ## [1.2.0] - 2026-02-19
 
 ### Added
