@@ -143,6 +143,9 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.field_change_tracking | bool | `true` |  |
 | polytomic.integrations | object | `{}` | Integration credentials Configure OAuth credentials and API keys for third-party integrations. Only non-empty values will be included in the deployment secret. Supports all integration environment variables in UPPER_CASE format.  Common integrations:   SALESFORCE_CLIENT_ID / SALESFORCE_CLIENT_SECRET   HUBSPOT_CLIENT_ID / HUBSPOT_CLIENT_SECRET   GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET / GITHUB_DEPLOY_KEY   SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET   STRIPE_SECRET_KEY   GOOGLEADS_CLIENT_ID / GOOGLEADS_CLIENT_SECRET / GOOGLEADS_DEVELOPER_TOKEN   GSHEETS_API_KEY / GSHEETS_APP_ID / GSHEETS_CLIENT_ID / GSHEETS_CLIENT_SECRET   And many more - see documentation for full list  Example:   integrations:     SALESFORCE_CLIENT_ID: "your-client-id"     SALESFORCE_CLIENT_SECRET: "your-client-secret"     HUBSPOT_CLIENT_ID: "your-hubspot-id"     HUBSPOT_CLIENT_SECRET: "your-hubspot-secret" |
 | polytomic.internal_execution_logs | bool | `false` |  |
+| polytomic.kubernetes | object | `{"nodeSelectors":"","tolerations":""}` | Kubernetes task executor scheduling configuration These settings control how Polytomic schedules dynamically created job pods |
+| polytomic.kubernetes.nodeSelectors | string | `""` | Node selectors for task executor pods (comma-separated key=value pairs) Format: key=value,key=value Example: "disktype=ssd,node-type=sync-worker" |
+| polytomic.kubernetes.tolerations | string | `""` | Tolerations for task executor pods (comma-separated) Format: key:operator:value:effect,key:operator:value:effect Example: "dedicated:Equal:sync-jobs:NoSchedule,gpu:Exists::NoSchedule" |
 | polytomic.log_level | string | `"info"` |  |
 | polytomic.metrics | bool | `false` | Telemetry |
 | polytomic.query_workers | int | `10` |  |
@@ -167,9 +170,11 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.sync_workers | int | `10` |  |
 | polytomic.tracing | bool | `false` |  |
 | polytomic.tx_buffer_size | int | `1000` |  |
-| polytomic.vector.daemonset | object | `{"enabled":true,"image":"polytomic-vector","imagePullPolicy":"IfNotPresent","podLabelSelector":"vector.dev/include=true","resources":{"limits":{"cpu":"200m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"serviceAccount":{"roleArn":""},"tag":"","tolerations":[]}` | Vector DaemonSet for stdout/stderr log collection Collects container logs from all Polytomic pods on each node Default: true (matches ECS behavior where polytomic_use_logger defaults to true) |
+| polytomic.vector.daemonset | object | `{"affinity":{},"enabled":true,"image":"polytomic-vector","imagePullPolicy":"IfNotPresent","nodeSelector":{},"podLabelSelector":"vector.dev/include=true","resources":{"limits":{"cpu":"200m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"serviceAccount":{"roleArn":""},"tag":"","tolerations":[]}` | Vector DaemonSet for stdout/stderr log collection Collects container logs from all Polytomic pods on each node Default: true (matches ECS behavior where polytomic_use_logger defaults to true) |
+| polytomic.vector.daemonset.affinity | object | `{}` | Affinity rules for Vector DaemonSet pods |
 | polytomic.vector.daemonset.enabled | bool | `true` | Set to false to disable DaemonSet log collection Consider disabling for: - Development environments to save resources - Cost-sensitive deployments where only business logs are needed - When using alternative cluster-wide log collection - Security/compliance restrictions on DaemonSets |
 | polytomic.vector.daemonset.image | string | `"polytomic-vector"` | Image name for Vector DaemonSet (registry is set via imageRegistry). MUST use Polytomic's Vector image with ptconf for secret decryption. |
+| polytomic.vector.daemonset.nodeSelector | object | `{}` | Node selector for Vector DaemonSet pods |
 | polytomic.vector.daemonset.podLabelSelector | string | `"vector.dev/include=true"` | Label selector to filter which pods to collect logs from. Uses vector.dev/include=true which is set on all Polytomic pod templates, making collection independent of the Helm release name. |
 | polytomic.vector.daemonset.serviceAccount | object | `{"roleArn":""}` | ServiceAccount configuration for Vector DaemonSet |
 | polytomic.vector.daemonset.serviceAccount.roleArn | string | `""` | IAM role ARN for IRSA (EKS only) |

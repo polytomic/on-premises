@@ -219,6 +219,18 @@ polytomic:
 
   internal_execution_logs: false
 
+  # -- Kubernetes task executor scheduling configuration
+  # These settings control how Polytomic schedules dynamically created job pods
+  kubernetes:
+    # -- Node selectors for task executor pods (comma-separated key=value pairs)
+    # Format: key=value,key=value
+    # Example: "disktype=ssd,node-type=sync-worker"
+    nodeSelectors: ""
+    # -- Tolerations for task executor pods (comma-separated)
+    # Format: key:operator:value:effect,key:operator:value:effect
+    # Example: "dedicated:Equal:sync-jobs:NoSchedule,gpu:Exists::NoSchedule"
+    tolerations: ""
+
   # Vector logging configuration
   vector:
     # -- Vector DaemonSet for stdout/stderr log collection
@@ -257,6 +269,10 @@ polytomic:
       # By default no tolerations are set, so Vector only runs on schedulable worker nodes.
       # Add tolerations here if your nodes have custom taints that Polytomic pods also tolerate.
       tolerations: []
+      # -- Node selector for Vector DaemonSet pods
+      nodeSelector: {}
+      # -- Affinity rules for Vector DaemonSet pods
+      affinity: {}
 
       # -- ServiceAccount configuration for Vector DaemonSet
       serviceAccount:
