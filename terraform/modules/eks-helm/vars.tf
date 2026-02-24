@@ -170,3 +170,15 @@ variable "force_update" {
   type        = bool
   default     = false
 }
+
+variable "wait" {
+  description = "Wait for all Kubernetes resources to be ready before marking the release as successful."
+  type        = bool
+  default     = false
+}
+
+variable "timeout" {
+  description = "Timeout in seconds for waiting for resources to be ready. Only used when wait is true."
+  type        = number
+  default     = 600 # 10 minutes
+}

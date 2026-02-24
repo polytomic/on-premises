@@ -16,7 +16,8 @@ resource "helm_release" "polytomic" {
   version           = local.use_repository && var.chart_version != "" ? var.chart_version : null
 
   create_namespace = true
-  wait             = false
+  wait             = var.wait
+  timeout          = var.wait ? var.timeout : null
   force_update     = var.force_update
 
 
