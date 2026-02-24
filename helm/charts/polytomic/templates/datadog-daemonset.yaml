@@ -46,8 +46,12 @@ spec:
           value: "true"
         - name: DD_APM_NON_LOCAL_TRAFFIC
           value: "true"
-        # Kubernetes node name (required for hostname detection)
+        # Kubernetes node name and hostname (required for hostname detection on EKS)
         - name: DD_KUBERNETES_KUBELET_NODENAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: DD_HOSTNAME
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
