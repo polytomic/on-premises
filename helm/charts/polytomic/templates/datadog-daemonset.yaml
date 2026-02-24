@@ -46,6 +46,11 @@ spec:
           value: "true"
         - name: DD_APM_NON_LOCAL_TRAFFIC
           value: "true"
+        # Kubernetes node name (required for hostname detection)
+        - name: DD_KUBERNETES_KUBELET_NODENAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
         # Kubernetes tagging
         - name: DD_KUBERNETES_POD_LABELS_AS_TAGS
           value: '{"app.kubernetes.io/name": "kube_app", "app.kubernetes.io/component": "kube_component"}'
