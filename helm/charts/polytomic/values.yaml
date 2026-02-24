@@ -510,13 +510,14 @@ podDisruptionBudget:
 
 worker:
   replicaCount: 2
+  # TODO: Restore higher CPU requests once eks-helm module supports extra_helm_values
   resources:
     limits:
       cpu: 500m
       memory: 1Gi
     requests:
-      cpu: 250m
-      memory: 512Mi
+      cpu: 100m
+      memory: 256Mi
   autoscaling:
     enabled: false  # Can be enabled if needed
     minReplicas: 1
@@ -541,13 +542,14 @@ worker:
 
 web:
   replicaCount: 2
+  # TODO: Restore higher CPU requests once eks-helm module supports extra_helm_values
   resources:
     limits:
       cpu: 1000m
       memory: 2Gi
     requests:
-      cpu: 500m
-      memory: 1Gi
+      cpu: 100m
+      memory: 256Mi
   autoscaling:
     enabled: true
     minReplicas: 2
@@ -580,13 +582,14 @@ web:
   #     done
 sync:
   replicaCount: 2
+  # TODO: Restore higher CPU requests once eks-helm module supports extra_helm_values
   resources:
     limits:
       cpu: 1000m
       memory: 2Gi
     requests:
-      cpu: 500m
-      memory: 1Gi
+      cpu: 100m
+      memory: 256Mi
   autoscaling:
     enabled: true
     minReplicas: 2
@@ -609,13 +612,14 @@ sync:
   sidecarContainers: []
 
 schemacache:
+  # TODO: Restore higher CPU requests once eks-helm module supports extra_helm_values
   resources:
     limits:
       cpu: 500m
       memory: 1Gi
     requests:
-      cpu: 250m
-      memory: 512Mi
+      cpu: 100m
+      memory: 256Mi
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -632,13 +636,14 @@ schemacache:
   sidecarContainers: []
 
 scheduler:
+  # TODO: Restore higher CPU requests once eks-helm module supports extra_helm_values
   resources:
     limits:
       cpu: 500m
       memory: 1Gi
     requests:
-      cpu: 250m
-      memory: 512Mi
+      cpu: 100m
+      memory: 256Mi
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -655,13 +660,14 @@ scheduler:
   sidecarContainers: []
 
 jobworker:
+  # TODO: Restore higher CPU requests once eks-helm module supports extra_helm_values
   resources:
     limits:
       cpu: 1000m
       memory: 2Gi
     requests:
-      cpu: 500m
-      memory: 1Gi
+      cpu: 100m
+      memory: 256Mi
   nodeSelector: {}
   tolerations: []
   affinity: {}

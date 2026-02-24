@@ -49,6 +49,9 @@ spec:
         # Kubernetes tagging
         - name: DD_KUBERNETES_POD_LABELS_AS_TAGS
           value: '{"app.kubernetes.io/name": "kube_app", "app.kubernetes.io/component": "kube_component"}'
+        # Disable system probe (not needed for APM-only usage)
+        - name: DD_SYSTEM_PROBE_ENABLED
+          value: "false"
         # Required for ptconf secret resolution
         - name: DEPLOYMENT
           valueFrom:
