@@ -164,3 +164,9 @@ variable "polytomic_dd_agent_image_tag" {
   type        = string
   default     = null
 }
+
+variable "force_update" {
+  description = "Force Helm to update the release even if no changes are detected. Useful for CI/CD pipelines."
+  type        = bool
+  default     = false
+}

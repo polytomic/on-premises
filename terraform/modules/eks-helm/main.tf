@@ -17,6 +17,7 @@ resource "helm_release" "polytomic" {
 
   create_namespace = true
   wait             = false
+  force_update     = var.force_update
 
 
   values = [<<EOF
