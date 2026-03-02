@@ -16,7 +16,9 @@ resource "helm_release" "polytomic" {
   version           = local.use_repository && var.chart_version != "" ? var.chart_version : null
 
   create_namespace = true
-  wait             = false
+  wait             = var.wait
+  timeout          = var.wait ? var.timeout : null
+  force_update     = var.force_update
 
 
   values = [<<EOF
@@ -75,6 +77,13 @@ polytomic:
       serviceAccount:
         roleArn: ${var.polytomic_use_logger && var.oidc_provider_arn != "" ? module.vector_role[0].arn : ""}
     managedLogs: ${var.polytomic_managed_logs}
+
+  # Datadog Agent DaemonSet for APM
+  datadog:
+    daemonset:
+      enabled: ${var.polytomic_use_dd_agent}
+      image: ${var.polytomic_dd_agent_image}
+      tag: ${coalesce(var.polytomic_dd_agent_image_tag, var.polytomic_image_tag)}
 
   sharedVolume:
     enabled: true

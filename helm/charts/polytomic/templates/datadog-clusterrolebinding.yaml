@@ -1,0 +1,17 @@
+{{- if .Values.polytomic.datadog.daemonset.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "polytomic.fullname" . }}-datadog
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+    app.kubernetes.io/component: datadog
+subjects:
+- kind: ServiceAccount
+  name: {{ include "polytomic.fullname" . }}-datadog
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "polytomic.fullname" . }}-datadog
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

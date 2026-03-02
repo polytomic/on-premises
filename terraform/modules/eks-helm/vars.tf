@@ -146,3 +146,39 @@ variable "execution_log_bucket_arn" {
   type        = string
   default     = ""
 }
+
+variable "polytomic_use_dd_agent" {
+  description = "Deploy Datadog Agent DaemonSet for APM tracing. Matches ECS module variable."
+  type        = bool
+  default     = false
+}
+
+variable "polytomic_dd_agent_image" {
+  description = "Image name for the Datadog Agent DaemonSet. Defaults to polytomic-dd-agent."
+  type        = string
+  default     = "polytomic-dd-agent"
+}
+
+variable "polytomic_dd_agent_image_tag" {
+  description = "Tag for the Datadog Agent DaemonSet image. Defaults to polytomic_image_tag when not set."
+  type        = string
+  default     = null
+}
+
+variable "force_update" {
+  description = "Force Helm to update the release even if no changes are detected. Useful for CI/CD pipelines."
+  type        = bool
+  default     = false
+}
+
+variable "wait" {
+  description = "Wait for all Kubernetes resources to be ready before marking the release as successful."
+  type        = bool
+  default     = false
+}
+
+variable "timeout" {
+  description = "Timeout in seconds for waiting for resources to be ready. Only used when wait is true."
+  type        = number
+  default     = 600 # 10 minutes
+}

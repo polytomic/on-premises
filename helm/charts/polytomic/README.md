@@ -2,7 +2,7 @@
 
 Polytomic helm chart for kubernetes
 
-![Version: 1.0.2](https://img.shields.io/badge/Version-1.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 1.3.0](https://img.shields.io/badge/Version-1.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 ## Installing the Chart
 
@@ -23,6 +23,73 @@ Kubernetes: `>=1.34.0-0`
 | https://charts.bitnami.com/bitnami | postgresql | 18.2.3 |
 | https://charts.bitnami.com/bitnami | redis | 24.1.2 |
 | https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/ | nfs-server-provisioner | 1.6.0 |
+
+## Logging Configuration
+
+Polytomic supports execution log collection via Vector DaemonSet.
+
+### Execution Logs to S3
+
+Collects execution logs from Polytomic pods and ships them to S3 for storage and retrieval in the UI.
+
+**Required values:**
+
+```yaml
+polytomic:
+  internal_execution_logs: true  # Write logs to stdout for Vector to collect
+  s3:
+    operational_bucket: "s3://your-bucket"
+    region: "us-west-2"
+  vector:
+    daemonset:
+      enabled: true
+      serviceAccount:
+        roleArn: "arn:aws:iam::123456789:role/vector-role"  # EKS only - needs s3:PutObject
+```
+
+### Forwarding Logs to Datadog
+
+In addition to S3, logs can be forwarded to Datadog Logs API.
+
+**Required values (in addition to S3 config above):**
+
+```yaml
+polytomic:
+  vector:
+    managedLogs: true  # Enable Datadog log forwarding
+```
+
+Note: S3 configuration is currently required even when using Datadog, as the S3 sink is always enabled in the Vector config.
+
+## Redis Configuration
+
+Polytomic supports both single-node Redis and Redis Cluster mode.
+
+### Redis Cluster Mode
+
+Redis Cluster mode is **automatically detected** - no special configuration is required. Polytomic will:
+1. Attempt to connect using Redis Cluster commands
+2. Automatically fall back to single-node mode if cluster commands are not supported
+
+This works with:
+- AWS ElastiCache (cluster mode enabled)
+- GCP Memorystore (cluster mode)
+- Self-hosted Redis Cluster
+- Any Redis-compatible service
+
+### Example External Redis Configuration
+
+```yaml
+redis:
+  enabled: false  # Disable embedded Redis
+
+externalRedis:
+  host: "your-redis-cluster.cache.amazonaws.com"
+  port: 6379
+  password: "your-password"
+  ssl: true  # Recommended for production
+  poolSize: 0  # 0 = unlimited
+```
 
 ## Values
 
@@ -135,6 +202,15 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.auth.url | string | `"https://polytomic.mycompany.com"` | Base URL for accessing Polytomic; for example, https://polytomic.mycompany.com. This will be used when redirecting back from Google and other integrations after authenticating with OAuth. |
 | polytomic.auth.workos_api_key | string | `""` |  |
 | polytomic.auth.workos_client_id | string | `""` |  |
+| polytomic.datadog.daemonset.enabled | bool | `false` | Enable Datadog Agent DaemonSet for APM tracing. When enabled, all Polytomic pods will have DD_AGENT_HOST set to the Datadog service name, and the service routes to the local node via internalTrafficPolicy: Local. |
+| polytomic.datadog.daemonset.image | string | `"polytomic-dd-agent"` | Image name for Datadog Agent DaemonSet (registry is set via imageRegistry). MUST use Polytomic's Datadog agent image with ptconf for secret decryption. |
+| polytomic.datadog.daemonset.imagePullPolicy | string | `"IfNotPresent"` |  |
+| polytomic.datadog.daemonset.resources.limits.cpu | string | `"500m"` |  |
+| polytomic.datadog.daemonset.resources.limits.memory | string | `"512Mi"` |  |
+| polytomic.datadog.daemonset.resources.requests.cpu | string | `"200m"` |  |
+| polytomic.datadog.daemonset.resources.requests.memory | string | `"256Mi"` |  |
+| polytomic.datadog.daemonset.tag | string | `""` | Tag for the Datadog agent image. Defaults to image.tag when not set. |
+| polytomic.datadog.daemonset.tolerations | list | `[]` | Additional tolerations for the Datadog DaemonSet pods. |
 | polytomic.default_org_features | list | `[]` |  |
 | polytomic.deployment.api_key | string | `""` | The global api key for your deployment, user provided. |
 | polytomic.deployment.key | string | `""` | The license key for your deployment, provided by Polytomic. |
@@ -142,7 +218,7 @@ Kubernetes: `>=1.34.0-0`
 | polytomic.env | string | `""` |  |
 | polytomic.field_change_tracking | bool | `true` |  |
 | polytomic.integrations | object | `{}` | Integration credentials Configure OAuth credentials and API keys for third-party integrations. Only non-empty values will be included in the deployment secret. Supports all integration environment variables in UPPER_CASE format.  Common integrations:   SALESFORCE_CLIENT_ID / SALESFORCE_CLIENT_SECRET   HUBSPOT_CLIENT_ID / HUBSPOT_CLIENT_SECRET   GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET / GITHUB_DEPLOY_KEY   SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET   STRIPE_SECRET_KEY   GOOGLEADS_CLIENT_ID / GOOGLEADS_CLIENT_SECRET / GOOGLEADS_DEVELOPER_TOKEN   GSHEETS_API_KEY / GSHEETS_APP_ID / GSHEETS_CLIENT_ID / GSHEETS_CLIENT_SECRET   And many more - see documentation for full list  Example:   integrations:     SALESFORCE_CLIENT_ID: "your-client-id"     SALESFORCE_CLIENT_SECRET: "your-client-secret"     HUBSPOT_CLIENT_ID: "your-hubspot-id"     HUBSPOT_CLIENT_SECRET: "your-hubspot-secret" |
-| polytomic.internal_execution_logs | bool | `false` |  |
+| polytomic.internal_execution_logs | bool | `false` | Enable internal execution logging via stdout. When true, Polytomic writes execution logs to stdout instead of directly to S3. Required for Vector DaemonSet log collection to work. Should be enabled together with vector.daemonset.enabled. |
 | polytomic.kubernetes | object | `{"nodeSelectors":"","tolerations":""}` | Kubernetes task executor scheduling configuration These settings control how Polytomic schedules dynamically created job pods |
 | polytomic.kubernetes.nodeSelectors | string | `""` | Node selectors for task executor pods (comma-separated key=value pairs) Format: key=value,key=value Example: "disktype=ssd,node-type=sync-worker" |
 | polytomic.kubernetes.tolerations | string | `""` | Tolerations for task executor pods (comma-separated) Format: key:operator:value:effect,key:operator:value:effect Example: "dedicated:Equal:sync-jobs:NoSchedule,gpu:Exists::NoSchedule" |

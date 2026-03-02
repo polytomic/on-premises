@@ -5,6 +5,18 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-03-02
+
+### Added
+
+- **Datadog Agent DaemonSet (optional)**: New `polytomic.datadog.daemonset.*` values deploy a Datadog Agent DaemonSet plus ServiceAccount, ClusterRole, and ClusterRoleBinding for APM/metrics collection.
+
+### Changed
+
+- **APM env wiring when Datadog is enabled**: When `polytomic.datadog.daemonset.enabled=true`, all Polytomic pods now receive `DD_AGENT_HOST` (set to the Datadog Service name), and `METRICS` is forced on to ensure metrics emission.
+
+---
+
 ## [1.2.1] - 2026-02-20
 
 ### Added
