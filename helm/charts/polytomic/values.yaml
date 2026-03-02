@@ -292,7 +292,8 @@ polytomic:
   datadog:
     daemonset:
       # -- Enable Datadog Agent DaemonSet for APM tracing
-      # When enabled, all Polytomic pods will have DD_AGENT_HOST set to the node IP
+      # When enabled, all Polytomic pods will have DD_AGENT_HOST set to the Datadog service name,
+      # and the service routes to the local node via internalTrafficPolicy: Local.
       enabled: false
 
       # -- Image name for Datadog Agent DaemonSet (registry is set via imageRegistry).

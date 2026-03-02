@@ -202,7 +202,7 @@ externalRedis:
 | polytomic.auth.url | string | `"https://polytomic.mycompany.com"` | Base URL for accessing Polytomic; for example, https://polytomic.mycompany.com. This will be used when redirecting back from Google and other integrations after authenticating with OAuth. |
 | polytomic.auth.workos_api_key | string | `""` |  |
 | polytomic.auth.workos_client_id | string | `""` |  |
-| polytomic.datadog.daemonset.enabled | bool | `false` | Enable Datadog Agent DaemonSet for APM tracing When enabled, all Polytomic pods will have DD_AGENT_HOST set to the node IP |
+| polytomic.datadog.daemonset.enabled | bool | `false` | Enable Datadog Agent DaemonSet for APM tracing. When enabled, all Polytomic pods will have DD_AGENT_HOST set to the Datadog service name, and the service routes to the local node via internalTrafficPolicy: Local. |
 | polytomic.datadog.daemonset.image | string | `"polytomic-dd-agent"` | Image name for Datadog Agent DaemonSet (registry is set via imageRegistry). MUST use Polytomic's Datadog agent image with ptconf for secret decryption. |
 | polytomic.datadog.daemonset.imagePullPolicy | string | `"IfNotPresent"` |  |
 | polytomic.datadog.daemonset.resources.limits.cpu | string | `"500m"` |  |
