@@ -217,6 +217,10 @@ polytomic:
       # -- Storage class name (empty = cluster default)
       storageClassName: ""
 
+  # -- Enable internal execution logging via stdout.
+  # When true, Polytomic writes execution logs to stdout instead of directly to S3.
+  # Required for Vector DaemonSet log collection to work.
+  # Should be enabled together with vector.daemonset.enabled.
   internal_execution_logs: false
 
   # -- Kubernetes task executor scheduling configuration
@@ -279,11 +283,9 @@ polytomic:
         # -- IAM role ARN for IRSA (EKS only)
         roleArn: ""
 
-    # -- Enable forwarding to Datadog Logs API
-    # When true, sets SEND_LOGS=true for both:
-    # - Embedded Vector (structured app logs)
-    # - DaemonSet Vector (stdout/stderr logs)
-    # Default: false (opt-in)
+    # -- Enable forwarding logs to Datadog Logs API.
+    # When true, Vector sends collected logs to Datadog in addition to S3.
+    # Requires vector.daemonset.enabled=true and valid Datadog API key in deployment secrets.
     managedLogs: false
 
   # Datadog Agent DaemonSet for APM and metrics collection
@@ -406,6 +408,8 @@ redis:
 
 # Option 2: External Redis (ElastiCache, MemoryStore, self-hosted, etc.)
 # Only used when redis.enabled=false
+# Note: Redis Cluster mode is automatically detected - no special configuration required.
+# Polytomic will try cluster commands first and fall back to single-node mode if not supported.
 externalRedis:
   # -- External Redis host (required if redis.enabled=false)
   host: ""
@@ -510,14 +514,13 @@ podDisruptionBudget:
 
 worker:
   replicaCount: 2
-  # TODO: Restore higher CPU requests once eks-helm module supports extra_helm_values
   resources:
     limits:
       cpu: 500m
       memory: 1Gi
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 250m
+      memory: 512Mi
   autoscaling:
     enabled: false  # Can be enabled if needed
     minReplicas: 1
@@ -542,14 +545,13 @@ worker:
 
 web:
   replicaCount: 2
-  # TODO: Restore higher CPU requests once eks-helm module supports extra_helm_values
   resources:
     limits:
       cpu: 1000m
       memory: 2Gi
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 500m
+      memory: 1Gi
   autoscaling:
     enabled: true
     minReplicas: 2
@@ -582,14 +584,13 @@ web:
   #     done
 sync:
   replicaCount: 2
-  # TODO: Restore higher CPU requests once eks-helm module supports extra_helm_values
   resources:
     limits:
       cpu: 1000m
       memory: 2Gi
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 500m
+      memory: 1Gi
   autoscaling:
     enabled: true
     minReplicas: 2
@@ -612,14 +613,13 @@ sync:
   sidecarContainers: []
 
 schemacache:
-  # TODO: Restore higher CPU requests once eks-helm module supports extra_helm_values
   resources:
     limits:
       cpu: 500m
       memory: 1Gi
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 250m
+      memory: 512Mi
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -636,14 +636,13 @@ schemacache:
   sidecarContainers: []
 
 scheduler:
-  # TODO: Restore higher CPU requests once eks-helm module supports extra_helm_values
   resources:
     limits:
       cpu: 500m
       memory: 1Gi
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 250m
+      memory: 512Mi
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -660,14 +659,13 @@ scheduler:
   sidecarContainers: []
 
 jobworker:
-  # TODO: Restore higher CPU requests once eks-helm module supports extra_helm_values
   resources:
     limits:
       cpu: 1000m
       memory: 2Gi
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 500m
+      memory: 1Gi
   nodeSelector: {}
   tolerations: []
   affinity: {}
