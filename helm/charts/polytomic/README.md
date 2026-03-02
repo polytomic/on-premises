@@ -256,7 +256,7 @@ externalRedis:
 | polytomic.vector.daemonset.serviceAccount.roleArn | string | `""` | IAM role ARN for IRSA (EKS only) |
 | polytomic.vector.daemonset.tag | string | `""` | Tag for the Vector image. Defaults to image.tag when not set. |
 | polytomic.vector.daemonset.tolerations | list | `[]` | Additional tolerations for the Vector DaemonSet pods. By default no tolerations are set, so Vector only runs on schedulable worker nodes. Add tolerations here if your nodes have custom taints that Polytomic pods also tolerate. |
-| polytomic.vector.managedLogs | bool | `false` | Enable forwarding logs to Datadog Logs API. When true, Vector sends collected logs to Datadog in addition to S3. Requires vector.daemonset.enabled=true and valid Datadog API key in deployment secrets. |
+| polytomic.vector.managedLogs | bool | `false` | Enable forwarding to Datadog Logs API When true, sets SEND_LOGS=true for both: - Embedded Vector (structured app logs) - DaemonSet Vector (stdout/stderr logs) Default: false (opt-in) |
 | postgresql.auth.database | string | `"polytomic"` |  |
 | postgresql.auth.password | string | `"polytomic"` |  |
 | postgresql.auth.username | string | `"polytomic"` |  |

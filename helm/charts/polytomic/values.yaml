@@ -283,9 +283,11 @@ polytomic:
         # -- IAM role ARN for IRSA (EKS only)
         roleArn: ""
 
-    # -- Enable forwarding logs to Datadog Logs API.
-    # When true, Vector sends collected logs to Datadog in addition to S3.
-    # Requires vector.daemonset.enabled=true and valid Datadog API key in deployment secrets.
+    # -- Enable forwarding to Datadog Logs API
+    # When true, sets SEND_LOGS=true for both:
+    # - Embedded Vector (structured app logs)
+    # - DaemonSet Vector (stdout/stderr logs)
+    # Default: false (opt-in)
     managedLogs: false
 
   # Datadog Agent DaemonSet for APM and metrics collection
