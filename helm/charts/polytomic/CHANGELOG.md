@@ -5,6 +5,25 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-03-05
+
+### Added
+
+- **Extra environment variables for secret**: New `polytomic.extraEnv` map allows injecting arbitrary key-value pairs into the chart-generated Kubernetes Secret without modifying the chart.
+
+- **External secrets support**: New `extraSecrets` list allows mounting additional pre-existing Kubernetes Secrets as environment variables. Secrets are appended after the main secret in `envFrom`, so their values take precedence. Secrets must exist in the same namespace as the Helm release.
+
+- **Datadog DaemonSet scheduling options**: New `polytomic.datadog.daemonset.nodeSelector` and `polytomic.datadog.daemonset.affinity` values allow scheduling Datadog Agent DaemonSet pods on specific nodes, complementing the existing `tolerations` option.
+
+| Value                                       | Default | Description                                              |
+| ------------------------------------------- | ------- | -------------------------------------------------------- |
+| `polytomic.extraEnv`                        | `{}`    | Arbitrary env vars added to the Polytomic secret         |
+| `extraSecrets`                              | `[]`    | List of existing Secrets to mount (e.g. `- name: foo`)   |
+| `polytomic.datadog.daemonset.nodeSelector`  | `{}`    | Node selector for Datadog DaemonSet pods                 |
+| `polytomic.datadog.daemonset.affinity`      | `{}`    | Affinity rules for Datadog DaemonSet pods                |
+
+---
+
 ## [1.3.0] - 2026-03-02
 
 ### Added

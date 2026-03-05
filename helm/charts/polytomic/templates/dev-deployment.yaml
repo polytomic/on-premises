@@ -36,6 +36,10 @@ spec:
           envFrom:
           - secretRef:
               name: {{ include "polytomic.fullname" . }}-config
+          {{- range .Values.extraSecrets }}
+          - secretRef:
+              name: {{ .name }}
+          {{- end }}
           volumeMounts:
           - mountPath: /etc/podinfo
             name: podinfo

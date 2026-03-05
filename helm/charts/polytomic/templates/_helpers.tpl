@@ -553,5 +553,8 @@ POLYTOMIC_USE_GCS: "true"
 LOCAL: "true"
 {{- end }}
 
+{{- range $key, $value := .Values.polytomic.extraEnv }}
+{{ $key }}: {{ $value | quote }}
+{{- end }}
 
 {{- end }}
