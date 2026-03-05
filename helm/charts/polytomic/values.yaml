@@ -315,6 +315,10 @@ polytomic:
 
       # -- Additional tolerations for the Datadog DaemonSet pods.
       tolerations: []
+      # -- Node selector for Datadog DaemonSet pods
+      nodeSelector: {}
+      # -- Affinity rules for Datadog DaemonSet pods
+      affinity: {}
 
   # -- Integration credentials
   # Configure OAuth credentials and API keys for third-party integrations.
@@ -338,6 +342,16 @@ polytomic:
   #     HUBSPOT_CLIENT_ID: "your-hubspot-id"
   #     HUBSPOT_CLIENT_SECRET: "your-hubspot-secret"
   integrations: {}
+
+  # -- Extra environment variables to add to the Polytomic secret.
+  # These are added as-is to the secret's stringData, allowing arbitrary
+  # key-value pairs to be set without modifying the chart.
+  #
+  # Example:
+  #   extraEnv:
+  #     MY_CUSTOM_VAR: "some-value"
+  #     ANOTHER_VAR: "another-value"
+  extraEnv: {}
 
 
   # -- Telemetry
@@ -479,6 +493,17 @@ serviceAccount:
 secret:
   # The name of the secret to use instead of generating one
   name: ""
+
+# -- Additional existing Secrets to mount as environment variables.
+# These are appended after the main secret in envFrom, so values in
+# later secrets override earlier ones.
+# Note: Secrets must exist in the same namespace as the Helm release.
+#
+# Example:
+#   extraSecrets:
+#     - name: my-deployment-keys
+#     - name: my-integration-creds
+extraSecrets: []
 
 # Production hardening features (disabled by default)
 networkPolicy:

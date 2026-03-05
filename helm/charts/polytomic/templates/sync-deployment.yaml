@@ -43,6 +43,10 @@ spec:
               {{- else }}
               name: {{ include "polytomic.fullname" . }}-config
               {{- end }}
+          {{- range .Values.extraSecrets }}
+          - secretRef:
+              name: {{ .name }}
+          {{- end }}
           env:
           - name: ROLE
             value: sync
