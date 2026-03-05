@@ -2,7 +2,7 @@
 
 Polytomic helm chart for kubernetes
 
-![Version: 1.3.0](https://img.shields.io/badge/Version-1.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 1.3.1](https://img.shields.io/badge/Version-1.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 ## Installing the Chart
 
@@ -127,6 +127,7 @@ externalRedis:
 | externalRedis.poolSize | int | `0` | Connection pool size (0 = unlimited) |
 | externalRedis.port | int | `6379` | External Redis port |
 | externalRedis.ssl | bool | `false` | Enable SSL/TLS |
+| extraSecrets | list | `[]` | Additional existing Secrets to mount as environment variables. These are appended after the main secret in envFrom, so values in later secrets override earlier ones. Note: Secrets must exist in the same namespace as the Helm release.  Example:   extraSecrets:     - name: my-deployment-keys     - name: my-integration-creds |
 | fullnameOverride | string | `""` |  |
 | healthProbes | object | `{"livenessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5},"readinessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5}}` | Global health probe configuration |
 | healthcheck.affinity | object | `{}` |  |
@@ -202,9 +203,11 @@ externalRedis:
 | polytomic.auth.url | string | `"https://polytomic.mycompany.com"` | Base URL for accessing Polytomic; for example, https://polytomic.mycompany.com. This will be used when redirecting back from Google and other integrations after authenticating with OAuth. |
 | polytomic.auth.workos_api_key | string | `""` |  |
 | polytomic.auth.workos_client_id | string | `""` |  |
-| polytomic.datadog.daemonset.enabled | bool | `false` | Enable Datadog Agent DaemonSet for APM tracing. When enabled, all Polytomic pods will have DD_AGENT_HOST set to the Datadog service name, and the service routes to the local node via internalTrafficPolicy: Local. |
+| polytomic.datadog.daemonset.affinity | object | `{}` | Affinity rules for Datadog DaemonSet pods |
+| polytomic.datadog.daemonset.enabled | bool | `false` | Enable Datadog Agent DaemonSet for APM tracing When enabled, all Polytomic pods will have DD_AGENT_HOST set to the Datadog service name, and the service routes to the local node via internalTrafficPolicy: Local. |
 | polytomic.datadog.daemonset.image | string | `"polytomic-dd-agent"` | Image name for Datadog Agent DaemonSet (registry is set via imageRegistry). MUST use Polytomic's Datadog agent image with ptconf for secret decryption. |
 | polytomic.datadog.daemonset.imagePullPolicy | string | `"IfNotPresent"` |  |
+| polytomic.datadog.daemonset.nodeSelector | object | `{}` | Node selector for Datadog DaemonSet pods |
 | polytomic.datadog.daemonset.resources.limits.cpu | string | `"500m"` |  |
 | polytomic.datadog.daemonset.resources.limits.memory | string | `"512Mi"` |  |
 | polytomic.datadog.daemonset.resources.requests.cpu | string | `"200m"` |  |
@@ -216,6 +219,7 @@ externalRedis:
 | polytomic.deployment.key | string | `""` | The license key for your deployment, provided by Polytomic. |
 | polytomic.deployment.name | string | `""` | A unique identifier for your on premises deploy, provided by Polytomic. |
 | polytomic.env | string | `""` |  |
+| polytomic.extraEnv | object | `{}` | Extra environment variables to add to the Polytomic secret. These are added as-is to the secret's stringData, allowing arbitrary key-value pairs to be set without modifying the chart.  Example:   extraEnv:     MY_CUSTOM_VAR: "some-value"     ANOTHER_VAR: "another-value" |
 | polytomic.field_change_tracking | bool | `true` |  |
 | polytomic.integrations | object | `{}` | Integration credentials Configure OAuth credentials and API keys for third-party integrations. Only non-empty values will be included in the deployment secret. Supports all integration environment variables in UPPER_CASE format.  Common integrations:   SALESFORCE_CLIENT_ID / SALESFORCE_CLIENT_SECRET   HUBSPOT_CLIENT_ID / HUBSPOT_CLIENT_SECRET   GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET / GITHUB_DEPLOY_KEY   SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET   STRIPE_SECRET_KEY   GOOGLEADS_CLIENT_ID / GOOGLEADS_CLIENT_SECRET / GOOGLEADS_DEVELOPER_TOKEN   GSHEETS_API_KEY / GSHEETS_APP_ID / GSHEETS_CLIENT_ID / GSHEETS_CLIENT_SECRET   And many more - see documentation for full list  Example:   integrations:     SALESFORCE_CLIENT_ID: "your-client-id"     SALESFORCE_CLIENT_SECRET: "your-client-secret"     HUBSPOT_CLIENT_ID: "your-hubspot-id"     HUBSPOT_CLIENT_SECRET: "your-hubspot-secret" |
 | polytomic.internal_execution_logs | bool | `false` | Enable internal execution logging via stdout. When true, Polytomic writes execution logs to stdout instead of directly to S3. Required for Vector DaemonSet log collection to work. Should be enabled together with vector.daemonset.enabled. |
