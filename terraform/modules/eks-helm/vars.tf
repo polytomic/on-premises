@@ -182,3 +182,9 @@ variable "timeout" {
   type        = number
   default     = 600 # 10 minutes
 }
+
+variable "extra_helm_values" {
+  description = "Additional Helm values in raw YAML format. Merged after the module's default values, so these take precedence."
+  type        = string
+  default     = ""
+}
