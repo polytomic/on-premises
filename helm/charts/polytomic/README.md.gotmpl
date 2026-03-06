@@ -23,12 +23,13 @@ Polytomic supports execution log collection via Vector DaemonSet.
 ### Execution Logs to S3
 
 Collects execution logs from Polytomic pods and ships them to S3 for storage and retrieval in the UI.
+When the Vector DaemonSet is enabled (the default), the app writes structured JSON to stdout
+and the DaemonSet handles collection and routing to S3.
 
 **Required values:**
 
 ```yaml
 polytomic:
-  internal_execution_logs: true  # Write logs to stdout for Vector to collect
   s3:
     operational_bucket: "s3://your-bucket"
     region: "us-west-2"

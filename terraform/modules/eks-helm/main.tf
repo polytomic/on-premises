@@ -21,7 +21,7 @@ resource "helm_release" "polytomic" {
   force_update     = var.force_update
 
 
-  values = [<<EOF
+  values = concat([<<EOF
 imageRegistry: ${var.ecr_registry}
 
 ingress:
@@ -68,7 +68,6 @@ polytomic:
     region: "${var.polytomic_bucket_region}"
 
   # Vector logging configuration
-  internal_execution_logs: ${var.polytomic_use_logger}
   vector:
     daemonset:
       enabled: ${var.polytomic_use_logger}
@@ -130,7 +129,7 @@ serviceAccount:
     eks.amazonaws.com/role-arn: ${var.polytomic_service_account_role_arn}
     eks.amazonaws.com/sts-regional-endpoints: "true"
 EOF
-  ]
+  ], var.extra_helm_values != "" ? [var.extra_helm_values] : [])
 
 }
 

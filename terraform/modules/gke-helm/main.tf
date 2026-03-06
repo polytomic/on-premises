@@ -63,8 +63,6 @@ polytomic:
   jobs:
     image: ${var.polytomic_image}
 
-  internal_execution_logs: true
-
   sharedVolume:
     enabled: true
     mode: dynamic
