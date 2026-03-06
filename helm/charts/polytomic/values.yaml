@@ -217,11 +217,13 @@ polytomic:
       # -- Storage class name (empty = cluster default)
       storageClassName: ""
 
-  # -- Enable internal execution logging via stdout.
-  # When true, Polytomic writes execution logs to stdout instead of directly to S3.
-  # Required for Vector DaemonSet log collection to work.
-  # Should be enabled together with vector.daemonset.enabled.
-  internal_execution_logs: false
+  # -- Enable the embedded Vector process for log routing.
+  # Only needed for non-DaemonSet deployments (e.g. ECS) where the in-pod
+  # Vector process handles routing execution logs to S3 via a unix socket.
+  # When vector.daemonset.enabled=true, this is NOT required — the app writes
+  # structured JSON to stdout and the DaemonSet handles collection and routing.
+  embeddedVector:
+    enabled: false
 
   # -- Kubernetes task executor scheduling configuration
   # These settings control how Polytomic schedules dynamically created job pods

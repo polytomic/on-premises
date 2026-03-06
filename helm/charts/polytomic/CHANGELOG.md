@@ -5,6 +5,36 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2026-03-05
+
+### Fixed
+
+- **Log duplication when using Vector DaemonSet**: When the DaemonSet is enabled, the app now writes structured JSON directly to stdout instead of routing through the embedded Vector's unix socket. This eliminates duplicate logs in Datadog caused by the embedded Vector's debug console sink echoing logs back to stdout. Requires app image with `VECTOR_DAEMONSET` support.
+
+### Changed
+
+- **Renamed `polytomic.internal_execution_logs` to `polytomic.embeddedVector.enabled`**: Clarifies that this setting controls the in-pod embedded Vector process for non-DaemonSet deployments (e.g. ECS). When `vector.daemonset.enabled=true` (the default), this is not required.
+
+- **`VECTOR_DAEMONSET` env var**: Automatically set to `true` when `vector.daemonset.enabled=true`. Tells the app to bypass the embedded Vector unix socket and write to stdout for DaemonSet collection.
+
+### Migration
+
+If you previously set `polytomic.internal_execution_logs: true` for DaemonSet log collection, remove it and ensure `vector.daemonset.enabled: true` (the default). The DaemonSet now handles everything automatically.
+
+For non-DaemonSet deployments (ECS), replace:
+```yaml
+polytomic:
+  internal_execution_logs: true
+```
+with:
+```yaml
+polytomic:
+  embeddedVector:
+    enabled: true
+```
+
+---
+
 ## [1.3.1] - 2026-03-05
 
 ### Added

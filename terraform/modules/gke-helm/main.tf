@@ -63,7 +63,8 @@ polytomic:
   jobs:
     image: ${var.polytomic_image}
 
-  internal_execution_logs: true
+  embeddedVector:
+    enabled: true
 
   sharedVolume:
     enabled: true

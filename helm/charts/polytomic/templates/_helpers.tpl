@@ -538,8 +538,11 @@ WORKOS_API_KEY: {{ .Values.polytomic.auth.workos_api_key | quote }}
 WORKOS_CLIENT_ID: {{ .Values.polytomic.auth.workos_client_id | quote }}
 hubspot_scopes_v2: "true"
 VERNEUIL_CONFIG: "{\"replication_spooling_dir\":\"/tmp/verneuil\",\"replication_targets\":[{\"s3\":{\"region\":\"{{ .Values.polytomic.s3.region }}\",\"chunk_bucket\":\"{{ .Values.polytomic.s3.operational_bucket }}/chunks\",\"manifest_bucket\":\"{{ .Values.polytomic.s3.operational_bucket }}/manifests\",\"create_buckets_on_demand\":false,\"domain_addressing\":false}}]}"
-EXECUTION_LOGS_V2: {{ or .Values.polytomic.internal_execution_logs .Values.polytomic.vector.daemonset.enabled | quote }}
-INTERNAL_EXECUTION_LOGS: {{ .Values.polytomic.internal_execution_logs | quote }}
+EXECUTION_LOGS_V2: {{ or .Values.polytomic.embeddedVector.enabled .Values.polytomic.vector.daemonset.enabled | quote }}
+INTERNAL_EXECUTION_LOGS: {{ .Values.polytomic.embeddedVector.enabled | quote }}
+{{- if .Values.polytomic.vector.daemonset.enabled }}
+VECTOR_DAEMONSET: "true"
+{{- end }}
 
 {{- if .Values.polytomic.vector.managedLogs }}
 SEND_LOGS: "true"
