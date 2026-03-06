@@ -63,9 +63,6 @@ polytomic:
   jobs:
     image: ${var.polytomic_image}
 
-  embeddedVector:
-    enabled: true
-
   sharedVolume:
     enabled: true
     mode: dynamic
