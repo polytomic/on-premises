@@ -66,7 +66,7 @@ spec:
               fieldPath: spec.nodeName
         # Kubernetes tagging
         - name: DD_KUBERNETES_POD_LABELS_AS_TAGS
-          value: '{"app.kubernetes.io/name": "kube_app", "app.kubernetes.io/component": "kube_component"}'
+          value: '{"app.kubernetes.io/name": "kube_app", "app.kubernetes.io/component": "kube_component", "polytomic.com/type": "polytomic_type", "polytomic.com/sync-id": "polytomic_sync_id", "polytomic.com/execution-id": "polytomic_execution_id"}'
         # Disable system probe (not needed for APM-only usage)
         - name: DD_SYSTEM_PROBE_ENABLED
           value: "false"
@@ -78,20 +78,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP
-        {{- end }}
-        {{- if .Values.polytomic.datadog.daemonset.kubeStateMetrics.enabled }}
-        # Kubernetes State Metrics Core (OOMKilled, evictions, restart counts)
-        - name: DD_KUBE_STATE_METRICS_CORE_ENABLED
-          value: "true"
-        - name: DD_KUBE_STATE_METRICS_CORE_CONF_COLLECTORS
-          value: "pods"
-        {{- end }}
-        {{- if .Values.polytomic.datadog.daemonset.kubeEvents.enabled }}
-        # Kubernetes event collection
-        - name: DD_COLLECT_KUBERNETES_EVENTS
-          value: "true"
-        - name: DD_LEADER_ELECTION
-          value: "true"
         {{- end }}
         {{- if .Values.polytomic.datadog.daemonset.processAgent.enabled }}
         # Process agent for live container monitoring

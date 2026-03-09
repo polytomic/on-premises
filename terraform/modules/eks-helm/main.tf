@@ -129,7 +129,7 @@ serviceAccount:
     eks.amazonaws.com/role-arn: ${var.polytomic_service_account_role_arn}
     eks.amazonaws.com/sts-regional-endpoints: "true"
 EOF
-  ], var.extra_helm_values != "" ? [var.extra_helm_values] : [])
+  ], var.extra_helm_values != "" ? [trimspace(var.extra_helm_values)] : [])
 
 }
 

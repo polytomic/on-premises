@@ -93,10 +93,14 @@ polytomic:
     task:
       # -- Seconds to sleep after task completion before cleaning up
       cleanup_delay_seconds: 10
-      cpu: 0
-      memory_reservation: 0
-      memory_maximum: 0
-      memory_mega: 0
+      # -- CPU request for executor pods (milliCPU). Maps to K8s resource request.
+      cpu: 1000
+      # -- Memory request for executor pods (MiB). Maps to K8s resource request.
+      memory_reservation: 2048
+      # -- Memory limit for executor pods (MiB). Maps to K8s resource limit.
+      memory_maximum: 8192
+      # -- Memory request for mega-sized tasks (MiB). Overrides memory_reservation when task.MegaSize is true.
+      memory_mega: 8192
       database_pool_size: 0
       redis_pool_size: 0
       tags: ""
@@ -317,14 +321,6 @@ polytomic:
 
       # -- Enable container metrics collection (CPU, memory) via kubelet
       containerMetrics:
-        enabled: true
-
-      # -- Enable Kubernetes State Metrics Core check (OOMKilled, evictions, restart counts)
-      kubeStateMetrics:
-        enabled: true
-
-      # -- Enable Kubernetes event collection (eviction events, pod kills)
-      kubeEvents:
         enabled: true
 
       # -- Enable process agent for live container monitoring
