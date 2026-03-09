@@ -46,9 +46,6 @@ spec:
           value: "true"
         - name: DD_APM_NON_LOCAL_TRAFFIC
           value: "true"
-        # Continuous profiling
-        - name: DD_PROFILING_ENABLED
-          value: "true"
         - name: DD_ENV
           valueFrom:
             secretKeyRef:
