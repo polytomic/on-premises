@@ -2,7 +2,7 @@
 
 Polytomic helm chart for kubernetes
 
-![Version: 1.3.2](https://img.shields.io/badge/Version-1.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 1.3.3](https://img.shields.io/badge/Version-1.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 ## Installing the Chart
 
@@ -205,12 +205,16 @@ externalRedis:
 | polytomic.auth.workos_api_key | string | `""` |  |
 | polytomic.auth.workos_client_id | string | `""` |  |
 | polytomic.datadog.daemonset.affinity | object | `{}` | Affinity rules for Datadog DaemonSet pods |
+| polytomic.datadog.daemonset.containerMetrics | object | `{"enabled":true}` | Enable container metrics collection (CPU, memory) via kubelet |
 | polytomic.datadog.daemonset.enabled | bool | `false` | Enable Datadog Agent DaemonSet for APM tracing When enabled, all Polytomic pods will have DD_AGENT_HOST set to the Datadog service name, and the service routes to the local node via internalTrafficPolicy: Local. |
+| polytomic.datadog.daemonset.excludeContainers | string | `""` | Optional container exclude filter. Same syntax as includeContainers. |
 | polytomic.datadog.daemonset.image | string | `"polytomic-dd-agent"` | Image name for Datadog Agent DaemonSet (registry is set via imageRegistry). MUST use Polytomic's Datadog agent image with ptconf for secret decryption. |
 | polytomic.datadog.daemonset.imagePullPolicy | string | `"IfNotPresent"` |  |
+| polytomic.datadog.daemonset.includeContainers | string | `""` | Optional container filters for scoping metrics collection. Supports kube_namespace:, image:, name:, kube_label: prefixes. Example: "kube_namespace:polytomic kube_namespace:monitoring" Defaults to "kube_namespace:<release namespace>" when empty. See https://docs.datadoghq.com/containers/guide/autodiscovery-management/ |
 | polytomic.datadog.daemonset.nodeSelector | object | `{}` | Node selector for Datadog DaemonSet pods |
+| polytomic.datadog.daemonset.processAgent | object | `{"enabled":true}` | Enable process agent for live container monitoring |
 | polytomic.datadog.daemonset.resources.limits.cpu | string | `"500m"` |  |
-| polytomic.datadog.daemonset.resources.limits.memory | string | `"512Mi"` |  |
+| polytomic.datadog.daemonset.resources.limits.memory | string | `"768Mi"` |  |
 | polytomic.datadog.daemonset.resources.requests.cpu | string | `"200m"` |  |
 | polytomic.datadog.daemonset.resources.requests.memory | string | `"256Mi"` |  |
 | polytomic.datadog.daemonset.tag | string | `""` | Tag for the Datadog agent image. Defaults to image.tag when not set. |
@@ -230,8 +234,12 @@ externalRedis:
 | polytomic.log_level | string | `"info"` |  |
 | polytomic.metrics | bool | `false` | Telemetry |
 | polytomic.query_workers | int | `10` |  |
-| polytomic.roles | object | `{"bulk":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"ingest":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"proxy":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"scheduler":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"task":{"cleanup_delay_seconds":10,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""}}` | Per-role executor configuration. Fields map to the {prefix}_* environment variables read by the application. Prefixes: task → TASK_EXECUTOR, bulk → BULK_EXECUTOR, ingest → INGEST_EXECUTOR,           proxy → PROXY_EXECUTOR, scheduler → SCHEDULER_ROLE.  The task role is the base: any field left at 0/"" in bulk/ingest/proxy/scheduler will inherit the corresponding task value at runtime (setDefaultRoleConfig). Only override the other roles when you need role-specific values. |
+| polytomic.roles | object | `{"bulk":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"ingest":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"proxy":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"scheduler":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"task":{"cleanup_delay_seconds":10,"cpu":1000,"database_pool_size":0,"memory_maximum":8192,"memory_mega":8192,"memory_reservation":2048,"redis_pool_size":0,"tags":""}}` | Per-role executor configuration. Fields map to the {prefix}_* environment variables read by the application. Prefixes: task → TASK_EXECUTOR, bulk → BULK_EXECUTOR, ingest → INGEST_EXECUTOR,           proxy → PROXY_EXECUTOR, scheduler → SCHEDULER_ROLE.  The task role is the base: any field left at 0/"" in bulk/ingest/proxy/scheduler will inherit the corresponding task value at runtime (setDefaultRoleConfig). Only override the other roles when you need role-specific values. |
 | polytomic.roles.task.cleanup_delay_seconds | int | `10` | Seconds to sleep after task completion before cleaning up |
+| polytomic.roles.task.cpu | int | `1000` | CPU request for executor pods (milliCPU). Maps to K8s resource request. |
+| polytomic.roles.task.memory_maximum | int | `8192` | Memory limit for executor pods (MiB). Maps to K8s resource limit. |
+| polytomic.roles.task.memory_mega | int | `8192` | Memory request for mega-sized tasks (MiB). Overrides memory_reservation when task.MegaSize is true. |
+| polytomic.roles.task.memory_reservation | int | `2048` | Memory request for executor pods (MiB). Maps to K8s resource request. |
 | polytomic.s3.access_key_id | string | `""` | Access key ID |
 | polytomic.s3.operational_bucket | string | `"s3://operations"` |  |
 | polytomic.s3.region | string | `"us-east-1"` | S3 region e.g. us-east-1 |

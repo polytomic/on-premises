@@ -93,10 +93,14 @@ polytomic:
     task:
       # -- Seconds to sleep after task completion before cleaning up
       cleanup_delay_seconds: 10
-      cpu: 0
-      memory_reservation: 0
-      memory_maximum: 0
-      memory_mega: 0
+      # -- CPU request for executor pods (milliCPU). Maps to K8s resource request.
+      cpu: 1000
+      # -- Memory request for executor pods (MiB). Maps to K8s resource request.
+      memory_reservation: 2048
+      # -- Memory limit for executor pods (MiB). Maps to K8s resource limit.
+      memory_maximum: 8192
+      # -- Memory request for mega-sized tasks (MiB). Overrides memory_reservation when task.MegaSize is true.
+      memory_mega: 8192
       database_pool_size: 0
       redis_pool_size: 0
       tags: ""
@@ -312,8 +316,25 @@ polytomic:
           memory: "256Mi"
           cpu: "200m"
         limits:
-          memory: "512Mi"
+          memory: "768Mi"
           cpu: "500m"
+
+      # -- Enable container metrics collection (CPU, memory) via kubelet
+      containerMetrics:
+        enabled: true
+
+      # -- Enable process agent for live container monitoring
+      processAgent:
+        enabled: true
+
+      # -- Optional container filters for scoping metrics collection.
+      # Supports kube_namespace:, image:, name:, kube_label: prefixes.
+      # Example: "kube_namespace:polytomic kube_namespace:monitoring"
+      # Defaults to "kube_namespace:<release namespace>" when empty.
+      # See https://docs.datadoghq.com/containers/guide/autodiscovery-management/
+      includeContainers: ""
+      # -- Optional container exclude filter. Same syntax as includeContainers.
+      excludeContainers: ""
 
       # -- Additional tolerations for the Datadog DaemonSet pods.
       tolerations: []

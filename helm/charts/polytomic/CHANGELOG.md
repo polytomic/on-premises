@@ -5,6 +5,33 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2026-03-09
+
+### Added
+
+- **Datadog container metrics collection**: New `polytomic.datadog.daemonset.containerMetrics` toggle (default: `true`) enables CPU and memory metrics via kubelet. Adds host volume mounts for `/proc` and `/sys/fs/cgroup`.
+
+- **Datadog process agent**: New `polytomic.datadog.daemonset.processAgent` toggle (default: `true`) enables live container monitoring in Datadog.
+
+- **Datadog container filtering**: New `polytomic.datadog.daemonset.includeContainers` and `excludeContainers` values for scoping metrics collection. Defaults to the release namespace. Supports `kube_namespace:`, `image:`, `name:`, and `kube_label:` prefixes.
+
+- **Polytomic executor pod label tagging**: Datadog agent now maps `polytomic.com/type`, `polytomic.com/sync-id`, and `polytomic.com/execution-id` pod labels as Datadog tags for executor pod metrics.
+
+- **Task executor resource defaults**: The `polytomic.roles.task` base role now ships with non-zero defaults: `cpu: 1000` (1000m request), `memory_reservation: 2048` (2Gi request), `memory_maximum: 8192` (8Gi limit), `memory_mega: 8192` (8Gi mega request). Previously all values were 0, leaving executor pods unconstrained.
+
+### Changed
+
+- Bumped Datadog agent memory limit default from 512Mi to 768Mi to accommodate process agent and metrics collection overhead.
+
+| Value                                              | Default    | Description                                        |
+| -------------------------------------------------- | ---------- | -------------------------------------------------- |
+| `polytomic.datadog.daemonset.containerMetrics.enabled` | `true`  | Enable CPU/memory metrics via kubelet              |
+| `polytomic.datadog.daemonset.processAgent.enabled`     | `true`  | Enable live container monitoring                   |
+| `polytomic.datadog.daemonset.includeContainers`        | `""`    | Container include filter (default: release namespace) |
+| `polytomic.datadog.daemonset.excludeContainers`        | `""`    | Container exclude filter                           |
+
+---
+
 ## [1.3.2] - 2026-03-05
 
 ### Fixed
