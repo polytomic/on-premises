@@ -29,6 +29,28 @@ rules:
   - nodes/stats
   verbs:
   - get
+{{- if .Values.polytomic.datadog.daemonset.kubeEvents.enabled }}
+# Leader election for event collection
+- apiGroups: ["coordination.k8s.io"]
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+# ConfigMaps for leader election fallback
+- apiGroups: [""]
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+{{- end }}
 # Non-resource URLs
 - nonResourceURLs:
   - "/version"

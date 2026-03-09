@@ -70,6 +70,43 @@ spec:
         # Disable system probe (not needed for APM-only usage)
         - name: DD_SYSTEM_PROBE_ENABLED
           value: "false"
+        {{- if .Values.polytomic.datadog.daemonset.containerMetrics.enabled }}
+        # Kubelet metrics (CPU, memory)
+        - name: DD_KUBELET_TLS_VERIFY
+          value: "false"
+        - name: DD_KUBERNETES_KUBELET_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        {{- end }}
+        {{- if .Values.polytomic.datadog.daemonset.kubeStateMetrics.enabled }}
+        # Kubernetes State Metrics Core (OOMKilled, evictions, restart counts)
+        - name: DD_KUBE_STATE_METRICS_CORE_ENABLED
+          value: "true"
+        - name: DD_KUBE_STATE_METRICS_CORE_CONF_COLLECTORS
+          value: "pods"
+        {{- end }}
+        {{- if .Values.polytomic.datadog.daemonset.kubeEvents.enabled }}
+        # Kubernetes event collection
+        - name: DD_COLLECT_KUBERNETES_EVENTS
+          value: "true"
+        - name: DD_LEADER_ELECTION
+          value: "true"
+        {{- end }}
+        {{- if .Values.polytomic.datadog.daemonset.processAgent.enabled }}
+        # Process agent for live container monitoring
+        - name: DD_PROCESS_AGENT_ENABLED
+          value: "true"
+        - name: DD_CONTAINER_COLLECT_ALL
+          value: "true"
+        {{- end }}
+        # Container include/exclude filters
+        - name: DD_CONTAINER_INCLUDE
+          value: {{ .Values.polytomic.datadog.daemonset.includeContainers | default (printf "kube_namespace:%s" .Release.Namespace) | quote }}
+        {{- if .Values.polytomic.datadog.daemonset.excludeContainers }}
+        - name: DD_CONTAINER_EXCLUDE
+          value: {{ .Values.polytomic.datadog.daemonset.excludeContainers | quote }}
+        {{- end }}
         # Required for ptconf secret resolution
         - name: DEPLOYMENT
           valueFrom:
@@ -89,8 +126,26 @@ spec:
               name: {{ include "polytomic.fullname" . }}-config
               {{- end }}
               key: DEPLOYMENT_KEY
+        {{- if .Values.polytomic.datadog.daemonset.containerMetrics.enabled }}
+        volumeMounts:
+        - name: cgroups
+          mountPath: /host/sys/fs/cgroup
+          readOnly: true
+        - name: proc
+          mountPath: /host/proc
+          readOnly: true
+        {{- end }}
         resources:
           {{- toYaml .Values.polytomic.datadog.daemonset.resources | nindent 10 }}
+      {{- if .Values.polytomic.datadog.daemonset.containerMetrics.enabled }}
+      volumes:
+      - name: cgroups
+        hostPath:
+          path: /sys/fs/cgroup
+      - name: proc
+        hostPath:
+          path: /proc
+      {{- end }}
       {{- with .Values.polytomic.datadog.daemonset.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
