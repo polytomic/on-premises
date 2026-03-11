@@ -5,6 +5,31 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.4] - 2026-03-11
+
+### Added
+
+- **External secret support for PostgreSQL and Redis passwords**: New `externalPostgresql.existingSecret` and `externalRedis.existingSecret` values allow referencing pre-existing Kubernetes Secrets for database and Redis passwords instead of storing them in Helm values. When configured, passwords are injected via `secretKeyRef` environment variables and interpolated into connection URLs at runtime using `${DATABASE_PASSWORD}` and `${REDIS_PASSWORD}` placeholders.
+
+- **Secret propagation to executor pods**: `KUBERNETES_SECRET_ENV` and `KUBERNETES_EXTRA_SECRETS` environment variables are now automatically set so that dynamically created executor (sync/bulk) pods receive the same secret-backed credentials as the main deployments.
+
+### Fixed
+
+- **Database/Redis password env vars only injected when needed**: `DATABASE_PASSWORD` and `REDIS_PASSWORD` environment variables from `secretKeyRef` are now conditionally injected only when an `existingSecret` is configured, rather than being unconditionally present on all deployments.
+
+### Changed
+
+- Improved documentation for `externalPostgresql.existingSecret` and `externalRedis.existingSecret` values in `values.yaml`.
+
+| Value                                       | Default                | Description                                              |
+| ------------------------------------------- | ---------------------- | -------------------------------------------------------- |
+| `externalPostgresql.existingSecret.name`    | `""`                   | Name of existing K8s secret for database password        |
+| `externalPostgresql.existingSecret.key`     | `"postgresql-password"` | Key within the secret containing the password           |
+| `externalRedis.existingSecret.name`         | `""`                   | Name of existing K8s secret for Redis password           |
+| `externalRedis.existingSecret.key`          | `"redis-password"`     | Key within the secret containing the password            |
+
+---
+
 ## [1.3.3] - 2026-03-09
 
 ### Added

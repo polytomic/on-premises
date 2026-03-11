@@ -8,8 +8,8 @@ This repository contains multiple deployment components, each with its own chang
 
 See [helm/charts/polytomic/CHANGELOG.md](helm/charts/polytomic/CHANGELOG.md)
 
-- **Current Version**: 1.3.3
-- **Latest Tag**: `polytomic-1.3.3`
+- **Current Version**: 1.3.4
+- **Latest Tag**: `polytomic-1.3.4`
 
 ### Terraform Modules
 
