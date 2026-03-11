@@ -215,19 +215,37 @@ Build PostgreSQL connection URL
 {{- $sslMode := "disable" -}}
 {{- if .Values.postgresql.enabled -}}
 {{- $sslMode = "disable" -}}
+{{- $password := .Values.postgresql.auth.password | default "polytomic" -}}
+{{- printf "postgres://%s:%s@%s:%s/%s?sslmode=%s"
+    (include "polytomic.postgresql.username" .)
+    $password
+    (include "polytomic.postgresql.host" .)
+    (include "polytomic.postgresql.port" .)
+    (include "polytomic.postgresql.database" .)
+    $sslMode -}}
 {{- else -}}
 {{- if .Values.externalPostgresql.sslMode -}}
 {{- $sslMode = .Values.externalPostgresql.sslMode -}}
 {{- else if .Values.externalPostgresql.ssl -}}
 {{- $sslMode = "require" -}}
 {{- end -}}
-{{- end -}}
+{{- if .Values.externalPostgresql.existingSecret.name -}}
 {{- printf "postgres://%s:${DATABASE_PASSWORD}@%s:%s/%s?sslmode=%s"
     (include "polytomic.postgresql.username" .)
     (include "polytomic.postgresql.host" .)
     (include "polytomic.postgresql.port" .)
     (include "polytomic.postgresql.database" .)
     $sslMode -}}
+{{- else -}}
+{{- printf "postgres://%s:%s@%s:%s/%s?sslmode=%s"
+    (include "polytomic.postgresql.username" .)
+    .Values.externalPostgresql.password
+    (include "polytomic.postgresql.host" .)
+    (include "polytomic.postgresql.port" .)
+    (include "polytomic.postgresql.database" .)
+    $sslMode -}}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -283,14 +301,21 @@ Build Redis connection URL
 */}}
 {{- define "polytomic.redis.url" -}}
 {{- $hasPassword := false -}}
+{{- $useExistingSecret := false -}}
 {{- $ssl := false -}}
+{{- $password := "" -}}
 {{- if .Values.redis.enabled -}}
 {{- if .Values.redis.auth.password -}}
 {{- $hasPassword = true -}}
+{{- $password = .Values.redis.auth.password -}}
 {{- end -}}
 {{- else -}}
-{{- if or .Values.externalRedis.password .Values.externalRedis.existingSecret.name -}}
+{{- if .Values.externalRedis.existingSecret.name -}}
 {{- $hasPassword = true -}}
+{{- $useExistingSecret = true -}}
+{{- else if .Values.externalRedis.password -}}
+{{- $hasPassword = true -}}
+{{- $password = .Values.externalRedis.password -}}
 {{- end -}}
 {{- if .Values.externalRedis.ssl -}}
 {{- $ssl = true -}}
@@ -301,10 +326,18 @@ Build Redis connection URL
 {{- $scheme = "rediss" -}}
 {{- end -}}
 {{- if $hasPassword -}}
+{{- if $useExistingSecret -}}
 {{- printf "%s://:${REDIS_PASSWORD}@%s:%s"
     $scheme
     (include "polytomic.redis.host" .)
     (include "polytomic.redis.port" .) -}}
+{{- else -}}
+{{- printf "%s://:%s@%s:%s"
+    $scheme
+    $password
+    (include "polytomic.redis.host" .)
+    (include "polytomic.redis.port" .) -}}
+{{- end -}}
 {{- else -}}
 {{- printf "%s://%s:%s"
     $scheme
@@ -377,11 +410,15 @@ KUBERNETES_TOLERATIONS: {{ .Values.polytomic.kubernetes.tolerations | quote }}
 KUBERNETES_EXTRA_SECRETS: {{ range $i, $s := .Values.extraSecrets }}{{ if $i }},{{ end }}{{ $s.name }}{{ end }}
 {{- end }}
 {{- $secretEnv := list -}}
+{{- if .Values.externalPostgresql.existingSecret.name -}}
 {{- $secretEnv = append $secretEnv (printf "DATABASE_PASSWORD=%s:%s" (include "polytomic.postgresql.secretName" .) (include "polytomic.postgresql.secretKey" .)) -}}
-{{- if or .Values.redis.enabled .Values.externalRedis.password .Values.externalRedis.existingSecret.name }}
+{{- end -}}
+{{- if .Values.externalRedis.existingSecret.name -}}
 {{- $secretEnv = append $secretEnv (printf "REDIS_PASSWORD=%s:%s" (include "polytomic.redis.secretName" .) (include "polytomic.redis.secretKey" .)) -}}
-{{- end }}
+{{- end -}}
+{{- if $secretEnv }}
 KUBERNETES_SECRET_ENV: {{ join "," $secretEnv | quote }}
+{{- end }}
 {{- /* Integration credentials - only output non-empty values */ -}}
 {{- range $key, $value := .Values.polytomic.integrations }}
 {{- if $value }}
