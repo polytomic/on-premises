@@ -50,14 +50,14 @@ spec:
           env:
           - name: ROLE
             value: sync
-          # Database password needs to be extracted separately for URL construction
+          {{- if .Values.externalPostgresql.existingSecret.name }}
           - name: DATABASE_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: {{ include "polytomic.postgresql.secretName" . }}
                 key: {{ include "polytomic.postgresql.secretKey" . }}
-          # Redis password
-          {{- if or .Values.redis.enabled .Values.externalRedis.password }}
+          {{- end }}
+          {{- if .Values.externalRedis.existingSecret.name }}
           - name: REDIS_PASSWORD
             valueFrom:
               secretKeyRef:

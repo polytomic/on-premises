@@ -2,7 +2,7 @@
 
 Polytomic helm chart for kubernetes
 
-![Version: 1.3.3](https://img.shields.io/badge/Version-1.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 1.3.4](https://img.shields.io/badge/Version-1.3.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 ## Installing the Chart
 
@@ -113,7 +113,9 @@ externalRedis:
 | development | bool | `false` |  |
 | externalPostgresql.autoMigrate | bool | `true` | Auto-run database migrations on startup |
 | externalPostgresql.database | string | `"polytomic"` | Database name |
-| externalPostgresql.existingSecret | object | `{"key":"postgresql-password","name":""}` | Use existing secret for password (optional) If set, password field above is ignored |
+| externalPostgresql.existingSecret | object | `{"key":"postgresql-password","name":""}` | Use existing secret for the database password (optional). If set, the password field above is ignored. The secret must exist in the same namespace as the Helm release and contain the raw password (not a connection URL). |
+| externalPostgresql.existingSecret.key | string | `"postgresql-password"` | Key within the secret that contains the password |
+| externalPostgresql.existingSecret.name | string | `""` | Name of the existing Kubernetes secret |
 | externalPostgresql.host | string | `""` | External PostgreSQL host (required if postgresql.enabled=false) |
 | externalPostgresql.idleTimeout | string | `"5s"` | Idle timeout |
 | externalPostgresql.password | string | `""` | Database password (consider using existing secret) |
@@ -122,13 +124,15 @@ externalRedis:
 | externalPostgresql.ssl | bool | `false` | Enable SSL/TLS |
 | externalPostgresql.sslMode | string | `"disable"` | SSL mode (disable, require, verify-ca, verify-full) |
 | externalPostgresql.username | string | `"polytomic"` | Database username |
-| externalRedis.existingSecret | object | `{"key":"redis-password","name":""}` | Use existing secret for password (optional) If set, password field above is ignored |
+| externalRedis.existingSecret | object | `{"key":"redis-password","name":""}` | Use existing secret for the Redis password (optional). If set, the password field above is ignored. The secret must exist in the same namespace as the Helm release and contain the raw password (not a connection URL). |
+| externalRedis.existingSecret.key | string | `"redis-password"` | Key within the secret that contains the password |
+| externalRedis.existingSecret.name | string | `""` | Name of the existing Kubernetes secret |
 | externalRedis.host | string | `""` | External Redis host (required if redis.enabled=false) |
 | externalRedis.password | string | `""` | Redis password (consider using existing secret) |
 | externalRedis.poolSize | int | `0` | Connection pool size (0 = unlimited) |
 | externalRedis.port | int | `6379` | External Redis port |
 | externalRedis.ssl | bool | `false` | Enable SSL/TLS |
-| extraSecrets | list | `[]` | Additional existing Secrets to mount as environment variables. These are appended after the main secret in envFrom, so values in later secrets override earlier ones. Note: Secrets must exist in the same namespace as the Helm release.  Example:   extraSecrets:     - name: my-deployment-keys     - name: my-integration-creds |
+| extraSecrets | list | `[]` | Additional existing Secrets to mount as environment variables. These are appended after the main secret in envFrom, so values in later secrets override earlier ones. Secrets are also propagated to executor (sync/bulk) jobs. Note: Secrets must exist in the same namespace as the Helm release.  Example:   extraSecrets:     - name: my-deployment-keys     - name: my-integration-creds |
 | fullnameOverride | string | `""` |  |
 | healthProbes | object | `{"livenessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5},"readinessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5}}` | Global health probe configuration |
 | healthcheck.affinity | object | `{}` |  |
