@@ -57,7 +57,7 @@ spec:
                 name: {{ include "polytomic.postgresql.secretName" . }}
                 key: {{ include "polytomic.postgresql.secretKey" . }}
           # Redis password
-          {{- if or .Values.redis.enabled .Values.externalRedis.password }}
+          {{- if or .Values.redis.enabled .Values.externalRedis.password .Values.externalRedis.existingSecret.name }}
           - name: REDIS_PASSWORD
             valueFrom:
               secretKeyRef:

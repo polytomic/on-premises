@@ -425,10 +425,14 @@ externalPostgresql:
   idleTimeout: "5s"
   # -- Auto-run database migrations on startup
   autoMigrate: true
-  # -- Use existing secret for password (optional)
-  # If set, password field above is ignored
+  # -- Use existing secret for the database password (optional).
+  # If set, the password field above is ignored.
+  # The secret must exist in the same namespace as the Helm release
+  # and contain the raw password (not a connection URL).
   existingSecret:
+    # -- Name of the existing Kubernetes secret
     name: ""
+    # -- Key within the secret that contains the password
     key: "postgresql-password"
 
 # Redis Cache
@@ -461,10 +465,14 @@ externalRedis:
   ssl: false
   # -- Connection pool size (0 = unlimited)
   poolSize: 0
-  # -- Use existing secret for password (optional)
-  # If set, password field above is ignored
+  # -- Use existing secret for the Redis password (optional).
+  # If set, the password field above is ignored.
+  # The secret must exist in the same namespace as the Helm release
+  # and contain the raw password (not a connection URL).
   existingSecret:
+    # -- Name of the existing Kubernetes secret
     name: ""
+    # -- Key within the secret that contains the password
     key: "redis-password"
 
 minio:
@@ -520,6 +528,7 @@ secret:
 # -- Additional existing Secrets to mount as environment variables.
 # These are appended after the main secret in envFrom, so values in
 # later secrets override earlier ones.
+# Secrets are also propagated to executor (sync/bulk) jobs.
 # Note: Secrets must exist in the same namespace as the Helm release.
 #
 # Example:
