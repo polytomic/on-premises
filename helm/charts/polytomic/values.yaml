@@ -221,6 +221,18 @@ polytomic:
       # -- Storage class name (empty = cluster default)
       storageClassName: ""
 
+    # EFS ballast configuration
+    # EFS throughput scales with data stored; ballast files ensure a minimum throughput baseline.
+    # A post-install/post-upgrade hook job creates or removes 1 GiB ballast files to match the
+    # desired total. The job is idempotent: existing files are never rewritten.
+    ballast:
+      # -- Enable EFS ballast file management
+      enabled: false
+      # -- Total ballast size in GiB (each file is 1 GiB)
+      sizeGb: 250
+      # -- Subdirectory under mountPath for ballast files
+      directory: ballast
+
   # -- Enable the embedded Vector process for log routing.
   # Only needed for non-DaemonSet deployments (e.g. ECS) where the in-pod
   # Vector process handles routing execution logs to S3 via a unix socket.

@@ -1,0 +1,92 @@
+{{- if and .Values.polytomic.sharedVolume.enabled .Values.polytomic.sharedVolume.ballast.enabled (ne .Values.polytomic.sharedVolume.mode "emptyDir") }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "polytomic.fullname" . }}-ballast-{{ .Release.Revision }}
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        {{- include "polytomic.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: ballast
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "polytomic.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.worker.podSecurityContext | nindent 8 }}
+      restartPolicy: OnFailure
+      containers:
+        - name: ballast
+          image: {{ include "polytomic.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              BALLAST_DIR="{{ .Values.polytomic.sharedVolume.mountPath }}/{{ .Values.polytomic.sharedVolume.ballast.directory }}"
+              DESIRED={{ .Values.polytomic.sharedVolume.ballast.sizeGb | int }}
+
+              mkdir -p "$BALLAST_DIR"
+
+              # Count existing ballast files
+              EXISTING=$(find "$BALLAST_DIR" -maxdepth 1 -name 'ballast_*' -type f | wc -l | tr -d ' ')
+              echo "Desired: ${DESIRED} GiB, Existing: ${EXISTING} file(s)"
+
+              if [ "$EXISTING" -eq "$DESIRED" ]; then
+                echo "Ballast is already at target size, nothing to do."
+                exit 0
+              fi
+
+              # Remove excess files (highest-numbered first)
+              if [ "$EXISTING" -gt "$DESIRED" ]; then
+                REMOVE=$((EXISTING - DESIRED))
+                echo "Removing ${REMOVE} ballast file(s)..."
+                find "$BALLAST_DIR" -maxdepth 1 -name 'ballast_*' -type f | sort -t_ -k2 -n -r | head -n "$REMOVE" | while read f; do
+                  echo "  rm $f"
+                  rm -f "$f"
+                done
+                echo "Done."
+                exit 0
+              fi
+
+              # Create missing files
+              echo "Creating $((DESIRED - EXISTING)) ballast file(s)..."
+              i=$((EXISTING + 1))
+              while [ "$i" -le "$DESIRED" ]; do
+                FILE="$BALLAST_DIR/ballast_${i}"
+                if [ ! -f "$FILE" ]; then
+                  echo "  Creating $FILE (1 GiB)..."
+                  dd if=/dev/urandom of="$FILE" bs=1048576 count=1024 status=none
+                fi
+                i=$((i + 1))
+              done
+              echo "Done. Ballast is now at ${DESIRED} GiB."
+          volumeMounts:
+            - mountPath: {{ .Values.polytomic.sharedVolume.mountPath }}
+              name: shared-volume
+              {{- if .Values.polytomic.sharedVolume.subPath }}
+              subPath: {{ .Values.polytomic.sharedVolume.subPath }}
+              {{- end }}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi
+      volumes:
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.polytomic.sharedVolume.volumeName }}
+{{- end }}

@@ -249,6 +249,9 @@ externalRedis:
 | polytomic.s3.region | string | `"us-east-1"` | S3 region e.g. us-east-1 |
 | polytomic.s3.secret_access_key | string | `""` | Secret access key |
 | polytomic.sharedVolume.accessModes | list | `["ReadWriteMany"]` | Access modes |
+| polytomic.sharedVolume.ballast.directory | string | `"ballast"` | Subdirectory under mountPath for ballast files |
+| polytomic.sharedVolume.ballast.enabled | bool | `false` | Enable EFS ballast file management |
+| polytomic.sharedVolume.ballast.sizeGb | int | `250` | Total ballast size in GiB (each file is 1 GiB) |
 | polytomic.sharedVolume.dynamic.storageClassName | string | `""` | Storage class name (empty = cluster default) |
 | polytomic.sharedVolume.enabled | bool | `true` | Enable shared volume (if false, uses emptyDir) |
 | polytomic.sharedVolume.mode | string | `"dynamic"` | Provisioning mode: "dynamic" (StorageClass), "static" (pre-existing PV), or "emptyDir" |
