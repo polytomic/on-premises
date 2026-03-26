@@ -19,4 +19,4 @@ jobs:
       - name: Build dependencies
         run: helm dependency build helm/charts/polytomic
       - name: Lint chart
-        run: helm lint helm/charts/polytomic
+        run: helm lint helm/charts/polytomic -f helm/charts/polytomic/ci/ci-values.yaml
