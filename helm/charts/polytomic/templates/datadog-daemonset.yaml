@@ -58,14 +58,7 @@ spec:
         - name: DD_APM_NON_LOCAL_TRAFFIC
           value: "true"
         - name: DD_ENV
-          valueFrom:
-            secretKeyRef:
-              {{- if .Values.secret.name }}
-              name: {{ .Values.secret.name }}
-              {{- else }}
-              name: {{ include "polytomic.fullname" . }}-config
-              {{- end }}
-              key: DEPLOYMENT
+          value: "$(DEPLOYMENT)"
         # Kubernetes node name and hostname (required for hostname detection on EKS)
         - name: DD_KUBERNETES_KUBELET_NODENAME
           valueFrom:
