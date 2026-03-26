@@ -2,6 +2,17 @@
   "$schema": "https://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "image": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Image tag. Must be set to a specific version tag."
+        }
+      },
+      "required": ["tag"]
+    },
     "polytomic": {
       "type": "object",
       "properties": {
