@@ -59,6 +59,16 @@ output "postgres_ip" {
   value       = var.create_postgres ? module.postgres[0].private_ip_address : ""
 }
 
+output "database_name" {
+  description = "Configured PostgreSQL database name"
+  value       = var.database_name
+}
+
+output "database_username" {
+  description = "Configured PostgreSQL database username"
+  value       = var.database_username
+}
+
 output "bucket" {
   description = "GCS bucket name"
   value       = google_storage_bucket.polytomic.name

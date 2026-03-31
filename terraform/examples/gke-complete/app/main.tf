@@ -61,6 +61,8 @@ module "gke_helm" {
   redis_password                 = data.terraform_remote_state.gke.outputs.redis_auth_string
   postgres_host                  = data.terraform_remote_state.gke.outputs.postgres_ip
   postgres_password              = data.terraform_remote_state.gke.outputs.postgres_password
+  database_name                  = data.terraform_remote_state.gke.outputs.database_name
+  database_username              = data.terraform_remote_state.gke.outputs.database_username
   polytomic_bucket               = data.terraform_remote_state.gke.outputs.bucket
   polytomic_service_account      = data.terraform_remote_state.gke.outputs.workload_identity_user_sa
   polytomic_google_client_id     = local.polytomic_google_client_id

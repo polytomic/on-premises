@@ -60,6 +60,16 @@ output "postgres_ip" {
   value       = module.gke.postgres_ip
 }
 
+output "database_name" {
+  description = "Configured PostgreSQL database name"
+  value       = module.gke.database_name
+}
+
+output "database_username" {
+  description = "Configured PostgreSQL database username"
+  value       = module.gke.database_username
+}
+
 output "bucket" {
   description = "GCS bucket name"
   value       = module.gke.bucket

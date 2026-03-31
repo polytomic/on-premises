@@ -28,6 +28,8 @@ No modules.
 | <a name="input_chart_path"></a> [chart\_path](#input\_chart\_path) | Path to local Helm chart. Only used when chart\_repository is empty. Defaults to relative path to chart in this repository. | `string` | `""` | no |
 | <a name="input_chart_repository"></a> [chart\_repository](#input\_chart\_repository) | The Helm chart repository URL. Leave empty to use local chart. | `string` | `"https://charts.polytomic.com"` | no |
 | <a name="input_chart_version"></a> [chart\_version](#input\_chart\_version) | The version of the Polytomic Helm chart to install. Only used when chart\_repository is set. | `string` | `""` | no |
+| <a name="input_database_name"></a> [database\_name](#input\_database\_name) | Name of the PostgreSQL database to connect to | `string` | `"polytomic"` | no |
+| <a name="input_database_username"></a> [database\_username](#input\_database\_username) | Username for the PostgreSQL database connection | `string` | `"polytomic"` | no |
 | <a name="input_extra_helm_values"></a> [extra\_helm\_values](#input\_extra\_helm\_values) | Additional Helm values in raw YAML format. Merged after the module's default values, so these take precedence. | `string` | `""` | no |
 | <a name="input_force_update"></a> [force\_update](#input\_force\_update) | Force Helm to update the release even if no changes are detected. | `bool` | `false` | no |
 | <a name="input_image_registry"></a> [image\_registry](#input\_image\_registry) | Container image registry for all Polytomic images (e.g., us.gcr.io/polytomic-container-distro or us-docker.pkg.dev/project/repo). Equivalent to imageRegistry in the Helm chart. | `string` | n/a | yes |
