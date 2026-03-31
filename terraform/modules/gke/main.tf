@@ -191,3 +191,10 @@ resource "google_storage_bucket_iam_member" "polytomic" {
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${var.workload_identity_sa}"
 }
+
+resource "google_storage_bucket_iam_member" "polytomic_logger" {
+  count  = var.logger_workload_identity_sa != "" && var.logger_workload_identity_sa != var.workload_identity_sa ? 1 : 0
+  bucket = google_storage_bucket.polytomic.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${var.logger_workload_identity_sa}"
+}

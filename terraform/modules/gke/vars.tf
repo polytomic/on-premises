@@ -203,3 +203,9 @@ variable "workload_identity_sa" {
   type        = string
   default     = ""
 }
+
+variable "logger_workload_identity_sa" {
+  description = "Optional email of a dedicated logger workload identity service account that should also receive bucket write access"
+  type        = string
+  default     = ""
+}

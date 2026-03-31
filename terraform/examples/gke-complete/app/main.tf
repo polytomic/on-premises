@@ -68,7 +68,8 @@ module "gke_helm" {
 
   # Vector DaemonSet log collection (enabled by default)
   # By default, the DaemonSet reuses the main workload identity service account.
-  # To isolate log writes, set a dedicated logger service account:
+  # To isolate log writes, set a dedicated logger service account and grant it
+  # bucket access in the cluster module via logger_workload_identity_sa:
   # polytomic_logger_service_account = "vector-sa@my-project.iam.gserviceaccount.com"
 
   # Optional: Datadog Agent for APM tracing

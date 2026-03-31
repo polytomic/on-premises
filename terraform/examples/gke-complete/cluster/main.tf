@@ -33,6 +33,9 @@ module "gke" {
   prefix                  = local.prefix
   cluster_service_account = module.gke_cluster_service_account.email
   workload_identity_sa    = module.gke_cluster_service_account.workload_identity_user_sa_email
+  # If you use a dedicated logger service account in the Helm module, grant it
+  # bucket access here as well:
+  # logger_workload_identity_sa = "vector-sa@my-project.iam.gserviceaccount.com"
 
   bucket_name = local.bucket_name
 

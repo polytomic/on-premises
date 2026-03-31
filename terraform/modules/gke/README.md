@@ -31,6 +31,7 @@
 | [google_service_networking_connection.default](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_networking_connection) | resource |
 | [google_storage_bucket.polytomic](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket) | resource |
 | [google_storage_bucket_iam_member.polytomic](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_iam_member) | resource |
+| [google_storage_bucket_iam_member.polytomic_logger](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_iam_member) | resource |
 | [google_client_config.default](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/client_config) | data source |
 | [google_compute_zones.available](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
 
@@ -58,6 +59,7 @@
 | <a name="input_ip_range_pods_name"></a> [ip\_range\_pods\_name](#input\_ip\_range\_pods\_name) | The secondary ip range to use for pods | `string` | `"ip-range-pods"` | no |
 | <a name="input_ip_range_services_name"></a> [ip\_range\_services\_name](#input\_ip\_range\_services\_name) | The secondary ip range to use for services | `string` | `"ip-range-services"` | no |
 | <a name="input_labels"></a> [labels](#input\_labels) | Labels to apply to all resources | `map(string)` | `{}` | no |
+| <a name="input_logger_workload_identity_sa"></a> [logger\_workload\_identity\_sa](#input\_logger\_workload\_identity\_sa) | Optional email of a dedicated logger workload identity service account that should also receive bucket write access | `string` | `""` | no |
 | <a name="input_max_size"></a> [max\_size](#input\_max\_size) | Maximum number of nodes in the node pool | `number` | `4` | no |
 | <a name="input_min_size"></a> [min\_size](#input\_min\_size) | Minimum number of nodes in the node pool | `number` | `2` | no |
 | <a name="input_postgres_instance_tier"></a> [postgres\_instance\_tier](#input\_postgres\_instance\_tier) | The tier (machine type) of the Cloud SQL instance | `string` | `"db-custom-2-7680"` | no |
