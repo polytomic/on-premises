@@ -2,7 +2,7 @@ name: trivy-terraform-scan
 on:
   pull_request:
     paths:
-      - 'terraform/**'
+      - "terraform/**"
   workflow_dispatch:
 
 permissions:
@@ -18,14 +18,14 @@ jobs:
       - name: Clone repo
         uses: actions/checkout@v4
       - name: Run Trivy scanner
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           scan-type: config
           scan-ref: terraform
           format: sarif
           output: trivy-results.sarif
           severity: HIGH,CRITICAL
-          exit-code: '1'
+          exit-code: "1"
       - name: Upload SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
