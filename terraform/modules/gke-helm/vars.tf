@@ -150,9 +150,9 @@ variable "polytomic_managed_logs" {
 }
 
 variable "polytomic_logger_service_account" {
-  description = "GCP service account email for Vector DaemonSet Workload Identity. Required when polytomic_use_logger is true for GCS write access."
+  description = "Optional GCP service account email for Vector DaemonSet Workload Identity. Defaults to polytomic_service_account when unset."
   type        = string
-  default     = ""
+  default     = null
 }
 
 # Datadog Agent DaemonSet (APM)
