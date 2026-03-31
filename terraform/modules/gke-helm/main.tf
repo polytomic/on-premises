@@ -106,9 +106,9 @@ redis:
 externalPostgresql:
   host: ${var.postgres_host}
   port: 5432
-  username: polytomic
+  username: ${var.database_username}
   password: ${var.postgres_password}
-  database: polytomic
+  database: ${var.database_name}
   ssl: false
   poolSize: "15"
   autoMigrate: true

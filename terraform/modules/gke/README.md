@@ -80,6 +80,8 @@
 |------|-------------|
 | <a name="output_bucket"></a> [bucket](#output\_bucket) | GCS bucket name |
 | <a name="output_cluster_name"></a> [cluster\_name](#output\_cluster\_name) | GKE cluster name |
+| <a name="output_database_name"></a> [database\_name](#output\_database\_name) | Configured PostgreSQL database name |
+| <a name="output_database_username"></a> [database\_username](#output\_database\_username) | Configured PostgreSQL database username |
 | <a name="output_lb_ip"></a> [lb\_ip](#output\_lb\_ip) | Load balancer IP address |
 | <a name="output_lb_name"></a> [lb\_name](#output\_lb\_name) | Load balancer IP name |
 | <a name="output_network_id"></a> [network\_id](#output\_network\_id) | VPC network ID |

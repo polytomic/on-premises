@@ -93,6 +93,18 @@ variable "postgres_host" {
   type        = string
 }
 
+variable "database_name" {
+  description = "Name of the PostgreSQL database to connect to"
+  type        = string
+  default     = "polytomic"
+}
+
+variable "database_username" {
+  description = "Username for the PostgreSQL database connection"
+  type        = string
+  default     = "polytomic"
+}
+
 variable "polytomic_bucket" {
   description = "The GCS bucket name for operational data"
   type        = string
