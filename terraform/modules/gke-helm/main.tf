@@ -22,6 +22,8 @@ resource "helm_release" "polytomic" {
 
 
   values = concat([<<EOF
+imageRegistry: ${var.image_registry}
+
 ingress:
   enabled: true
   className: gce

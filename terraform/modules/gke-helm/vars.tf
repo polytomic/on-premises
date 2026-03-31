@@ -1,6 +1,12 @@
-variable "polytomic_image" {
-  description = "Image repository for the Polytomic container (e.g., us.gcr.io/polytomic-container-distro/polytomic-onprem)"
+variable "image_registry" {
+  description = "Container image registry for all Polytomic images (e.g., us.gcr.io/polytomic-container-distro or us-docker.pkg.dev/project/repo). Equivalent to imageRegistry in the Helm chart."
   type        = string
+}
+
+variable "polytomic_image" {
+  description = "Image name for the Polytomic container (without registry prefix). Combined with image_registry to form the full image reference."
+  type        = string
+  default     = "polytomic-onprem"
 }
 
 variable "polytomic_image_tag" {
