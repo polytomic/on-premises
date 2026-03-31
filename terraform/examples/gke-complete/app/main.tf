@@ -67,7 +67,8 @@ module "gke_helm" {
   polytomic_google_client_secret = local.polytomic_google_client_secret
 
   # Vector DaemonSet log collection (enabled by default)
-  # To provide GCS write access, set the logger service account:
+  # By default, the DaemonSet reuses the main workload identity service account.
+  # To isolate log writes, set a dedicated logger service account:
   # polytomic_logger_service_account = "vector-sa@my-project.iam.gserviceaccount.com"
 
   # Optional: Datadog Agent for APM tracing

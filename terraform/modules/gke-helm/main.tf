@@ -4,7 +4,8 @@ locals {
   chart_path     = var.chart_path != "" ? var.chart_path : "${path.module}/../../../helm/charts/polytomic"
 
   # Use explicit logger tag if provided, otherwise match the main Polytomic image tag
-  vector_image_tag = coalesce(var.polytomic_logger_image_tag, var.polytomic_image_tag)
+  vector_image_tag             = coalesce(var.polytomic_logger_image_tag, var.polytomic_image_tag)
+  vector_service_account_email = coalesce(var.polytomic_logger_service_account, var.polytomic_service_account)
 }
 
 resource "helm_release" "polytomic" {
@@ -79,7 +80,7 @@ polytomic:
       tag: ${local.vector_image_tag}
       serviceAccount:
         annotations:
-          iam.gke.io/gcp-service-account: ${var.polytomic_logger_service_account}
+          iam.gke.io/gcp-service-account: ${local.vector_service_account_email}
     managedLogs: ${var.polytomic_managed_logs}
 
   # Datadog Agent DaemonSet for APM
