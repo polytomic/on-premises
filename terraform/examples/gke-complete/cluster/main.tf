@@ -1,12 +1,16 @@
 locals {
-  project_id = ""
-  region     = "us-east1"
-  prefix     = "polytomic"
+  project_id  = ""
+  region      = "us-east1"
+  prefix      = "polytomic"
+  bucket_name = "set-a-globally-unique-bucket-name"
 
   # IMPORTANT: GCS bucket name must be globally unique
   # Recommended format: "<company>-polytomic-operations"
-  # If not specified, defaults to "${prefix}-operations"
-  # bucket_name = "my-company-polytomic-operations"
+}
+
+check "bucket_name_configured" {
+  assert        = local.bucket_name != "set-a-globally-unique-bucket-name"
+  error_message = "Set local.bucket_name to a globally unique GCS bucket name before applying this example."
 }
 
 provider "google" {
@@ -30,8 +34,7 @@ module "gke" {
   cluster_service_account = module.gke_cluster_service_account.email
   workload_identity_sa    = module.gke_cluster_service_account.workload_identity_user_sa_email
 
-  # Uncomment to specify explicit bucket name (otherwise uses "${prefix}-operations")
-  # bucket_name = local.bucket_name
+  bucket_name = local.bucket_name
 
   # Optional: customize node pool sizing
   # instance_type = "e2-standard-4"
