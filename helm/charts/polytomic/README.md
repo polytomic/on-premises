@@ -45,6 +45,8 @@ polytomic:
     daemonset:
       enabled: true
       serviceAccount:
+        annotations:
+          iam.gke.io/gcp-service-account: "vector-logs@my-project.iam.gserviceaccount.com" # GKE only
         roleArn: "arn:aws:iam::123456789:role/vector-role"  # EKS only - needs s3:PutObject
 ```
 
@@ -263,13 +265,14 @@ externalRedis:
 | polytomic.sync_workers | int | `10` |  |
 | polytomic.tracing | bool | `false` |  |
 | polytomic.tx_buffer_size | int | `1000` |  |
-| polytomic.vector.daemonset | object | `{"affinity":{},"enabled":true,"image":"polytomic-vector","imagePullPolicy":"IfNotPresent","nodeSelector":{},"podLabelSelector":"vector.dev/include=true","resources":{"limits":{"cpu":"200m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"serviceAccount":{"roleArn":""},"tag":"","tolerations":[]}` | Vector DaemonSet for stdout/stderr log collection Collects container logs from all Polytomic pods on each node Default: true (matches ECS behavior where polytomic_use_logger defaults to true) |
+| polytomic.vector.daemonset | object | `{"affinity":{},"enabled":true,"image":"polytomic-vector","imagePullPolicy":"IfNotPresent","nodeSelector":{},"podLabelSelector":"vector.dev/include=true","resources":{"limits":{"cpu":"200m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"serviceAccount":{"annotations":{},"roleArn":""},"tag":"","tolerations":[]}` | Vector DaemonSet for stdout/stderr log collection Collects container logs from all Polytomic pods on each node Default: true (matches ECS behavior where polytomic_use_logger defaults to true) |
 | polytomic.vector.daemonset.affinity | object | `{}` | Affinity rules for Vector DaemonSet pods |
 | polytomic.vector.daemonset.enabled | bool | `true` | Set to false to disable DaemonSet log collection Consider disabling for: - Development environments to save resources - Cost-sensitive deployments where only business logs are needed - When using alternative cluster-wide log collection - Security/compliance restrictions on DaemonSets |
 | polytomic.vector.daemonset.image | string | `"polytomic-vector"` | Image name for Vector DaemonSet (registry is set via imageRegistry). MUST use Polytomic's Vector image with ptconf for secret decryption. |
 | polytomic.vector.daemonset.nodeSelector | object | `{}` | Node selector for Vector DaemonSet pods |
 | polytomic.vector.daemonset.podLabelSelector | string | `"vector.dev/include=true"` | Label selector to filter which pods to collect logs from. Uses vector.dev/include=true which is set on all Polytomic pod templates, making collection independent of the Helm release name. |
-| polytomic.vector.daemonset.serviceAccount | object | `{"roleArn":""}` | ServiceAccount configuration for Vector DaemonSet |
+| polytomic.vector.daemonset.serviceAccount | object | `{"annotations":{},"roleArn":""}` | ServiceAccount configuration for Vector DaemonSet |
+| polytomic.vector.daemonset.serviceAccount.annotations | object | `{}` | Additional service account annotations (for example GKE Workload Identity) |
 | polytomic.vector.daemonset.serviceAccount.roleArn | string | `""` | IAM role ARN for IRSA (EKS only) |
 | polytomic.vector.daemonset.tag | string | `""` | Tag for the Vector image. Defaults to image.tag when not set. |
 | polytomic.vector.daemonset.tolerations | list | `[]` | Additional tolerations for the Vector DaemonSet pods. By default no tolerations are set, so Vector only runs on schedulable worker nodes. Add tolerations here if your nodes have custom taints that Polytomic pods also tolerate. |

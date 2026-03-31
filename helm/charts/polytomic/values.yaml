@@ -286,6 +286,8 @@ polytomic:
 
       # -- ServiceAccount configuration for Vector DaemonSet
       serviceAccount:
+        # -- Additional service account annotations (for example GKE Workload Identity)
+        annotations: {}
         # -- IAM role ARN for IRSA (EKS only)
         roleArn: ""
 
