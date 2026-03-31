@@ -42,7 +42,22 @@ data:
     inputs = [ "parse" ]
     condition = 'exists(.execution_id) && exists(.organization_id) && exists(.sync_id)'
 
-    # S3 sink (always enabled)
+{{- if .Values.polytomic.s3.gcs }}
+    # GCS sink
+    [sinks.gcs]
+    type = "gcp_cloud_storage"
+    inputs = [ "filter" ]
+    bucket =  "${EXECUTION_LOG_BUCKET:?err}"
+    key_prefix = "{{ "{{" }} organization_id  {{ "}}" }}/execution_logs/{{ "{{" }} sync_id {{ "}}" }}/{{ "{{" }} execution_id {{ "}}" }}"
+    filename_append_uuid = true
+    filename_time_format = "%s"
+    filename_extension = "json"
+    [sinks.gcs.encoding]
+    codec = "json"
+    [sinks.gcs.batch]
+    timeout_secs = 10
+{{- else }}
+    # S3 sink
     [sinks.s3]
     type = "aws_s3"
     inputs = [ "filter" ]
@@ -56,6 +71,7 @@ data:
     codec = "json"
     [sinks.s3.batch]
     timeout_secs = 10
+{{- end }}
 
 {{- if .Values.polytomic.vector.managedLogs }}
 
