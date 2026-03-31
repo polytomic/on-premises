@@ -30,6 +30,7 @@ No modules.
 | <a name="input_chart_version"></a> [chart\_version](#input\_chart\_version) | The version of the Polytomic Helm chart to install. Only used when chart\_repository is set. | `string` | `""` | no |
 | <a name="input_extra_helm_values"></a> [extra\_helm\_values](#input\_extra\_helm\_values) | Additional Helm values in raw YAML format. Merged after the module's default values, so these take precedence. | `string` | `""` | no |
 | <a name="input_force_update"></a> [force\_update](#input\_force\_update) | Force Helm to update the release even if no changes are detected. | `bool` | `false` | no |
+| <a name="input_image_registry"></a> [image\_registry](#input\_image\_registry) | Container image registry for all Polytomic images (e.g., us.gcr.io/polytomic-container-distro or us-docker.pkg.dev/project/repo). Equivalent to imageRegistry in the Helm chart. | `string` | n/a | yes |
 | <a name="input_polytomic_api_key"></a> [polytomic\_api\_key](#input\_polytomic\_api\_key) | The api key for the polytomic deployment | `string` | `""` | no |
 | <a name="input_polytomic_bucket"></a> [polytomic\_bucket](#input\_polytomic\_bucket) | The GCS bucket name for operational data | `string` | n/a | yes |
 | <a name="input_polytomic_cert_name"></a> [polytomic\_cert\_name](#input\_polytomic\_cert\_name) | The name of the GCP managed SSL certificate for ingress | `string` | n/a | yes |
@@ -39,7 +40,7 @@ No modules.
 | <a name="input_polytomic_deployment_key"></a> [polytomic\_deployment\_key](#input\_polytomic\_deployment\_key) | The key for the polytomic deployment | `string` | n/a | yes |
 | <a name="input_polytomic_google_client_id"></a> [polytomic\_google\_client\_id](#input\_polytomic\_google\_client\_id) | Google OAuth client ID | `string` | `""` | no |
 | <a name="input_polytomic_google_client_secret"></a> [polytomic\_google\_client\_secret](#input\_polytomic\_google\_client\_secret) | Google OAuth client secret | `string` | `""` | no |
-| <a name="input_polytomic_image"></a> [polytomic\_image](#input\_polytomic\_image) | Image repository for the Polytomic container (e.g., us.gcr.io/polytomic-container-distro/polytomic-onprem) | `string` | n/a | yes |
+| <a name="input_polytomic_image"></a> [polytomic\_image](#input\_polytomic\_image) | Image name for the Polytomic container (without registry prefix). Combined with image\_registry to form the full image reference. | `string` | `"polytomic-onprem"` | no |
 | <a name="input_polytomic_image_tag"></a> [polytomic\_image\_tag](#input\_polytomic\_image\_tag) | The tag to use for the polytomic container | `string` | n/a | yes |
 | <a name="input_polytomic_ip_name"></a> [polytomic\_ip\_name](#input\_polytomic\_ip\_name) | The name of the GCP global static IP for ingress | `string` | n/a | yes |
 | <a name="input_polytomic_logger_image"></a> [polytomic\_logger\_image](#input\_polytomic\_logger\_image) | Image name for the Vector DaemonSet. | `string` | `"polytomic-vector"` | no |

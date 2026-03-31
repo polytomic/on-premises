@@ -8,7 +8,7 @@ locals {
 
   polytomic_deployment           = "deployment"
   polytomic_deployment_key       = "key"
-  polytomic_image                = "us.gcr.io/polytomic-container-distro/polytomic-onprem"
+  polytomic_image_registry       = "us.gcr.io/polytomic-container-distro"
   polytomic_image_tag            = "latest"
   polytomic_root_user            = "user@example.com"
   polytomic_google_client_id     = "google-client-id"
@@ -53,7 +53,7 @@ module "gke_helm" {
   polytomic_url                  = local.url
   polytomic_deployment           = local.polytomic_deployment
   polytomic_deployment_key       = local.polytomic_deployment_key
-  polytomic_image                = local.polytomic_image
+  image_registry                 = local.polytomic_image_registry
   polytomic_image_tag            = local.polytomic_image_tag
   polytomic_root_user            = local.polytomic_root_user
   redis_host                     = data.terraform_remote_state.gke.outputs.redis_host
