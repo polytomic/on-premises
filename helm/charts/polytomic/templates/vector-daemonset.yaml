@@ -54,9 +54,11 @@ spec:
           value: {{ .Values.polytomic.vector.daemonset.podLabelSelector | quote }}
         # S3 configuration
         - name: EXECUTION_LOG_BUCKET
-          value: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | quote }}
+          value: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | trimPrefix "gs://" | quote }}
+        {{- if not .Values.polytomic.s3.gcs }}
         - name: AWS_REGION
           value: {{ .Values.polytomic.s3.region | quote }}
+        {{- end }}
         {{- if .Values.polytomic.s3.access_key_id }}
         - name: AWS_ACCESS_KEY_ID
           value: {{ .Values.polytomic.s3.access_key_id | quote }}
