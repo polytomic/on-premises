@@ -119,8 +119,9 @@ module "postgres" {
   maintenance_window_hour         = var.database_maintenance_window_hour
   maintenance_window_update_track = "stable"
 
-  disk_size       = var.database_disk_size
-  disk_autoresize = var.database_disk_autoresize
+  disk_size             = var.database_disk_size
+  disk_autoresize       = var.database_disk_autoresize
+  disk_autoresize_limit = var.database_disk_autoresize_limit
 
   deletion_protection = var.database_deletion_protection
 
