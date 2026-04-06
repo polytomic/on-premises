@@ -6,9 +6,10 @@ module "gcp_network" {
 
   subnets = [
     {
-      subnet_name   = var.prefix
-      subnet_ip     = "10.10.0.0/16"
-      subnet_region = var.region
+      subnet_name           = var.prefix
+      subnet_ip             = "10.10.0.0/16"
+      subnet_region         = var.region
+      subnet_private_access = "true"
     },
   ]
 
