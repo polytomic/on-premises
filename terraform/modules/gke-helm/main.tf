@@ -11,7 +11,7 @@ locals {
 resource "helm_release" "polytomic" {
   name              = "polytomic"
   namespace         = "polytomic"
-  dependency_update = true
+  dependency_update = local.use_repository
   repository        = local.use_repository ? var.chart_repository : null
   chart             = local.use_repository ? "polytomic" : local.chart_path
   version           = local.use_repository && var.chart_version != "" ? var.chart_version : null
