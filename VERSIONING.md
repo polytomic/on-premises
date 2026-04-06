@@ -82,19 +82,22 @@ git add helm/charts/polytomic/Chart.yaml
 git commit -m "Bump Helm chart version to 1.2.0"
 ```
 
-## 4. Create and push tag
-```bash
-# For Terraform modules
-git tag -a terraform/eks/v1.2.0 -m "Release EKS module v1.2.0"
-git push origin terraform/eks/v1.2.0
+## 4. For Helm only: Push to master
+Merging the Chart.yaml version bump to master automatically triggers the
+chart-releaser workflow, which creates the `polytomic-<version>` tag and
+GitHub Release with the packaged chart.
 
-# For Helm chart (triggers automatic GitHub release)
-# Note: Must match chart name-version format for chart-releaser
-git tag -a polytomic-1.2.0 -m "Release Helm chart v1.2.0"
-git push origin polytomic-1.2.0
+```bash
+git push origin master
 ```
 
-## 5. Update root CHANGELOG.md
+## 5. For Terraform only: Create and push tag
+```bash
+git tag -a terraform/eks/v1.2.0 -m "Release EKS module v1.2.0"
+git push origin terraform/eks/v1.2.0
+```
+
+## 6. Update root CHANGELOG.md
 Update the version number for your component:
 ```markdown
 #### EKS Infrastructure Module
@@ -112,10 +115,10 @@ git push origin master
 Done!
 
 **Note:**
-- **Helm charts**: GitHub Release is created automatically when you push the `polytomic-*` tag
+- **Helm charts**: Tag and GitHub Release are created automatically by chart-releaser when the version bump merges to master. Do not manually create tags or releases for Helm charts.
 - **Terraform modules**: Optionally create a manual GitHub Release at https://github.com/polytomic/on-premises/releases
 
-> **Warning:** Do not manually create a GitHub Release for Helm chart tags (e.g. via the GitHub UI or `gh release create`). The chart-releaser workflow creates the release automatically with the packaged chart attached. If a release already exists for the tag — even an empty one — chart-releaser will skip it and the chart will not be published.
+> **Warning:** Do not manually create GitHub Releases or `polytomic-*` tags for Helm charts. The chart-releaser workflow handles both. If a release already exists for a chart version, chart-releaser will skip it and the chart will not be published.
 
 ---
 
