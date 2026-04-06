@@ -124,7 +124,12 @@ minio:
   enabled: false
 
 nfs-server-provisioner:
-  enabled: false
+  enabled: true
+
+polytomic:
+  sharedVolume:
+    dynamic:
+      storageClassName: nfs
 
 EOF
   ], var.extra_helm_values != "" ? [trimspace(var.extra_helm_values)] : [])
