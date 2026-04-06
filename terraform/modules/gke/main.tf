@@ -86,6 +86,12 @@ module "memorystore" {
   authorized_network = module.gcp_network.network_id
 
   transit_encryption_mode = var.redis_transit_encryption_mode
+  maintenance_policy = {
+    weekly_maintenance_window = {
+      day  = var.redis_maintenance_window_day
+      hour = var.redis_maintenance_window_hour
+    }
+  }
 
   labels = var.labels
 
