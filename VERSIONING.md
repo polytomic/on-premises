@@ -115,6 +115,8 @@ Done!
 - **Helm charts**: GitHub Release is created automatically when you push the `polytomic-*` tag
 - **Terraform modules**: Optionally create a manual GitHub Release at https://github.com/polytomic/on-premises/releases
 
+> **Warning:** Do not manually create a GitHub Release for Helm chart tags (e.g. via the GitHub UI or `gh release create`). The chart-releaser workflow creates the release automatically with the packaged chart attached. If a release already exists for the tag — even an empty one — chart-releaser will skip it and the chart will not be published.
+
 ---
 
 ## Quick Reference Commands
