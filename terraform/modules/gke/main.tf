@@ -87,9 +87,12 @@ module "memorystore" {
 
   transit_encryption_mode = var.redis_transit_encryption_mode
   maintenance_policy = {
-    weekly_maintenance_window = {
-      day  = var.redis_maintenance_window_day
-      hour = var.redis_maintenance_window_hour
+    day = var.redis_maintenance_window_day
+    start_time = {
+      hours   = var.redis_maintenance_window_hour
+      minutes = 0
+      seconds = 0
+      nanos   = 0
     }
   }
 
@@ -119,6 +122,7 @@ module "postgres" {
 
   create_timeout = "30m"
 
+  edition                         = var.database_edition
   tier                            = var.postgres_instance_tier
   availability_type               = var.database_availability_type
   maintenance_window_day          = var.database_maintenance_window_day

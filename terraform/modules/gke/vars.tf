@@ -98,6 +98,12 @@ variable "postgres_instance_tier" {
   default     = "db-custom-2-7680"
 }
 
+variable "database_edition" {
+  description = "The edition of the Cloud SQL instance (ENTERPRISE or ENTERPRISE_PLUS)"
+  type        = string
+  default     = "ENTERPRISE"
+}
+
 variable "database_deletion_protection" {
   description = "Whether to enable deletion protection on the database"
   type        = bool

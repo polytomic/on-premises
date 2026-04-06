@@ -49,6 +49,7 @@
 | <a name="input_database_disk_autoresize"></a> [database\_disk\_autoresize](#input\_database\_disk\_autoresize) | Whether to enable disk autoresize | `bool` | `true` | no |
 | <a name="input_database_disk_autoresize_limit"></a> [database\_disk\_autoresize\_limit](#input\_database\_disk\_autoresize\_limit) | Maximum disk size in GB when autoresize is enabled (0 = unlimited) | `number` | `100` | no |
 | <a name="input_database_disk_size"></a> [database\_disk\_size](#input\_database\_disk\_size) | Disk size in GB for the Cloud SQL instance | `number` | `20` | no |
+| <a name="input_database_edition"></a> [database\_edition](#input\_database\_edition) | The edition of the Cloud SQL instance (ENTERPRISE or ENTERPRISE\_PLUS) | `string` | `"ENTERPRISE"` | no |
 | <a name="input_database_maintenance_window_day"></a> [database\_maintenance\_window\_day](#input\_database\_maintenance\_window\_day) | Day of the week for maintenance window (1=Mon, 7=Sun) | `number` | `7` | no |
 | <a name="input_database_maintenance_window_hour"></a> [database\_maintenance\_window\_hour](#input\_database\_maintenance\_window\_hour) | Hour of the day for maintenance window (0-23) | `number` | `0` | no |
 | <a name="input_database_name"></a> [database\_name](#input\_database\_name) | Name of the database to create | `string` | `"polytomic"` | no |
