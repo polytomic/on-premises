@@ -1,3 +1,10 @@
+## Unreleased
+
+### Removed
+
+- `VERNEUIL_CONFIG` environment variable and `verneuil_config` local removed from task definitions (Verneuil is no longer used).
+- `polyotmic_efs_caching` variable removed (was only used by Verneuil config).
+
 ## 2.7.0 (3 Sept 2025)
 
 - Updated schema cache ECS service to use the correct task definition.

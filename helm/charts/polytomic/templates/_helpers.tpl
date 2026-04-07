@@ -383,9 +383,9 @@ SINGLE_PLAYER: {{ .Values.polytomic.auth.single_player | quote }}
 AWS_REGION: {{ .Values.polytomic.s3.region | quote }}
 AWS_ACCESS_KEY_ID: {{ .Values.polytomic.s3.access_key_id | quote }}
 AWS_SECRET_ACCESS_KEY: {{ .Values.polytomic.s3.secret_access_key | quote }}
-RECORD_LOG_BUCKET: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | quote }}
+RECORD_LOG_BUCKET: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | trimPrefix "gs://" | quote }}
 RECORD_LOG_REGION: {{ .Values.polytomic.s3.region | quote }}
-EXECUTION_LOG_BUCKET: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | quote }}
+EXECUTION_LOG_BUCKET: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | trimPrefix "gs://" | quote }}
 EXECUTION_LOG_REGION: {{ .Values.polytomic.s3.region | quote }}
 KUBERNETES: "true"
 KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
@@ -573,7 +573,6 @@ TX_BUFFER_SIZE: {{ .Values.polytomic.tx_buffer_size | quote }}
 WORKOS_API_KEY: {{ .Values.polytomic.auth.workos_api_key | quote }}
 WORKOS_CLIENT_ID: {{ .Values.polytomic.auth.workos_client_id | quote }}
 hubspot_scopes_v2: "true"
-VERNEUIL_CONFIG: "{\"replication_spooling_dir\":\"/tmp/verneuil\",\"replication_targets\":[{\"s3\":{\"region\":\"{{ .Values.polytomic.s3.region }}\",\"chunk_bucket\":\"{{ .Values.polytomic.s3.operational_bucket }}/chunks\",\"manifest_bucket\":\"{{ .Values.polytomic.s3.operational_bucket }}/manifests\",\"create_buckets_on_demand\":false,\"domain_addressing\":false}}]}"
 EXECUTION_LOGS_V2: {{ or .Values.polytomic.embeddedVector.enabled .Values.polytomic.vector.daemonset.enabled | quote }}
 INTERNAL_EXECUTION_LOGS: {{ .Values.polytomic.embeddedVector.enabled | quote }}
 {{- if .Values.polytomic.vector.daemonset.enabled }}

@@ -37,6 +37,8 @@ polytomic:
     daemonset:
       enabled: true
       serviceAccount:
+        annotations:
+          iam.gke.io/gcp-service-account: "vector-logs@my-project.iam.gserviceaccount.com" # GKE only
         roleArn: "arn:aws:iam::123456789:role/vector-role"  # EKS only - needs s3:PutObject
 ```
 

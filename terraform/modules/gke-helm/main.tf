@@ -2,25 +2,34 @@ locals {
   # Determine chart source based on configuration
   use_repository = var.chart_repository != ""
   chart_path     = var.chart_path != "" ? var.chart_path : "${path.module}/../../../helm/charts/polytomic"
+
+  # Use explicit logger tag if provided, otherwise match the main Polytomic image tag
+  vector_image_tag             = coalesce(var.polytomic_logger_image_tag, var.polytomic_image_tag)
+  vector_service_account_email = coalesce(var.polytomic_logger_service_account, var.polytomic_service_account)
 }
 
 resource "helm_release" "polytomic" {
-  name       = "polytomic"
-  namespace  = "polytomic"
-  repository = local.use_repository ? var.chart_repository : null
-  chart      = local.use_repository ? "polytomic" : local.chart_path
-  version    = local.use_repository && var.chart_version != "" ? var.chart_version : null
+  name              = "polytomic"
+  namespace         = "polytomic"
+  dependency_update = local.use_repository
+  repository        = local.use_repository ? var.chart_repository : null
+  chart             = local.use_repository ? "polytomic" : local.chart_path
+  version           = local.use_repository && var.chart_version != "" ? var.chart_version : null
 
   create_namespace = true
-  wait             = false
+  wait             = var.wait
+  timeout          = var.wait ? var.timeout : null
+  force_update     = var.force_update
 
 
-  values = [<<EOF
+  values = concat([<<EOF
+imageRegistry: ${var.image_registry}
+
 ingress:
   enabled: true
   className: gce
   annotations:
-    kubernetes.io/ingress.class:  gce
+    kubernetes.io/ingress.class: gce
     ingress.gcp.kubernetes.io/pre-shared-cert: '${var.polytomic_cert_name}'
     kubernetes.io/ingress.global-static-ip-name: '${var.polytomic_ip_name}'
 
@@ -63,10 +72,30 @@ polytomic:
   jobs:
     image: ${var.polytomic_image}
 
+  # Vector logging configuration
+  vector:
+    daemonset:
+      enabled: ${var.polytomic_use_logger}
+      image: ${var.polytomic_logger_image}
+      tag: ${local.vector_image_tag}
+      serviceAccount:
+        annotations:
+          iam.gke.io/gcp-service-account: ${local.vector_service_account_email}
+    managedLogs: ${var.polytomic_managed_logs}
+
+  # Datadog Agent DaemonSet for APM
+  datadog:
+    daemonset:
+      enabled: ${var.polytomic_use_dd_agent}
+      image: ${var.polytomic_dd_agent_image}
+      tag: ${coalesce(var.polytomic_dd_agent_image_tag, var.polytomic_image_tag)}
+
   sharedVolume:
     enabled: true
     mode: dynamic
     size: 20Gi
+    dynamic:
+      storageClassName: nfs
 
 # Disable embedded databases - use external Cloud SQL and MemoryStore
 postgresql:
@@ -79,9 +108,9 @@ redis:
 externalPostgresql:
   host: ${var.postgres_host}
   port: 5432
-  username: polytomic
+  username: ${var.database_username}
   password: ${var.postgres_password}
-  database: polytomic
+  database: ${var.database_name}
   ssl: false
   poolSize: "15"
   autoMigrate: true
@@ -97,10 +126,11 @@ minio:
   enabled: false
 
 nfs-server-provisioner:
-  enabled: false
+  enabled: true
+  persistence:
+    size: 25Gi
 
 EOF
-  ]
+  ], var.extra_helm_values != "" ? [trimspace(var.extra_helm_values)] : [])
 
 }
-

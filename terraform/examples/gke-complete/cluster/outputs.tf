@@ -1,5 +1,5 @@
 output "cluster_name" {
-  description = "Cluster name"
+  description = "GKE cluster name"
   value       = module.gke.cluster_name
 }
 
@@ -29,32 +29,48 @@ output "workload_identity_user_sa" {
 }
 
 output "redis_auth_string" {
-  value     = module.gke.redis_auth_string
-  sensitive = true
+  description = "Redis AUTH string"
+  value       = module.gke.redis_auth_string
+  sensitive   = true
 }
 
 output "redis_host" {
-  value = module.gke.redis_host
+  description = "Redis host"
+  value       = module.gke.redis_host
 }
 
 output "redis_port" {
-  value = module.gke.redis_port
+  description = "Redis port"
+  value       = module.gke.redis_port
 }
 
 output "postgres_password" {
-  value     = module.gke.postgres_password
-  sensitive = true
+  description = "PostgreSQL password"
+  value       = module.gke.postgres_password
+  sensitive   = true
 }
 
 output "postgres_host" {
-  value = module.gke.postgres_host
+  description = "PostgreSQL connection name"
+  value       = module.gke.postgres_host
 }
 
 output "postgres_ip" {
-  value = module.gke.postgres_ip
+  description = "PostgreSQL private IP"
+  value       = module.gke.postgres_ip
 }
 
+output "database_name" {
+  description = "Configured PostgreSQL database name"
+  value       = module.gke.database_name
+}
+
+output "database_username" {
+  description = "Configured PostgreSQL database username"
+  value       = module.gke.database_username
+}
 
 output "bucket" {
-  value = module.gke.bucket
+  description = "GCS bucket name"
+  value       = module.gke.bucket
 }
