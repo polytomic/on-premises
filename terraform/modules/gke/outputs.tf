@@ -73,3 +73,8 @@ output "bucket" {
   description = "GCS bucket name"
   value       = google_storage_bucket.polytomic.name
 }
+
+output "workload_identity_user_sa" {
+  description = "Workload Identity service account email — send to Polytomic for registry access"
+  value       = var.workload_identity_sa
+}

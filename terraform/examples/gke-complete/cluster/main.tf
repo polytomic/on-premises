@@ -20,18 +20,17 @@ provider "google" {
 
 
 module "gke_cluster_service_account" {
-  source = "../../../modules/gke-cluster-sa"
+  source = "github.com/polytomic/on-premises/terraform/modules/gke-cluster-sa"
 
   project_id = local.project_id
-  # logger_workload_identity_sa = "vector-sa@my-project.iam.gserviceaccount.com"
 }
 
 module "gke" {
-  source = "../../../modules/gke"
+  source = "github.com/polytomic/on-premises/terraform/modules/gke"
 
-  project_id              = local.project_id
-  region                  = local.region
-  prefix                  = local.prefix
+  project_id                  = local.project_id
+  region                      = local.region
+  prefix                      = local.prefix
   cluster_service_account = module.gke_cluster_service_account.email
   workload_identity_sa    = module.gke_cluster_service_account.workload_identity_user_sa_email
 

@@ -18,7 +18,7 @@ locals {
 
 provider "helm" {
   kubernetes {
-    host                   = data.google_container_cluster.my_cluster.endpoint
+    host                   = "https://${data.google_container_cluster.my_cluster.endpoint}"
     token                  = data.google_client_config.default.access_token
     cluster_ca_certificate = base64decode(data.google_container_cluster.my_cluster.master_auth[0].cluster_ca_certificate)
   }
@@ -46,7 +46,7 @@ data "google_container_cluster" "my_cluster" {
 
 
 module "gke_helm" {
-  source = "../../../modules/gke-helm"
+  source = "github.com/polytomic/on-premises/terraform/modules/gke-helm"
 
   polytomic_cert_name            = google_compute_managed_ssl_certificate.cert.name
   polytomic_ip_name              = data.terraform_remote_state.gke.outputs.load_balancer_name
@@ -73,6 +73,10 @@ module "gke_helm" {
   # To isolate log writes, set a dedicated logger service account and grant it
   # bucket access in the cluster module via logger_workload_identity_sa:
   # polytomic_logger_service_account = "vector-sa@my-project.iam.gserviceaccount.com"
+
+  # Optional: Forward logs to Polytomic-managed Datadog
+  # Requires a deployment key provisioned for managed logging.
+  # polytomic_managed_logs = true
 
   # Optional: Datadog Agent for APM tracing
   # polytomic_use_dd_agent = true

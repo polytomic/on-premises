@@ -97,3 +97,4 @@
 | <a name="output_redis_host"></a> [redis\_host](#output\_redis\_host) | Redis host |
 | <a name="output_redis_port"></a> [redis\_port](#output\_redis\_port) | Redis port |
 | <a name="output_sa"></a> [sa](#output\_sa) | Service account used by the cluster |
+| <a name="output_workload_identity_user_sa"></a> [workload\_identity\_user\_sa](#output\_workload\_identity\_user\_sa) | Workload Identity service account email — send to Polytomic for registry access |
