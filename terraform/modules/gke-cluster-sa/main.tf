@@ -39,18 +39,21 @@ resource "google_project_iam_member" "storage-role" {
   member  = "serviceAccount:${google_service_account.workload-identity-user-sa.email}"
 }
 locals {
-  workload_identity_members = toset([
-    "serviceAccount:${var.project_id}.svc.id.goog[polytomic/polytomic]",
-    "serviceAccount:${var.project_id}.svc.id.goog[polytomic/polytomic-vector]",
-  ])
+  polytomic_workload_identity_member = "serviceAccount:${var.project_id}.svc.id.goog[polytomic/polytomic]"
+  vector_workload_identity_member    = "serviceAccount:${var.project_id}.svc.id.goog[polytomic/polytomic-vector]"
+  vector_service_account_id          = "projects/${var.project_id}/serviceAccounts/${coalesce(var.logger_workload_identity_sa, google_service_account.workload-identity-user-sa.email)}"
 }
 
-resource "google_service_account_iam_member" "workload_identity_role" {
-  for_each = local.workload_identity_members
-
+resource "google_service_account_iam_member" "polytomic_workload_identity_role" {
   service_account_id = google_service_account.workload-identity-user-sa.name
   role               = "roles/iam.workloadIdentityUser"
   # ${var.project_id}].svc.id.goog  == kubernetes cluster identity namespace
   # [polytomic/<service-account>] == [kubernetes namespace/service account name]
-  member = each.value
+  member = local.polytomic_workload_identity_member
+}
+
+resource "google_service_account_iam_member" "vector_workload_identity_role" {
+  service_account_id = local.vector_service_account_id
+  role               = "roles/iam.workloadIdentityUser"
+  member             = local.vector_workload_identity_member
 }
