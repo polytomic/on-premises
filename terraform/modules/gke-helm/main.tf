@@ -94,6 +94,8 @@ polytomic:
     enabled: true
     mode: dynamic
     size: 20Gi
+    dynamic:
+      storageClassName: nfs
 
 # Disable embedded databases - use external Cloud SQL and MemoryStore
 postgresql:
@@ -125,11 +127,8 @@ minio:
 
 nfs-server-provisioner:
   enabled: true
-
-polytomic:
-  sharedVolume:
-    dynamic:
-      storageClassName: nfs
+  persistence:
+    size: 25Gi
 
 EOF
   ], var.extra_helm_values != "" ? [trimspace(var.extra_helm_values)] : [])

@@ -104,6 +104,12 @@ variable "database_edition" {
   default     = "ENTERPRISE"
 }
 
+variable "cluster_deletion_protection" {
+  description = "Whether to enable deletion protection on the GKE cluster"
+  type        = bool
+  default     = true
+}
+
 variable "database_deletion_protection" {
   description = "Whether to enable deletion protection on the database"
   type        = bool
