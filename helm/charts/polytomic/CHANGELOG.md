@@ -5,6 +5,25 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **GCS sink for Vector DaemonSet**: When `polytomic.s3.gcs` is true, the Vector DaemonSet config uses a `gcp_cloud_storage` sink instead of `aws_s3`, enabling native GCS log collection on GKE.
+- **Vector service account annotations**: New `polytomic.vector.daemonset.serviceAccount.annotations` value for arbitrary service account annotations (e.g., GKE Workload Identity `iam.gke.io/gcp-service-account`).
+
+### Changed
+
+- Bucket name helpers now strip both `s3://` and `gs://` prefixes from `polytomic.s3.operational_bucket`.
+- Vector DaemonSet omits `AWS_REGION` env var when `polytomic.s3.gcs` is true.
+- Vector service account renders annotations block when either `annotations` or `roleArn` is set (previously only rendered for `roleArn`).
+
+### Removed
+
+- `VERNEUIL_CONFIG` environment variable removed from the chart secret (Verneuil is no longer used).
+
+---
+
 ## [1.3.4] - 2026-03-11
 
 ### Added

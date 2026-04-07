@@ -5,7 +5,7 @@ All notable changes to the GKE infrastructure module will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - 2026-03-31
+## [1.1.0] - 2026-04-07
 
 This release brings the GKE module in sync with the EKS module (v1.1.0), upgrading all
 upstream module dependencies and adding configurability for cluster, database, and cache.
@@ -17,10 +17,18 @@ upstream module dependencies and adding configurability for cluster, database, a
 - `labels` variable for applying labels to all resources
 - GKE node pool configuration variables: `instance_type`, `min_size`, `max_size`, `desired_size`
 - Database configurability: `database_name`, `database_username`, `database_version`, `database_deletion_protection`, `database_backup_retention`, `database_availability_type`, `database_maintenance_window_day`, `database_maintenance_window_hour`, `database_disk_size`, `database_disk_autoresize`, `database_disk_autoresize_limit`
+- `database_edition` variable (ENTERPRISE or ENTERPRISE_PLUS)
+- `cluster_deletion_protection` variable for GKE cluster deletion protection
 - Redis configurability: `redis_version`, `redis_auth_enabled`, `redis_transit_encryption_mode`, `redis_maintenance_window_day`, `redis_maintenance_window_hour`
+- Redis maintenance policy now wired to Memorystore module
 - `network_name` and `network_id` outputs
+- `database_name`, `database_username`, and `workload_identity_user_sa` outputs
 - Smart bucket name defaulting (`{prefix}-operations` when `bucket_name` is empty)
 - Conditional guard on `workload_identity_sa` IAM binding
+- `logger_workload_identity_sa` variable and IAM binding for dedicated logger service accounts
+- Cloud NAT router for outbound internet access from private nodes
+- Private Google Access enabled on subnets for GCR/Artifact Registry access
+- `disk_autoresize_limit` passed through to Cloud SQL module
 
 ### Changed
 

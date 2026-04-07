@@ -45,15 +45,15 @@ See [terraform/modules/eks-helm/CHANGELOG.md](terraform/modules/eks-helm/CHANGEL
 
 See [terraform/modules/gke/CHANGELOG.md](terraform/modules/gke/CHANGELOG.md)
 
-- **Current Version**: 1.0.0
-- **Latest Tag**: `terraform/gke/v1.0.0`
+- **Current Version**: 1.1.0
+- **Latest Tag**: `terraform/gke/v1.1.0`
 
 #### GKE Helm Deployment Module
 
 See [terraform/modules/gke-helm/CHANGELOG.md](terraform/modules/gke-helm/CHANGELOG.md)
 
-- **Current Version**: 1.0.0
-- **Latest Tag**: `terraform/gke-helm/v1.0.0`
+- **Current Version**: 1.2.0
+- **Latest Tag**: `terraform/gke-helm/v1.2.0`
 
 ## Versioning Strategy
 
