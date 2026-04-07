@@ -38,10 +38,19 @@ resource "google_project_iam_member" "storage-role" {
   role    = "roles/storage.objectAdmin"
   member  = "serviceAccount:${google_service_account.workload-identity-user-sa.email}"
 }
-resource "google_project_iam_member" "workload-identity-role" {
-  project = var.project_id
-  role    = "roles/iam.workloadIdentityUser"
-  # ${var.project_id}].svc.id.goog  == kubernetes cluster idenity namespace
-  # [polytomic/polytomic] == [kubernetes namespace/service account name]
-  member = "serviceAccount:${var.project_id}.svc.id.goog[polytomic/polytomic]"
+locals {
+  workload_identity_members = toset([
+    "serviceAccount:${var.project_id}.svc.id.goog[polytomic/polytomic]",
+    "serviceAccount:${var.project_id}.svc.id.goog[polytomic/polytomic-vector]",
+  ])
+}
+
+resource "google_service_account_iam_member" "workload_identity_role" {
+  for_each = local.workload_identity_members
+
+  service_account_id = google_service_account.workload-identity-user-sa.name
+  role               = "roles/iam.workloadIdentityUser"
+  # ${var.project_id}].svc.id.goog  == kubernetes cluster identity namespace
+  # [polytomic/<service-account>] == [kubernetes namespace/service account name]
+  member = each.value
 }
