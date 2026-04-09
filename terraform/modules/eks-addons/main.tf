@@ -67,6 +67,57 @@ resource "helm_release" "lb" {
   ]
 }
 
+# Cluster Autoscaler
+# Watches for unschedulable pods and adjusts the ASG desired capacity
+# so the node group scales up (within max_size) automatically.
+module "cluster_autoscaler_role" {
+  count   = var.enable_cluster_autoscaler ? 1 : 0
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
+
+  name                                 = "${var.prefix}_cluster_autoscaler"
+  attach_cluster_autoscaler_policy     = true
+  cluster_autoscaler_cluster_names     = [var.cluster_name]
+
+  oidc_providers = {
+    main = {
+      provider_arn               = var.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:cluster-autoscaler"]
+    }
+  }
+}
+
+resource "helm_release" "cluster_autoscaler" {
+  count      = var.enable_cluster_autoscaler ? 1 : 0
+  name       = "cluster-autoscaler"
+  repository = "https://kubernetes.github.io/autoscaler"
+  chart      = "cluster-autoscaler"
+  namespace  = "kube-system"
+
+  set = [
+    {
+      name  = "autoDiscovery.clusterName"
+      value = var.cluster_name
+    },
+    {
+      name  = "awsRegion"
+      value = var.region
+    },
+    {
+      name  = "rbac.serviceAccount.create"
+      value = "true"
+    },
+    {
+      name  = "rbac.serviceAccount.name"
+      value = "cluster-autoscaler"
+    },
+    {
+      name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+      value = module.cluster_autoscaler_role[0].arn
+    },
+  ]
+}
+
 # Polytomic application IAM role
 module "polytomic_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
