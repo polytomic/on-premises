@@ -22,3 +22,9 @@ variable "cluster_name" {
 variable "oidc_provider_arn" {
   description = "OIDC provider ARN"
 }
+
+variable "enable_cluster_autoscaler" {
+  description = "Deploy the Kubernetes Cluster Autoscaler for automatic node scaling"
+  type        = bool
+  default     = false
+}
