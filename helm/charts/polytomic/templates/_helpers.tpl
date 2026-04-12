@@ -31,6 +31,14 @@ Fully-qualified image reference for the main Polytomic container.
 {{- end }}
 
 {{/*
+MCP server image
+*/}}
+{{- define "polytomic.mcp-image" -}}
+{{- $tag := .Values.mcp.image.tag | default (.Values.image.tag | required "image.tag must be set to a specific version tag") -}}
+{{- printf "%s/%s:%s" .Values.imageRegistry .Values.mcp.image.repository $tag -}}
+{{- end }}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "polytomic.chart" -}}
@@ -121,6 +129,14 @@ Healthcheck Selector labels
 */}}
 {{- define "polytomic.healthcheck-selectorLabels" -}}
 app.kubernetes.io/name: {{ include "polytomic.name" . }}-healthcheck
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+MCP Selector labels
+*/}}
+{{- define "polytomic.mcp-selectorLabels" -}}
+app.kubernetes.io/name: {{ include "polytomic.name" . }}-mcp
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 

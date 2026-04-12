@@ -766,6 +766,51 @@ healthcheck:
     runAsUser: 0
   sidecarContainers: []
 
+mcp:
+  # -- Enable the MCP server deployment
+  enabled: false
+  image:
+    # -- MCP server image name (registry is set via imageRegistry)
+    repository: polytomic-mcp
+    # -- MCP image tag. Defaults to image.tag when not set.
+    tag: ""
+  # -- Number of MCP server replicas
+  replicaCount: 1
+  # -- Polytomic API version for the MCP server
+  apiVersion: "2025-09-18"
+  # -- Container port for the MCP server
+  port: 3000
+  resources:
+    limits:
+      cpu: 250m
+      memory: 512Mi
+    requests:
+      cpu: 128m
+      memory: 256Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  service:
+    type: ClusterIP
+    port: 3000
+  ingress:
+    # -- Enable a separate ingress for the MCP server (e.g. mcp.polytomic.example.com)
+    enabled: false
+    className: nginx
+    annotations: {}
+    hosts: []
+    #  - host: mcp.polytomic.example.com
+    #    paths:
+    #      - path: /
+    #        pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: mcp-tls
+    #    hosts:
+    #      - mcp.polytomic.example.com
+
 dev:
   enabled: false  # Development deployment disabled by default
   resources:

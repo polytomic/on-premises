@@ -81,3 +81,52 @@ resource "aws_alb_listener" "http" {
     }
   }
 }
+
+resource "aws_alb_target_group" "mcp" {
+  count       = var.polytomic_mcp_enabled ? 1 : 0
+  name        = "${var.prefix}-mcp-tg"
+  port        = 3000
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
+  target_type = "ip"
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-mcp-tg"
+    }
+  )
+
+  health_check {
+    healthy_threshold   = "3"
+    interval            = "20"
+    protocol            = "HTTP"
+    matcher             = "200"
+    timeout             = "3"
+    path                = "/healthz"
+    unhealthy_threshold = "2"
+    port                = "3000"
+  }
+}
+
+resource "aws_alb_listener_rule" "mcp" {
+  count        = var.polytomic_mcp_enabled ? 1 : 0
+  listener_arn = aws_alb_listener.http.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.mcp[0].arn
+  }
+
+  condition {
+    host_header {
+      values = [var.polytomic_mcp_host]
+    }
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-mcp-rule"
+    }
+  )
+}

@@ -408,3 +408,74 @@ resource "aws_ecs_service" "scheduler" {
     security_groups  = concat(var.additional_ecs_security_groups, [module.fargate_sg.security_group_id])
   }
 }
+
+resource "aws_ecs_task_definition" "mcp" {
+  count  = var.polytomic_mcp_enabled ? 1 : 0
+  family = "${var.prefix}-mcp"
+
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = var.polytomic_resource_mcp_cpu
+  memory                   = var.polytomic_resource_mcp_memory
+
+  task_role_arn      = aws_iam_role.polytomic_ecs_task_role.arn
+  execution_role_arn = aws_iam_role.polytomic_ecs_execution_role.arn
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-mcp"
+  })
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+
+  container_definitions = templatefile(
+    "${path.module}/task-definitions/mcp.json.tftpl",
+    {
+      mcp_image                 = var.polytomic_mcp_image
+      mcp_log_group             = module.ecs_log_groups["mcp"].cloudwatch_log_group_name
+      region                    = var.region
+      polytomic_url             = var.polytomic_url == "" ? "http://${aws_alb.main.dns_name}/" : var.polytomic_url
+      polytomic_mcp_api_version = var.polytomic_mcp_api_version
+      polytomic_logger          = var.polytomic_use_logger
+      polytomic_logger_image    = var.polytomic_logger_image
+      polytomic_dd_agent        = var.polytomic_use_dd_agent
+      polytomic_dd_agent_image  = var.polytomic_dd_agent_image
+    }
+  )
+}
+
+resource "aws_ecs_service" "mcp" {
+  count           = var.polytomic_mcp_enabled ? 1 : 0
+  name            = "${var.prefix}-mcp"
+  cluster         = var.ecs_cluster_name == "" ? module.ecs[0].cluster_arn : data.aws_ecs_cluster.cluster[0].arn
+  task_definition = aws_ecs_task_definition.mcp[0].arn
+  desired_count   = 1
+
+  enable_execute_command            = true
+  health_check_grace_period_seconds = 30
+  platform_version                  = "1.4.0"
+
+  launch_type = "FARGATE"
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-mcp"
+  })
+
+  propagate_tags = "TASK_DEFINITION"
+
+  network_configuration {
+    subnets          = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
+    assign_public_ip = false
+    security_groups  = concat(var.additional_ecs_security_groups, [module.fargate_sg.security_group_id])
+  }
+
+  load_balancer {
+    target_group_arn = aws_alb_target_group.mcp[0].arn
+    container_name   = "mcp"
+    container_port   = 3000
+  }
+}
