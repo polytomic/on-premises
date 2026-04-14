@@ -47,7 +47,7 @@ data "aws_subnets" "private" {
 }
 
 module "polytomic_privatelink" {
-  source = "../../modules/aws-privatelink-rds-lattice"
+  source = "github.com/polytomic/on-premises//terraform/modules/aws-privatelink-rds-lattice"
 
   vpc_id     = data.aws_vpc.existing.id
   subnet_ids = data.aws_subnets.private.ids
