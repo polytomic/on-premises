@@ -90,6 +90,14 @@ resource "aws_alb_target_group" "mcp" {
   protocol    = "HTTP"
   vpc_id      = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
   target_type = "ip"
+
+  lifecycle {
+    precondition {
+      condition     = length("${var.prefix}-mcp-tg") <= 32
+      error_message = "polytomic_mcp_enabled requires a prefix short enough to keep the MCP target group name within AWS's 32-character limit. Use a prefix of 25 characters or fewer."
+    }
+  }
+
   tags = merge(
     var.tags,
     {
