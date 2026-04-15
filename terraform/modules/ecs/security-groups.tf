@@ -44,14 +44,14 @@ module "fargate_sg" {
         cidr_blocks = "0.0.0.0/0"
       },
     ],
-    var.polytomic_port == "3000" ? [] : [
+    var.polytomic_mcp_enabled && var.polytomic_port != "3000" ? [
       {
         from_port   = 3000
         to_port     = 3000
         protocol    = "tcp"
         cidr_blocks = "0.0.0.0/0"
       },
-    ]
+    ] : []
   )
 
   egress_with_cidr_blocks = [
