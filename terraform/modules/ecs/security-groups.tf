@@ -35,15 +35,24 @@ module "fargate_sg" {
   vpc_id = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
 
   # ingress
-  ingress_with_cidr_blocks = [
-    {
-      from_port   = var.polytomic_port
-      to_port     = var.polytomic_port
-      protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
-
-    },
-  ]
+  ingress_with_cidr_blocks = concat(
+    [
+      {
+        from_port   = var.polytomic_port
+        to_port     = var.polytomic_port
+        protocol    = "tcp"
+        cidr_blocks = "0.0.0.0/0"
+      },
+    ],
+    var.polytomic_port == "3000" ? [] : [
+      {
+        from_port   = 3000
+        to_port     = 3000
+        protocol    = "tcp"
+        cidr_blocks = "0.0.0.0/0"
+      },
+    ]
+  )
 
   egress_with_cidr_blocks = [
     {
@@ -133,4 +142,3 @@ module "lb_sg" {
     }
   )
 }
-
