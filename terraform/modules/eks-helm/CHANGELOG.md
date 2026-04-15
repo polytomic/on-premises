@@ -5,6 +5,18 @@ All notable changes to the EKS Helm deployment module will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-04-15
+
+### Added
+
+- **Datadog Agent DaemonSet support**: New `polytomic_use_dd_agent` variable (default `false`) to deploy a Datadog Agent DaemonSet for APM tracing, plus `polytomic_dd_agent_image` and `polytomic_dd_agent_image_tag` for image overrides. Matches the ECS module variable.
+- **Helm release lifecycle controls**: New `wait` (default `false`), `timeout` (default `600`s, only applied when `wait = true`), and `force_update` (default `false`) variables, letting the release block on readiness or force updates in CI/CD pipelines.
+- **`extra_helm_values` variable**: Additional Helm values in raw YAML, merged after the module's defaults so they take precedence.
+
+### Changed
+
+- The `polytomic.internal_execution_logs` chart value is no longer rendered from this module; logger configuration is handled entirely via the Vector DaemonSet values.
+
 ## [1.2.0] - 2026-02-19
 
 Corresponds to Helm chart v1.2.0.

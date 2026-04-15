@@ -1,4 +1,13 @@
-## Unreleased
+## 2.8.0 (15 Apr 2026)
+
+### Added
+
+- MCP server task definition, ECS service, ALB target group/listener rule, and associated variables for deploying the Polytomic MCP server on premises (#135).
+- Ingest task definition and ECS service; the ingest task ARN is injected into environments of tasks that require it, in preparation for isolated ingestion (#117).
+
+### Changed
+
+- Default Redis instance type is now `cache.t4g.micro` (AWS is moving `t2` instances to previous-generation status).
 
 ### Removed
 

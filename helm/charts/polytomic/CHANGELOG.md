@@ -5,6 +5,12 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-04-15
+
+### Added
+
+- **MCP server deployment**: New optional deployment, service, and ingress for the Polytomic MCP server. Disabled by default; enable via `mcp.enabled`. Supports a separate ingress (e.g. `mcp.polytomic.example.com`), configurable replica count, resources, image, port (default `3000`), and API version (default `2025-09-18`) (#135).
+
 ## [1.4.0] - 2026-04-07
 
 ### Added
