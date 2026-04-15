@@ -153,7 +153,7 @@ externalRedis:
 | healthcheck.tolerations | list | `[]` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"polytomic-onprem"` | Image name (registry is set via imageRegistry) |
-| image.tag | string | `""` | Image tag. Defaults to Chart.appVersion if not specified. For production, always specify a concrete version (e.g., "rel2021.11.04") See https://docs.polytomic.com/changelog for available versions |
+| image.tag | string | `"blarf"` | Image tag. Defaults to Chart.appVersion if not specified. For production, always specify a concrete version (e.g., "rel2021.11.04") See https://docs.polytomic.com/changelog for available versions |
 | imagePullSecrets | list | `[]` | Reference to one or more secrets to be used when pulling images Used both for chart-managed pods and passed to Polytomic for dynamically created job pods Example: imagePullSecrets:   - name: polytomic-ecr |
 | imageRegistry | string | `"568237466542.dkr.ecr.us-west-2.amazonaws.com"` | Registry prefix for all Polytomic images. Override to use a different ECR region, e.g.:   imageRegistry: "568237466542.dkr.ecr.us-east-1.amazonaws.com" |
 | ingress.annotations | object | `{}` |  |
@@ -212,7 +212,7 @@ externalRedis:
 | polytomic.auth.workos_client_id | string | `""` |  |
 | polytomic.datadog.daemonset.affinity | object | `{}` | Affinity rules for Datadog DaemonSet pods |
 | polytomic.datadog.daemonset.containerMetrics | object | `{"enabled":true}` | Enable container metrics collection (CPU, memory) via kubelet |
-| polytomic.datadog.daemonset.enabled | bool | `false` | Enable Datadog Agent DaemonSet for APM tracing When enabled, all Polytomic pods will have DD_AGENT_HOST set to the Datadog service name, and the service routes to the local node via internalTrafficPolicy: Local. |
+| polytomic.datadog.daemonset.enabled | bool | `true` | Enable Datadog Agent DaemonSet for APM tracing When enabled, all Polytomic pods will have DD_AGENT_HOST set to the Datadog service name, and the service routes to the local node via internalTrafficPolicy: Local. |
 | polytomic.datadog.daemonset.excludeContainers | string | `""` | Optional container exclude filter. Same syntax as includeContainers. |
 | polytomic.datadog.daemonset.image | string | `"polytomic-dd-agent"` | Image name for Datadog Agent DaemonSet (registry is set via imageRegistry). MUST use Polytomic's Datadog agent image with ptconf for secret decryption. |
 | polytomic.datadog.daemonset.imagePullPolicy | string | `"IfNotPresent"` |  |

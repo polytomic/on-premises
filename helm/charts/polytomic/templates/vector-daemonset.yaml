@@ -39,6 +39,17 @@ spec:
         imagePullPolicy: {{ .Values.polytomic.vector.daemonset.imagePullPolicy }}
         command:
           - /entrypoint.sh
+        envFrom:
+        - secretRef:
+            {{- if .Values.secret.name }}
+            name: {{ .Values.secret.name }}
+            {{- else }}
+            name: {{ include "polytomic.fullname" . }}-config
+            {{- end }}
+        {{- range .Values.extraSecrets }}
+        - secretRef:
+            name: {{ .name }}
+        {{- end }}
         env:
         # entrypoint.sh reads SEND_LOGS but detects Kubernetes via VECTOR_SELF_NODE_NAME
         # and skips appending config; the Datadog sink is controlled by the ConfigMap instead.
@@ -67,25 +78,7 @@ spec:
         - name: AWS_SECRET_ACCESS_KEY
           value: {{ .Values.polytomic.s3.secret_access_key | quote }}
         {{- end }}
-        # All the same env vars as app pods for ptconf
-        - name: DEPLOYMENT
-          valueFrom:
-            secretKeyRef:
-              {{- if .Values.secret.name }}
-              name: {{ .Values.secret.name }}
-              {{- else }}
-              name: {{ include "polytomic.fullname" . }}-config
-              {{- end }}
-              key: DEPLOYMENT
-        - name: DEPLOYMENT_KEY
-          valueFrom:
-            secretKeyRef:
-              {{- if .Values.secret.name }}
-              name: {{ .Values.secret.name }}
-              {{- else }}
-              name: {{ include "polytomic.fullname" . }}-config
-              {{- end }}
-              key: DEPLOYMENT_KEY
+        # DEPLOYMENT and DEPLOYMENT_KEY are provided via envFrom above
         volumeMounts:
         - name: config-writable
           mountPath: /etc/vector
