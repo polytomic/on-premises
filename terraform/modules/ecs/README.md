@@ -184,7 +184,7 @@ module "polytomic-ecs" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0, < 6.0.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.0 |
@@ -203,15 +203,19 @@ module "polytomic-ecs" {
 |------|------|
 | [aws_alb.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/alb) | resource |
 | [aws_alb_listener.http](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/alb_listener) | resource |
+| [aws_alb_listener_rule.mcp](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/alb_listener_rule) | resource |
+| [aws_alb_target_group.mcp](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/alb_target_group) | resource |
 | [aws_alb_target_group.polytomic](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/alb_target_group) | resource |
 | [aws_cloudwatch_event_rule.oom](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_target.sns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
+| [aws_ecs_service.mcp](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_service.scheduler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_service.schemacache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_service.sync](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_service.web](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_service.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 | [aws_ecs_task_definition.ingest](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
+| [aws_ecs_task_definition.mcp](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
 | [aws_ecs_task_definition.scheduler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
 | [aws_ecs_task_definition.schemacache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
 | [aws_ecs_task_definition.stats_reporter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
@@ -326,6 +330,10 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_log_level"></a> [polytomic\_log\_level](#input\_polytomic\_log\_level) | The log level to use for Polytomic | `string` | `"info"` | no |
 | <a name="input_polytomic_logger_image"></a> [polytomic\_logger\_image](#input\_polytomic\_logger\_image) | Docker image to use for the Polytomic log aggregator | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest"` | no |
 | <a name="input_polytomic_managed_logs"></a> [polytomic\_managed\_logs](#input\_polytomic\_managed\_logs) | Use managed logs | `bool` | `false` | no |
+| <a name="input_polytomic_mcp_api_version"></a> [polytomic\_mcp\_api\_version](#input\_polytomic\_mcp\_api\_version) | Polytomic API version for the MCP server | `string` | `"2025-09-18"` | no |
+| <a name="input_polytomic_mcp_enabled"></a> [polytomic\_mcp\_enabled](#input\_polytomic\_mcp\_enabled) | Enable the MCP server service | `bool` | `false` | no |
+| <a name="input_polytomic_mcp_host"></a> [polytomic\_mcp\_host](#input\_polytomic\_mcp\_host) | Hostname for MCP server (e.g. mcp.polytomic.example.com). Required when polytomic\_mcp\_enabled is true. | `string` | `""` | no |
+| <a name="input_polytomic_mcp_image"></a> [polytomic\_mcp\_image](#input\_polytomic\_mcp\_image) | Docker image to use for the MCP server | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-mcp:latest"` | no |
 | <a name="input_polytomic_mssql_tx_isolation"></a> [polytomic\_mssql\_tx\_isolation](#input\_polytomic\_mssql\_tx\_isolation) | Transaction isolation level for MSSQL connections | `string` | `""` | no |
 | <a name="input_polytomic_port"></a> [polytomic\_port](#input\_polytomic\_port) | Port on which Polytomic is listening | `string` | `"80"` | no |
 | <a name="input_polytomic_preflight_check"></a> [polytomic\_preflight\_check](#input\_polytomic\_preflight\_check) | Whether to run a preflight check | `bool` | `false` | no |
@@ -334,6 +342,8 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_record_log_disabled"></a> [polytomic\_record\_log\_disabled](#input\_polytomic\_record\_log\_disabled) | Globally disable record logging for this deployment | `bool` | `false` | no |
 | <a name="input_polytomic_resource_ingest_cpu"></a> [polytomic\_resource\_ingest\_cpu](#input\_polytomic\_resource\_ingest\_cpu) | CPU units for the ingest container | `number` | `2048` | no |
 | <a name="input_polytomic_resource_ingest_memory"></a> [polytomic\_resource\_ingest\_memory](#input\_polytomic\_resource\_ingest\_memory) | Memory units for the ingest container | `number` | `8192` | no |
+| <a name="input_polytomic_resource_mcp_cpu"></a> [polytomic\_resource\_mcp\_cpu](#input\_polytomic\_resource\_mcp\_cpu) | CPU units for the MCP server container | `number` | `256` | no |
+| <a name="input_polytomic_resource_mcp_memory"></a> [polytomic\_resource\_mcp\_memory](#input\_polytomic\_resource\_mcp\_memory) | Memory units for the MCP server container | `number` | `512` | no |
 | <a name="input_polytomic_resource_scheduler_cpu"></a> [polytomic\_resource\_scheduler\_cpu](#input\_polytomic\_resource\_scheduler\_cpu) | CPU units for the scheduler container | `number` | `1024` | no |
 | <a name="input_polytomic_resource_scheduler_memory"></a> [polytomic\_resource\_scheduler\_memory](#input\_polytomic\_resource\_scheduler\_memory) | Memory units for the scheduler container | `number` | `2048` | no |
 | <a name="input_polytomic_resource_schemacache_cpu"></a> [polytomic\_resource\_schemacache\_cpu](#input\_polytomic\_resource\_schemacache\_cpu) | CPU units for the schemacache container | `number` | `2048` | no |

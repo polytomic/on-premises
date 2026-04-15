@@ -177,6 +177,29 @@ externalRedis:
 | jobworker.securityContext.runAsUser | int | `0` |  |
 | jobworker.sidecarContainers | list | `[]` |  |
 | jobworker.tolerations | list | `[]` |  |
+| mcp.affinity | object | `{}` |  |
+| mcp.apiVersion | string | `"2025-09-18"` | Polytomic API version for the MCP server |
+| mcp.enabled | bool | `false` | Enable the MCP server deployment |
+| mcp.image.repository | string | `"polytomic-mcp"` | MCP server image name (registry is set via imageRegistry) |
+| mcp.image.tag | string | `""` | MCP image tag. Defaults to image.tag when not set. |
+| mcp.ingress.annotations | object | `{}` |  |
+| mcp.ingress.className | string | `"nginx"` |  |
+| mcp.ingress.enabled | bool | `false` | Enable a separate ingress for the MCP server (e.g. mcp.polytomic.example.com) |
+| mcp.ingress.hosts | list | `[]` |  |
+| mcp.ingress.tls | list | `[]` |  |
+| mcp.nodeSelector | object | `{}` |  |
+| mcp.podAnnotations | object | `{}` |  |
+| mcp.podSecurityContext | object | `{}` |  |
+| mcp.port | int | `3000` | Container port for the MCP server |
+| mcp.replicaCount | int | `1` | Number of MCP server replicas |
+| mcp.resources.limits.cpu | string | `"250m"` |  |
+| mcp.resources.limits.memory | string | `"512Mi"` |  |
+| mcp.resources.requests.cpu | string | `"128m"` |  |
+| mcp.resources.requests.memory | string | `"256Mi"` |  |
+| mcp.securityContext | object | `{}` |  |
+| mcp.service.port | int | `3000` |  |
+| mcp.service.type | string | `"ClusterIP"` |  |
+| mcp.tolerations | list | `[]` |  |
 | minio.enabled | bool | `false` |  |
 | minio.mode | string | `"standalone"` |  |
 | minio.persistence.size | string | `"50Mi"` |  |

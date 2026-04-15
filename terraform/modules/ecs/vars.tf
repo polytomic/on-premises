@@ -222,6 +222,36 @@ variable "polytomic_dd_agent_image" {
   default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-dd-agent:latest"
 }
 
+variable "polytomic_mcp_enabled" {
+  description = "Enable the MCP server service"
+  default     = false
+}
+
+variable "polytomic_mcp_image" {
+  description = "Docker image to use for the MCP server"
+  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-mcp:latest"
+}
+
+variable "polytomic_mcp_api_version" {
+  description = "Polytomic API version for the MCP server"
+  default     = "2025-09-18"
+}
+
+variable "polytomic_mcp_host" {
+  description = "Hostname for MCP server (e.g. mcp.polytomic.example.com). Required when polytomic_mcp_enabled is true."
+  default     = ""
+}
+
+variable "polytomic_resource_mcp_cpu" {
+  description = "CPU units for the MCP server container"
+  default     = 256
+}
+
+variable "polytomic_resource_mcp_memory" {
+  description = "Memory units for the MCP server container"
+  default     = 512
+}
+
 variable "polytomic_tx_buffer_size" {
   description = "Transaction buffer size for datalite cache"
   default     = 50000

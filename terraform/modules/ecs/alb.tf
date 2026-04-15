@@ -2,6 +2,7 @@ locals {
   lb_public_subnets  = var.vpc_id == "" ? module.vpc[0].public_subnets : var.public_subnet_ids
   lb_private_subnets = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
   lb_sgs             = length(var.load_balancer_security_groups) == 0 ? module.lb_sg.*.security_group_id : var.load_balancer_security_groups
+  mcp_host           = trimspace(var.polytomic_mcp_host)
 }
 
 resource "aws_alb" "main" {
@@ -80,4 +81,70 @@ resource "aws_alb_listener" "http" {
       target_group_arn = aws_alb_target_group.polytomic.arn
     }
   }
+}
+
+resource "aws_alb_target_group" "mcp" {
+  count       = var.polytomic_mcp_enabled ? 1 : 0
+  name        = "${var.prefix}-mcp-tg"
+  port        = 3000
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
+  target_type = "ip"
+
+  lifecycle {
+    precondition {
+      condition     = length("${var.prefix}-mcp-tg") <= 32
+      error_message = "polytomic_mcp_enabled requires a prefix short enough to keep the MCP target group name within AWS's 32-character limit. Use a prefix of 25 characters or fewer."
+    }
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-mcp-tg"
+    }
+  )
+
+  health_check {
+    healthy_threshold   = "3"
+    interval            = "20"
+    protocol            = "HTTP"
+    matcher             = "200"
+    timeout             = "3"
+    path                = "/healthz"
+    unhealthy_threshold = "2"
+    port                = "3000"
+  }
+}
+
+resource "aws_alb_listener_rule" "mcp" {
+  count        = var.polytomic_mcp_enabled ? 1 : 0
+  listener_arn = aws_alb_listener.http.arn
+
+  lifecycle {
+    precondition {
+      condition     = local.mcp_host != ""
+      error_message = "polytomic_mcp_host must be set to a non-empty hostname when polytomic_mcp_enabled is true."
+    }
+  }
+
+  # The module does not provision an HTTPS listener for MCP, so keep the
+  # host-based rule on the HTTP listener instead of redirecting it away.
+  action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.mcp[0].arn
+  }
+
+  condition {
+    host_header {
+      values = [local.mcp_host]
+    }
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-mcp-rule"
+    }
+  )
 }
