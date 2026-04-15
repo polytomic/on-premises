@@ -301,7 +301,7 @@ variable "redis_cluster_size" {
 
 variable "redis_instance_type" {
   description = "Redis instance type"
-  default     = "cache.t2.micro"
+  default     = "cache.t4g.micro"
 }
 
 variable "redis_engine_version" {
@@ -579,10 +579,4 @@ variable "task_tags" {
   description = "A map of tags to add to application-launched tasks"
   type        = map(string)
   default     = {}
-}
-
-
-variable "polyotmic_efs_caching" {
-  description = "Enable EFS caching"
-  default     = false
 }

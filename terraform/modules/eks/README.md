@@ -1,13 +1,18 @@
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0, < 7.0.0 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.0 |
+| <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0, < 7.0.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 3.0 |
 
 ## Modules
 
@@ -15,12 +20,14 @@ No requirements.
 |------|--------|---------|
 | <a name="module_database"></a> [database](#module\_database) | terraform-aws-modules/rds/aws | 5.9.0 |
 | <a name="module_database_sg"></a> [database\_sg](#module\_database\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
+| <a name="module_ebs_csi_driver_irsa"></a> [ebs\_csi\_driver\_irsa](#module\_ebs\_csi\_driver\_irsa) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.0 |
 | <a name="module_efs"></a> [efs](#module\_efs) | cloudposse/efs/aws | n/a |
+| <a name="module_efs_csi_driver_irsa"></a> [efs\_csi\_driver\_irsa](#module\_efs\_csi\_driver\_irsa) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.0 |
 | <a name="module_efs_sg"></a> [efs\_sg](#module\_efs\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
-| <a name="module_eks"></a> [eks](#module\_eks) | terraform-aws-modules/eks/aws | n/a |
+| <a name="module_eks"></a> [eks](#module\_eks) | terraform-aws-modules/eks/aws | ~> 21.0 |
 | <a name="module_redis"></a> [redis](#module\_redis) | umotif-public/elasticache-redis/aws | n/a |
 | <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | n/a |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | n/a |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 6.0 |
 
 ## Resources
 
@@ -34,7 +41,8 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The name of the bucket to create | `string` | `"polytomic-bucket"` | no |
+| <a name="input_access_entries"></a> [access\_entries](#input\_access\_entries) | Map of IAM principal ARNs to access entry configurations. Allows granting cluster access to additional IAM users/roles beyond the one that created the cluster. Each entry can specify kubernetes\_groups, access\_policies, and type. | `any` | `{}` | no |
+| <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | Optional: Exact S3 bucket name to use. If not specified, defaults to '<prefix>-operations'. Use this to specify an existing bucket or ensure global uniqueness. | `string` | `""` | no |
 | <a name="input_create_efs"></a> [create\_efs](#input\_create\_efs) | Whether to create an EFS instance | `bool` | `true` | no |
 | <a name="input_create_postgres"></a> [create\_postgres](#input\_create\_postgres) | Whether to create a postgres instance | `bool` | `true` | no |
 | <a name="input_create_redis"></a> [create\_redis](#input\_create\_redis) | Whether to create a redis instance | `bool` | `true` | no |
@@ -47,11 +55,11 @@ No requirements.
 | <a name="input_database_deletion_protection"></a> [database\_deletion\_protection](#input\_database\_deletion\_protection) | Database deletion protection | `bool` | `true` | no |
 | <a name="input_database_enabled_cloudwatch_logs_exports"></a> [database\_enabled\_cloudwatch\_logs\_exports](#input\_database\_enabled\_cloudwatch\_logs\_exports) | Database enabled cloudwatch logs exports | `list` | <pre>[<br/>  "postgresql",<br/>  "upgrade"<br/>]</pre> | no |
 | <a name="input_database_engine"></a> [database\_engine](#input\_database\_engine) | Database engine | `string` | `"postgres"` | no |
-| <a name="input_database_engine_version"></a> [database\_engine\_version](#input\_database\_engine\_version) | Database engine version | `string` | `"14.7"` | no |
-| <a name="input_database_family"></a> [database\_family](#input\_database\_family) | Database family | `string` | `"postgres14"` | no |
+| <a name="input_database_engine_version"></a> [database\_engine\_version](#input\_database\_engine\_version) | Database engine version | `string` | `"17.2"` | no |
+| <a name="input_database_family"></a> [database\_family](#input\_database\_family) | Database family | `string` | `"postgres17"` | no |
 | <a name="input_database_instance_class"></a> [database\_instance\_class](#input\_database\_instance\_class) | Database instance class | `string` | `"db.t3.small"` | no |
 | <a name="input_database_maintenance_window"></a> [database\_maintenance\_window](#input\_database\_maintenance\_window) | Database maintenance window | `string` | `"Mon:00:00-Mon:03:00"` | no |
-| <a name="input_database_major_engine_version"></a> [database\_major\_engine\_version](#input\_database\_major\_engine\_version) | Database major engine version | `string` | `"14"` | no |
+| <a name="input_database_major_engine_version"></a> [database\_major\_engine\_version](#input\_database\_major\_engine\_version) | Database major engine version | `string` | `"17"` | no |
 | <a name="input_database_max_allocated_storage"></a> [database\_max\_allocated\_storage](#input\_database\_max\_allocated\_storage) | Database max allocated storage | `number` | `100` | no |
 | <a name="input_database_monitoring_interval"></a> [database\_monitoring\_interval](#input\_database\_monitoring\_interval) | Database monitoring interval | `number` | `60` | no |
 | <a name="input_database_monitoring_role_name"></a> [database\_monitoring\_role\_name](#input\_database\_monitoring\_role\_name) | Database monitoring role name | `string` | `"polytomic-monitoring-role"` | no |
@@ -63,7 +71,7 @@ No requirements.
 | <a name="input_database_skip_final_snapshot"></a> [database\_skip\_final\_snapshot](#input\_database\_skip\_final\_snapshot) | Database skip final snapshot | `bool` | `false` | no |
 | <a name="input_database_username"></a> [database\_username](#input\_database\_username) | Database username | `string` | `"polytomic"` | no |
 | <a name="input_desired_size"></a> [desired\_size](#input\_desired\_size) | Desired number of nodes | `number` | `3` | no |
-| <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Instance type | `string` | `"t3.small"` | no |
+| <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Instance type | `string` | `"t3.medium"` | no |
 | <a name="input_max_size"></a> [max\_size](#input\_max\_size) | Maximum number of nodes | `number` | `4` | no |
 | <a name="input_min_size"></a> [min\_size](#input\_min\_size) | Minimum number of nodes | `number` | `2` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix for all resources | `string` | `"polytomic"` | no |
@@ -74,7 +82,7 @@ No requirements.
 | <a name="input_redis_cluster_size"></a> [redis\_cluster\_size](#input\_redis\_cluster\_size) | Redis cluster size | `string` | `"1"` | no |
 | <a name="input_redis_engine_version"></a> [redis\_engine\_version](#input\_redis\_engine\_version) | Redis engine version | `string` | `"6.2"` | no |
 | <a name="input_redis_family"></a> [redis\_family](#input\_redis\_family) | Redis family | `string` | `"redis6.x"` | no |
-| <a name="input_redis_instance_type"></a> [redis\_instance\_type](#input\_redis\_instance\_type) | Redis instance type | `string` | `"cache.t2.micro"` | no |
+| <a name="input_redis_instance_type"></a> [redis\_instance\_type](#input\_redis\_instance\_type) | Redis instance type | `string` | `"cache.t3.micro"` | no |
 | <a name="input_redis_maintenance_window"></a> [redis\_maintenance\_window](#input\_redis\_maintenance\_window) | Redis maintenance window | `string` | `"mon:03:00-mon:04:00"` | no |
 | <a name="input_redis_port"></a> [redis\_port](#input\_redis\_port) | Redis port | `number` | `6379` | no |
 | <a name="input_redis_snapshot_retention_limit"></a> [redis\_snapshot\_retention\_limit](#input\_redis\_snapshot\_retention\_limit) | Redis snapshot retention limit | `string` | `"7"` | no |

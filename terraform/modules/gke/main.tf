@@ -1,19 +1,20 @@
 module "gcp_network" {
   source       = "terraform-google-modules/network/google"
-  version      = "6.0.0"
+  version      = "~> 12.0"
   project_id   = var.project_id
-  network_name = "polytomic"
+  network_name = var.prefix
 
   subnets = [
     {
-      subnet_name   = "polytomic"
-      subnet_ip     = "10.10.0.0/16"
-      subnet_region = var.region
+      subnet_name           = var.prefix
+      subnet_ip             = "10.10.0.0/16"
+      subnet_region         = var.region
+      subnet_private_access = "true"
     },
   ]
 
   secondary_ranges = {
-    "polytomic" = [
+    "${var.prefix}" = [
       {
         range_name    = var.ip_range_pods_name
         ip_cidr_range = "10.20.0.0/16"
@@ -28,12 +29,11 @@ module "gcp_network" {
 
 data "google_client_config" "default" {}
 
-
 module "gke" {
   source            = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version           = "24.1.0"
+  version           = "~> 35.0"
   project_id        = var.project_id
-  name              = "polytomic"
+  name              = var.prefix
   regional          = true
   region            = var.region
   network           = module.gcp_network.network_name
@@ -41,11 +41,30 @@ module "gke" {
   ip_range_pods     = var.ip_range_pods_name
   ip_range_services = var.ip_range_services_name
 
-  service_account = var.cluster_service_account
+  deletion_protection = var.cluster_deletion_protection
+  service_account     = var.cluster_service_account
+
+  node_pools = [
+    {
+      name         = "${var.prefix}-node-pool"
+      machine_type = var.instance_type
+      min_count    = var.min_size
+      max_count    = var.max_size
+      node_count   = var.desired_size
+      auto_upgrade = true
+      auto_repair  = true
+    },
+  ]
+
+  node_pools_labels = {
+    all = var.labels
+  }
 }
 
 resource "google_compute_global_address" "load_balancer" {
-  name = "polytomic-load-balancer"
+  name    = "${var.prefix}-load-balancer"
+  project = var.project_id
+  labels  = var.labels
 }
 
 
@@ -53,22 +72,35 @@ module "memorystore" {
   count = var.create_redis ? 1 : 0
 
   source  = "terraform-google-modules/memorystore/google"
-  version = "7.0.0"
+  version = "~> 12.0"
 
-  name         = "polytomic-redis"
-  project      = var.project_id
+  name       = "${var.prefix}-redis"
+  project_id = var.project_id
+  region     = var.region
+
   connect_mode = "PRIVATE_SERVICE_ACCESS"
 
-  auth_enabled = true
+  auth_enabled = var.redis_auth_enabled
   enable_apis  = true
 
   memory_size_gb     = var.redis_size
+  redis_version      = var.redis_version
   authorized_network = module.gcp_network.network_id
 
-  transit_encryption_mode = "DISABLED"
+  transit_encryption_mode = var.redis_transit_encryption_mode
+  maintenance_policy = {
+    day = var.redis_maintenance_window_day
+    start_time = {
+      hours   = var.redis_maintenance_window_hour
+      minutes = 0
+      seconds = 0
+      nanos   = 0
+    }
+  }
+
+  labels = var.labels
 
   depends_on = [google_service_networking_connection.default]
-
 }
 
 
@@ -81,25 +113,29 @@ data "google_compute_zones" "available" {
 module "postgres" {
   count   = var.create_postgres ? 1 : 0
   source  = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
-  version = "13.0.1"
+  version = "~> 23.0"
 
-  name                 = "polytomic-postgresql"
+  name                 = "${var.prefix}-postgresql"
   zone                 = data.google_compute_zones.available.names[0]
   random_instance_name = true
   project_id           = var.project_id
-  database_version     = "POSTGRES_14"
+  database_version     = var.database_version
   region               = var.region
 
   create_timeout = "30m"
 
-  // Master configurations
+  edition                         = var.database_edition
   tier                            = var.postgres_instance_tier
-  availability_type               = "REGIONAL"
-  maintenance_window_day          = 7
-  maintenance_window_hour         = 12
+  availability_type               = var.database_availability_type
+  maintenance_window_day          = var.database_maintenance_window_day
+  maintenance_window_hour         = var.database_maintenance_window_hour
   maintenance_window_update_track = "stable"
 
-  deletion_protection = false
+  disk_size             = var.database_disk_size
+  disk_autoresize       = var.database_disk_autoresize
+  disk_autoresize_limit = var.database_disk_autoresize_limit
+
+  deletion_protection = var.database_deletion_protection
 
   ip_configuration = {
     ipv4_enabled        = true
@@ -114,24 +150,42 @@ module "postgres" {
     location                       = var.region
     start_time                     = "20:55"
     point_in_time_recovery_enabled = false
-    retained_backups               = 7
+    retained_backups               = var.database_backup_retention
     retention_unit                 = "COUNT"
     transaction_log_retention_days = null
   }
 
-  db_name   = "polytomic"
-  user_name = "polytomic"
+  db_name     = var.database_name
+  user_name   = var.database_username
+  user_labels = var.labels
 
   depends_on = [google_service_networking_connection.default]
 }
 
 
+resource "google_compute_router" "router" {
+  name    = "${var.prefix}-router"
+  project = var.project_id
+  region  = var.region
+  network = module.gcp_network.network_id
+}
+
+resource "google_compute_router_nat" "nat" {
+  name                               = "${var.prefix}-nat"
+  project                            = var.project_id
+  router                             = google_compute_router.router.name
+  region                             = var.region
+  nat_ip_allocate_option             = "AUTO_ONLY"
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+}
+
 resource "google_compute_global_address" "private_ip_address" {
-  name          = "private-ip-address"
+  name          = "${var.prefix}-private-ip-address"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   prefix_length = 16
   network       = module.gcp_network.network_id
+  labels        = var.labels
 }
 
 resource "google_service_networking_connection" "default" {
@@ -147,15 +201,28 @@ resource "google_compute_network_peering_routes_config" "peering_routes" {
   export_custom_routes = true
 }
 
-resource "google_storage_bucket" "polytomic" {
-  name          = var.bucket_name
-  location      = var.region
-  force_destroy = true
+locals {
+  bucket_name = var.bucket_name != "" ? var.bucket_name : "${var.prefix}-operations"
 }
 
+resource "google_storage_bucket" "polytomic" {
+  name          = local.bucket_name
+  location      = var.region
+  project       = var.project_id
+  force_destroy = true
+  labels        = var.labels
+}
 
 resource "google_storage_bucket_iam_member" "polytomic" {
+  count  = var.workload_identity_sa != "" ? 1 : 0
   bucket = google_storage_bucket.polytomic.name
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${var.workload_identity_sa}"
+}
+
+resource "google_storage_bucket_iam_member" "polytomic_logger" {
+  count  = var.logger_workload_identity_sa != "" && var.logger_workload_identity_sa != var.workload_identity_sa ? 1 : 0
+  bucket = google_storage_bucket.polytomic.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${var.logger_workload_identity_sa}"
 }

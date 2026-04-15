@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "polytomic": {
+      "type": "object",
+      "properties": {
+        "deployment": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Unique identifier for your deployment, provided by Polytomic"
+            },
+            "key": {
+              "type": "string",
+              "description": "License key for your deployment, provided by Polytomic"
+            },
+            "api_key": {
+              "type": "string",
+              "description": "Global API key for your deployment"
+            }
+          }
+        },
+        "auth": {
+          "type": "object",
+          "properties": {
+            "root_user": {
+              "type": "string",
+              "description": "Email address for the initial admin user"
+            },
+            "url": {
+              "type": "string",
+              "description": "Base URL for accessing Polytomic"
+            },
+            "single_player": {
+              "type": "boolean",
+              "description": "Enable single-player mode (no authentication)"
+            }
+          }
+        }
+      }
+    },
+    "postgresql": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "redis": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

@@ -1,18 +1,33 @@
-name: tfsec-pr-commenter
+name: trivy-terraform-scan
 on:
   pull_request:
     paths:
-      - 'terraform/**'
+      - "terraform/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
-  tfsec:
-    name: tfsec PR commenter
+  trivy:
+    name: Trivy Terraform scan
     runs-on: ubuntu-latest
 
     steps:
       - name: Clone repo
-        uses: actions/checkout@master
-      - name: tfsec
-        uses: aquasecurity/tfsec-pr-commenter-action@main
+        uses: actions/checkout@v4
+      - name: Run Trivy scanner
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
-          github_token: ${{ github.token }}
-          tfsec_args: --minimum-severity HIGH
+          scan-type: config
+          scan-ref: terraform
+          format: sarif
+          output: trivy-results.sarif
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+      - name: Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif

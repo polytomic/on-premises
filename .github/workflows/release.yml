@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'helm/charts/**'
+  workflow_dispatch: {}
+
 jobs:
   release:
     # depending on default permission settings for your org (contents being read-only or read-write for workloads), you will have to add permissions
@@ -32,7 +36,7 @@ jobs:
           done
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.4.0
+        uses: helm/chart-releaser-action@v1.7.0
         with:
           charts_dir: helm/charts
           charts_repo_url: charts.polytomic.com

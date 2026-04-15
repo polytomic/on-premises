@@ -16,6 +16,76 @@ helm install helm/charts/polytomic polytomic
 
 {{ template "chart.requirementsSection" . }}
 
+## Logging Configuration
+
+Polytomic supports execution log collection via Vector DaemonSet.
+
+### Execution Logs to S3
+
+Collects execution logs from Polytomic pods and ships them to S3 for storage and retrieval in the UI.
+When the Vector DaemonSet is enabled (the default), the app writes structured JSON to stdout
+and the DaemonSet handles collection and routing to S3.
+
+**Required values:**
+
+```yaml
+polytomic:
+  s3:
+    operational_bucket: "s3://your-bucket"
+    region: "us-west-2"
+  vector:
+    daemonset:
+      enabled: true
+      serviceAccount:
+        annotations:
+          iam.gke.io/gcp-service-account: "vector-logs@my-project.iam.gserviceaccount.com" # GKE only
+        roleArn: "arn:aws:iam::123456789:role/vector-role"  # EKS only - needs s3:PutObject
+```
+
+### Forwarding Logs to Datadog
+
+In addition to S3, logs can be forwarded to Datadog Logs API.
+
+**Required values (in addition to S3 config above):**
+
+```yaml
+polytomic:
+  vector:
+    managedLogs: true  # Enable Datadog log forwarding
+```
+
+Note: S3 configuration is currently required even when using Datadog, as the S3 sink is always enabled in the Vector config.
+
+## Redis Configuration
+
+Polytomic supports both single-node Redis and Redis Cluster mode.
+
+### Redis Cluster Mode
+
+Redis Cluster mode is **automatically detected** - no special configuration is required. Polytomic will:
+1. Attempt to connect using Redis Cluster commands
+2. Automatically fall back to single-node mode if cluster commands are not supported
+
+This works with:
+- AWS ElastiCache (cluster mode enabled)
+- GCP Memorystore (cluster mode)
+- Self-hosted Redis Cluster
+- Any Redis-compatible service
+
+### Example External Redis Configuration
+
+```yaml
+redis:
+  enabled: false  # Disable embedded Redis
+
+externalRedis:
+  host: "your-redis-cluster.cache.amazonaws.com"
+  port: 6379
+  password: "your-password"
+  ssl: true  # Recommended for production
+  poolSize: 0  # 0 = unlimited
+```
+
 {{ template "chart.valuesSection" . }}
 
 {{ template "helm-docs.versionFooter" . }}

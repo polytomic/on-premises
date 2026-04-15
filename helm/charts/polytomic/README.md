@@ -2,7 +2,7 @@
 
 Polytomic helm chart for kubernetes
 
-![Version: 0.0.17](https://img.shields.io/badge/Version-0.0.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
+![Version: 1.4.0](https://img.shields.io/badge/Version-1.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 ## Installing the Chart
 
@@ -16,29 +16,146 @@ helm install helm/charts/polytomic polytomic
 
 ## Requirements
 
+Kubernetes: `>=1.34.0-0`
+
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | postgresql | 12.1.9 |
-| https://charts.bitnami.com/bitnami | redis | 17.4.3 |
+| https://charts.bitnami.com/bitnami | postgresql | 18.2.3 |
+| https://charts.bitnami.com/bitnami | redis | 24.1.2 |
 | https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/ | nfs-server-provisioner | 1.6.0 |
+
+## Logging Configuration
+
+Polytomic supports execution log collection via Vector DaemonSet.
+
+### Execution Logs to S3
+
+Collects execution logs from Polytomic pods and ships them to S3 for storage and retrieval in the UI.
+When the Vector DaemonSet is enabled (the default), the app writes structured JSON to stdout
+and the DaemonSet handles collection and routing to S3.
+
+**Required values:**
+
+```yaml
+polytomic:
+  s3:
+    operational_bucket: "s3://your-bucket"
+    region: "us-west-2"
+  vector:
+    daemonset:
+      enabled: true
+      serviceAccount:
+        annotations:
+          iam.gke.io/gcp-service-account: "vector-logs@my-project.iam.gserviceaccount.com" # GKE only
+        roleArn: "arn:aws:iam::123456789:role/vector-role"  # EKS only - needs s3:PutObject
+```
+
+### Forwarding Logs to Datadog
+
+In addition to S3, logs can be forwarded to Datadog Logs API.
+
+**Required values (in addition to S3 config above):**
+
+```yaml
+polytomic:
+  vector:
+    managedLogs: true  # Enable Datadog log forwarding
+```
+
+Note: S3 configuration is currently required even when using Datadog, as the S3 sink is always enabled in the Vector config.
+
+## Redis Configuration
+
+Polytomic supports both single-node Redis and Redis Cluster mode.
+
+### Redis Cluster Mode
+
+Redis Cluster mode is **automatically detected** - no special configuration is required. Polytomic will:
+1. Attempt to connect using Redis Cluster commands
+2. Automatically fall back to single-node mode if cluster commands are not supported
+
+This works with:
+- AWS ElastiCache (cluster mode enabled)
+- GCP Memorystore (cluster mode)
+- Self-hosted Redis Cluster
+- Any Redis-compatible service
+
+### Example External Redis Configuration
+
+```yaml
+redis:
+  enabled: false  # Disable embedded Redis
+
+externalRedis:
+  host: "your-redis-cluster.cache.amazonaws.com"
+  port: 6379
+  password: "your-password"
+  ssl: true  # Recommended for production
+  poolSize: 0  # 0 = unlimited
+```
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | dev.affinity | object | `{}` |  |
+| dev.enabled | bool | `false` |  |
 | dev.nodeSelector | object | `{}` |  |
 | dev.podAnnotations | object | `{}` |  |
-| dev.podSecurityContext | object | `{}` |  |
-| dev.resources | object | `{}` |  |
-| dev.securityContext | object | `{}` |  |
+| dev.podSecurityContext.fsGroup | int | `2000` |  |
+| dev.resources.limits.cpu | string | `"500m"` |  |
+| dev.resources.limits.memory | string | `"1Gi"` |  |
+| dev.resources.requests.cpu | string | `"100m"` |  |
+| dev.resources.requests.memory | string | `"256Mi"` |  |
+| dev.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| dev.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| dev.securityContext.runAsNonRoot | bool | `false` |  |
+| dev.securityContext.runAsUser | int | `0` |  |
 | dev.tolerations | list | `[]` |  |
 | development | bool | `false` |  |
+| externalPostgresql.autoMigrate | bool | `true` | Auto-run database migrations on startup |
+| externalPostgresql.database | string | `"polytomic"` | Database name |
+| externalPostgresql.existingSecret | object | `{"key":"postgresql-password","name":""}` | Use existing secret for the database password (optional). If set, the password field above is ignored. The secret must exist in the same namespace as the Helm release and contain the raw password (not a connection URL). |
+| externalPostgresql.existingSecret.key | string | `"postgresql-password"` | Key within the secret that contains the password |
+| externalPostgresql.existingSecret.name | string | `""` | Name of the existing Kubernetes secret |
+| externalPostgresql.host | string | `""` | External PostgreSQL host (required if postgresql.enabled=false) |
+| externalPostgresql.idleTimeout | string | `"5s"` | Idle timeout |
+| externalPostgresql.password | string | `""` | Database password (consider using existing secret) |
+| externalPostgresql.poolSize | string | `"15"` | Connection pool size |
+| externalPostgresql.port | int | `5432` | External PostgreSQL port |
+| externalPostgresql.ssl | bool | `false` | Enable SSL/TLS |
+| externalPostgresql.sslMode | string | `"disable"` | SSL mode (disable, require, verify-ca, verify-full) |
+| externalPostgresql.username | string | `"polytomic"` | Database username |
+| externalRedis.existingSecret | object | `{"key":"redis-password","name":""}` | Use existing secret for the Redis password (optional). If set, the password field above is ignored. The secret must exist in the same namespace as the Helm release and contain the raw password (not a connection URL). |
+| externalRedis.existingSecret.key | string | `"redis-password"` | Key within the secret that contains the password |
+| externalRedis.existingSecret.name | string | `""` | Name of the existing Kubernetes secret |
+| externalRedis.host | string | `""` | External Redis host (required if redis.enabled=false) |
+| externalRedis.password | string | `""` | Redis password (consider using existing secret) |
+| externalRedis.poolSize | int | `0` | Connection pool size (0 = unlimited) |
+| externalRedis.port | int | `6379` | External Redis port |
+| externalRedis.ssl | bool | `false` | Enable SSL/TLS |
+| extraSecrets | list | `[]` | Additional existing Secrets to mount as environment variables. These are appended after the main secret in envFrom, so values in later secrets override earlier ones. Secrets are also propagated to executor (sync/bulk) jobs. Note: Secrets must exist in the same namespace as the Helm release.  Example:   extraSecrets:     - name: my-deployment-keys     - name: my-integration-creds |
 | fullnameOverride | string | `""` |  |
+| healthProbes | object | `{"livenessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5},"readinessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5}}` | Global health probe configuration |
+| healthcheck.affinity | object | `{}` |  |
+| healthcheck.nodeSelector | object | `{}` |  |
+| healthcheck.podAnnotations | object | `{}` |  |
+| healthcheck.podSecurityContext.fsGroup | int | `2000` |  |
+| healthcheck.resources.limits.cpu | string | `"100m"` |  |
+| healthcheck.resources.limits.memory | string | `"256Mi"` |  |
+| healthcheck.resources.requests.cpu | string | `"50m"` |  |
+| healthcheck.resources.requests.memory | string | `"128Mi"` |  |
+| healthcheck.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| healthcheck.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| healthcheck.securityContext.runAsNonRoot | bool | `false` |  |
+| healthcheck.securityContext.runAsUser | int | `0` |  |
+| healthcheck.sidecarContainers | list | `[]` |  |
+| healthcheck.tolerations | list | `[]` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
-| image.repository | string | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"` | Image repository |
-| image.tag | string | `"latest"` | Overrides the image tag whose default is the chart appVersion. |
-| imagePullSecrets | list | `[]` | Reference to one or more secrets to be used when pulling images |
+| image.repository | string | `"polytomic-onprem"` | Image name (registry is set via imageRegistry) |
+| image.tag | string | `""` | Image tag. Defaults to Chart.appVersion if not specified. For production, always specify a concrete version (e.g., "rel2021.11.04") See https://docs.polytomic.com/changelog for available versions |
+| imagePullSecrets | list | `[]` | Reference to one or more secrets to be used when pulling images Used both for chart-managed pods and passed to Polytomic for dynamically created job pods Example: imagePullSecrets:   - name: polytomic-ecr |
+| imageRegistry | string | `"568237466542.dkr.ecr.us-west-2.amazonaws.com"` | Registry prefix for all Polytomic images. Override to use a different ECR region, e.g.:   imageRegistry: "568237466542.dkr.ecr.us-east-1.amazonaws.com" |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `"nginx"` | Name of the ingress class to route through this controller |
 | ingress.enabled | bool | `true` |  |
@@ -46,24 +163,45 @@ helm install helm/charts/polytomic polytomic
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | ingress.tls | list | `[]` |  |
+| jobworker.affinity | object | `{}` |  |
+| jobworker.nodeSelector | object | `{}` |  |
+| jobworker.podAnnotations | object | `{}` |  |
+| jobworker.podSecurityContext.fsGroup | int | `2000` |  |
+| jobworker.resources.limits.cpu | string | `"1000m"` |  |
+| jobworker.resources.limits.memory | string | `"2Gi"` |  |
+| jobworker.resources.requests.cpu | string | `"500m"` |  |
+| jobworker.resources.requests.memory | string | `"1Gi"` |  |
+| jobworker.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| jobworker.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| jobworker.securityContext.runAsNonRoot | bool | `false` |  |
+| jobworker.securityContext.runAsUser | int | `0` |  |
+| jobworker.sidecarContainers | list | `[]` |  |
+| jobworker.tolerations | list | `[]` |  |
 | minio.enabled | bool | `false` |  |
 | minio.mode | string | `"standalone"` |  |
 | minio.persistence.size | string | `"50Mi"` |  |
 | minio.rootPassword | string | `"polytomic"` |  |
 | minio.rootUser | string | `"polytomic"` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.allowExternalHttps | bool | `true` |  |
+| networkPolicy.enabled | bool | `false` |  |
+| networkPolicy.externalHttpsCidrs | list | `[]` |  |
+| networkPolicy.ingressNamespaceSelector.name | string | `"ingress-nginx"` |  |
+| networkPolicy.postgresql.namespaceSelector."kubernetes.io/metadata.name" | string | `"default"` |  |
+| networkPolicy.postgresql.podSelector."app.kubernetes.io/name" | string | `"postgresql"` |  |
+| networkPolicy.redis.namespaceSelector."kubernetes.io/metadata.name" | string | `"default"` |  |
+| networkPolicy.redis.podSelector."app.kubernetes.io/name" | string | `"redis"` |  |
 | nfs-server-provisioner.enabled | bool | `true` |  |
-| nfs-server-provisioner.image.repository | string | `"k8s.gcr.io/sig-storage/nfs-provisioner"` |  |
-| nfs-server-provisioner.image.tag | string | `"v3.0.1"` |  |
+| nfs-server-provisioner.image.repository | string | `"registry.k8s.io/sig-storage/nfs-provisioner"` |  |
+| nfs-server-provisioner.image.tag | string | `"v4.0.8"` |  |
 | nfs-server-provisioner.persistence.enabled | bool | `true` |  |
 | nfs-server-provisioner.storageClass.allowVolumeExpansion | bool | `true` |  |
 | nfs-server-provisioner.storageClass.create | bool | `true` |  |
 | nfs-server-provisioner.storageClass.defaultClass | bool | `false` |  |
 | nfs-server-provisioner.storageClass.name | string | `"nfs"` |  |
 | nfs-server-provisioner.storageClass.parameters | object | `{}` |  |
-| polytomic.airtable_client_secret | string | `""` |  |
-| polytomic.asana_client_id | string | `""` |  |
-| polytomic.asana_client_secret | string | `""` |  |
+| podDisruptionBudget.enabled | bool | `false` |  |
+| podDisruptionBudget.minAvailable | int | `1` |  |
 | polytomic.auth.google_client_id | string | `""` | Google OAuth Client ID, obtained by creating a OAuth 2.0 Client ID |
 | polytomic.auth.google_client_secret | string | `""` | Google OAuth Client Secret, obtained by creating a OAuth 2.0 Client ID |
 | polytomic.auth.methods | list | `[]` |  |
@@ -72,97 +210,113 @@ helm install helm/charts/polytomic polytomic
 | polytomic.auth.url | string | `"https://polytomic.mycompany.com"` | Base URL for accessing Polytomic; for example, https://polytomic.mycompany.com. This will be used when redirecting back from Google and other integrations after authenticating with OAuth. |
 | polytomic.auth.workos_api_key | string | `""` |  |
 | polytomic.auth.workos_client_id | string | `""` |  |
-| polytomic.bingads_client_id | string | `""` |  |
-| polytomic.bingads_client_secret | string | `""` |  |
-| polytomic.bingads_developer_token | string | `""` |  |
-| polytomic.cache.enabled | bool | `true` |  |
-| polytomic.cache.size | string | `"20Mi"` |  |
-| polytomic.cache.storage_class | string | `""` |  |
-| polytomic.cache.volume_name | string | `"polytomic-cache"` |  |
-| polytomic.ccloud_api_key | string | `""` |  |
-| polytomic.ccloud_api_secret | string | `""` |  |
+| polytomic.datadog.daemonset.affinity | object | `{}` | Affinity rules for Datadog DaemonSet pods |
+| polytomic.datadog.daemonset.containerMetrics | object | `{"enabled":true}` | Enable container metrics collection (CPU, memory) via kubelet |
+| polytomic.datadog.daemonset.enabled | bool | `false` | Enable Datadog Agent DaemonSet for APM tracing When enabled, all Polytomic pods will have DD_AGENT_HOST set to the Datadog service name, and the service routes to the local node via internalTrafficPolicy: Local. |
+| polytomic.datadog.daemonset.excludeContainers | string | `""` | Optional container exclude filter. Same syntax as includeContainers. |
+| polytomic.datadog.daemonset.image | string | `"polytomic-dd-agent"` | Image name for Datadog Agent DaemonSet (registry is set via imageRegistry). MUST use Polytomic's Datadog agent image with ptconf for secret decryption. |
+| polytomic.datadog.daemonset.imagePullPolicy | string | `"IfNotPresent"` |  |
+| polytomic.datadog.daemonset.includeContainers | string | `""` | Optional container filters for scoping metrics collection. Supports kube_namespace:, image:, name:, kube_label: prefixes. Example: "kube_namespace:polytomic kube_namespace:monitoring" Defaults to "kube_namespace:<release namespace>" when empty. See https://docs.datadoghq.com/containers/guide/autodiscovery-management/ |
+| polytomic.datadog.daemonset.nodeSelector | object | `{}` | Node selector for Datadog DaemonSet pods |
+| polytomic.datadog.daemonset.processAgent | object | `{"enabled":true}` | Enable process agent for live container monitoring |
+| polytomic.datadog.daemonset.resources.limits.cpu | string | `"500m"` |  |
+| polytomic.datadog.daemonset.resources.limits.memory | string | `"768Mi"` |  |
+| polytomic.datadog.daemonset.resources.requests.cpu | string | `"200m"` |  |
+| polytomic.datadog.daemonset.resources.requests.memory | string | `"256Mi"` |  |
+| polytomic.datadog.daemonset.tag | string | `""` | Tag for the Datadog agent image. Defaults to image.tag when not set. |
+| polytomic.datadog.daemonset.tolerations | list | `[]` | Additional tolerations for the Datadog DaemonSet pods. |
 | polytomic.default_org_features | list | `[]` |  |
 | polytomic.deployment.api_key | string | `""` | The global api key for your deployment, user provided. |
 | polytomic.deployment.key | string | `""` | The license key for your deployment, provided by Polytomic. |
 | polytomic.deployment.name | string | `""` | A unique identifier for your on premises deploy, provided by Polytomic. |
+| polytomic.embeddedVector | object | `{"enabled":false}` | Enable the embedded Vector process for log routing. Only needed for non-DaemonSet deployments (e.g. ECS) where the in-pod Vector process handles routing execution logs to S3 via a unix socket. When vector.daemonset.enabled=true, this is NOT required — the app writes structured JSON to stdout and the DaemonSet handles collection and routing. |
 | polytomic.env | string | `""` |  |
-| polytomic.fb_login_configuration_id | string | `""` |  |
-| polytomic.fbaudience_client_id | string | `""` |  |
-| polytomic.fbaudience_client_secret | string | `""` |  |
+| polytomic.extraEnv | object | `{}` | Extra environment variables to add to the Polytomic secret. These are added as-is to the secret's stringData, allowing arbitrary key-value pairs to be set without modifying the chart.  Example:   extraEnv:     MY_CUSTOM_VAR: "some-value"     ANOTHER_VAR: "another-value" |
 | polytomic.field_change_tracking | bool | `true` |  |
-| polytomic.front_client_id | string | `""` |  |
-| polytomic.front_client_secret | string | `""` |  |
-| polytomic.github_client_id | string | `""` |  |
-| polytomic.github_client_secret | string | `""` |  |
-| polytomic.github_deploy_key | string | `""` |  |
-| polytomic.googleads_client_id | string | `""` |  |
-| polytomic.googleads_client_secret | string | `""` |  |
-| polytomic.googleads_developer_token | string | `""` |  |
-| polytomic.googlesearchconsole_client_id | string | `""` |  |
-| polytomic.googlesearchconsole_client_secret | string | `""` |  |
-| polytomic.googleworkspace_client_id | string | `""` |  |
-| polytomic.googleworkspace_client_secret | string | `""` |  |
-| polytomic.gsheets_api_key | string | `""` |  |
-| polytomic.gsheets_app_id | string | `""` |  |
-| polytomic.gsheets_client_id | string | `""` |  |
-| polytomic.gsheets_client_secret | string | `""` |  |
-| polytomic.hubspot_client_id | string | `""` |  |
-| polytomic.hubspot_client_secret | string | `""` |  |
-| polytomic.intercom_client_id | string | `""` |  |
-| polytomic.intercom_client_secret | string | `""` |  |
-| polytomic.internal_execution_logs | bool | `false` |  |
-| polytomic.linkedinads_client_id | string | `""` |  |
-| polytomic.linkedinads_client_secret | string | `""` |  |
+| polytomic.integrations | object | `{}` | Integration credentials Configure OAuth credentials and API keys for third-party integrations. Only non-empty values will be included in the deployment secret. Supports all integration environment variables in UPPER_CASE format.  Common integrations:   SALESFORCE_CLIENT_ID / SALESFORCE_CLIENT_SECRET   HUBSPOT_CLIENT_ID / HUBSPOT_CLIENT_SECRET   GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET / GITHUB_DEPLOY_KEY   SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET   STRIPE_SECRET_KEY   GOOGLEADS_CLIENT_ID / GOOGLEADS_CLIENT_SECRET / GOOGLEADS_DEVELOPER_TOKEN   GSHEETS_API_KEY / GSHEETS_APP_ID / GSHEETS_CLIENT_ID / GSHEETS_CLIENT_SECRET   And many more - see documentation for full list  Example:   integrations:     SALESFORCE_CLIENT_ID: "your-client-id"     SALESFORCE_CLIENT_SECRET: "your-client-secret"     HUBSPOT_CLIENT_ID: "your-hubspot-id"     HUBSPOT_CLIENT_SECRET: "your-hubspot-secret" |
+| polytomic.kubernetes | object | `{"nodeSelectors":"","tolerations":""}` | Kubernetes task executor scheduling configuration These settings control how Polytomic schedules dynamically created job pods |
+| polytomic.kubernetes.nodeSelectors | string | `""` | Node selectors for task executor pods (comma-separated key=value pairs) Format: key=value,key=value Example: "disktype=ssd,node-type=sync-worker" |
+| polytomic.kubernetes.tolerations | string | `""` | Tolerations for task executor pods (comma-separated) Format: key:operator:value:effect,key:operator:value:effect Example: "dedicated:Equal:sync-jobs:NoSchedule,gpu:Exists::NoSchedule" |
 | polytomic.log_level | string | `"info"` |  |
 | polytomic.metrics | bool | `false` | Telemetry |
-| polytomic.outreach_client_id | string | `""` |  |
-| polytomic.outreach_client_secret | string | `""` |  |
-| polytomic.pardot_client_id | string | `""` |  |
-| polytomic.pardot_client_secret | string | `""` |  |
-| polytomic.postgres.auto_migrate | bool | `true` |  |
-| polytomic.postgres.database | string | `"polytomic"` | Database name |
-| polytomic.postgres.host | string | `"polytomic-postgresql"` | Host address |
-| polytomic.postgres.password | string | `"polytomic"` | Password for given user |
-| polytomic.postgres.port | int | `5432` | Port number |
-| polytomic.postgres.ssl | bool | `false` | enable/disable SSL |
-| polytomic.postgres.username | string | `"polytomic"` | Postgres user name |
 | polytomic.query_workers | int | `10` |  |
-| polytomic.redis.host | string | `"polytomic-redis-master"` |  |
-| polytomic.redis.password | string | `"polytomic"` |  |
-| polytomic.redis.port | int | `6379` |  |
-| polytomic.redis.ssl | bool | `false` |  |
-| polytomic.redis.username | string | `nil` |  |
+| polytomic.roles | object | `{"bulk":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"ingest":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"proxy":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"scheduler":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"task":{"cleanup_delay_seconds":10,"cpu":1000,"database_pool_size":0,"memory_maximum":8192,"memory_mega":8192,"memory_reservation":2048,"redis_pool_size":0,"tags":""}}` | Per-role executor configuration. Fields map to the {prefix}_* environment variables read by the application. Prefixes: task → TASK_EXECUTOR, bulk → BULK_EXECUTOR, ingest → INGEST_EXECUTOR,           proxy → PROXY_EXECUTOR, scheduler → SCHEDULER_ROLE.  The task role is the base: any field left at 0/"" in bulk/ingest/proxy/scheduler will inherit the corresponding task value at runtime (setDefaultRoleConfig). Only override the other roles when you need role-specific values. |
+| polytomic.roles.task.cleanup_delay_seconds | int | `10` | Seconds to sleep after task completion before cleaning up |
+| polytomic.roles.task.cpu | int | `1000` | CPU request for executor pods (milliCPU). Maps to K8s resource request. |
+| polytomic.roles.task.memory_maximum | int | `8192` | Memory limit for executor pods (MiB). Maps to K8s resource limit. |
+| polytomic.roles.task.memory_mega | int | `8192` | Memory request for mega-sized tasks (MiB). Overrides memory_reservation when task.MegaSize is true. |
+| polytomic.roles.task.memory_reservation | int | `2048` | Memory request for executor pods (MiB). Maps to K8s resource request. |
 | polytomic.s3.access_key_id | string | `""` | Access key ID |
-| polytomic.s3.log_bucket | string | `""` | The bucket stores log files containing records involved in a sync execution |
 | polytomic.s3.operational_bucket | string | `"s3://operations"` |  |
-| polytomic.s3.query_bucket | string | `""` | The bucket is used to store query exports from Polytomic's SQL Runner. |
-| polytomic.s3.record_log_bucket | string | `"records"` | Holds record logs for syncs |
 | polytomic.s3.region | string | `"us-east-1"` | S3 region e.g. us-east-1 |
 | polytomic.s3.secret_access_key | string | `""` | Secret access key |
-| polytomic.salesforce_client_id | string | `""` |  |
-| polytomic.salesforce_client_secret | string | `""` |  |
-| polytomic.shipbob_client_id | string | `""` |  |
-| polytomic.shipbob_client_secret | string | `""` |  |
-| polytomic.shopify_client_id | string | `""` |  |
-| polytomic.shopify_client_secret | string | `""` |  |
-| polytomic.smartsheet_client_id | string | `""` |  |
-| polytomic.smartsheet_client_secret | string | `""` |  |
-| polytomic.stripe_secret_key | string | `""` |  |
+| polytomic.sharedVolume.accessModes | list | `["ReadWriteMany"]` | Access modes |
+| polytomic.sharedVolume.dynamic.storageClassName | string | `""` | Storage class name (empty = cluster default) |
+| polytomic.sharedVolume.enabled | bool | `true` | Enable shared volume (if false, uses emptyDir) |
+| polytomic.sharedVolume.mode | string | `"dynamic"` | Provisioning mode: "dynamic" (StorageClass), "static" (pre-existing PV), or "emptyDir" |
+| polytomic.sharedVolume.mountPath | string | `"/var/polytomic"` | Mount path in containers |
+| polytomic.sharedVolume.size | string | `"20Gi"` | Volume size |
+| polytomic.sharedVolume.static.driver | string | `"efs.csi.aws.com"` | CSI driver (e.g., efs.csi.aws.com, nfs.csi.k8s.io) |
+| polytomic.sharedVolume.static.volumeAttributes | object | `{}` | Optional volume attributes for CSI driver |
+| polytomic.sharedVolume.static.volumeHandle | string | `""` | Volume handle (e.g., EFS filesystem ID: fs-12345678) |
+| polytomic.sharedVolume.subPath | string | `""` | Optional subPath within the volume |
+| polytomic.sharedVolume.volumeName | string | `"polytomic-shared"` | Volume name for PV/PVC |
 | polytomic.sync_retry_errors | bool | `true` |  |
 | polytomic.sync_workers | int | `10` |  |
-| polytomic.task_executor_cleanup_delay_seconds | int | `10` |  |
 | polytomic.tracing | bool | `false` |  |
 | polytomic.tx_buffer_size | int | `1000` |  |
-| polytomic.zendesk_client_id | string | `""` |  |
-| polytomic.zendesk_client_secret | string | `""` |  |
+| polytomic.vector.daemonset | object | `{"affinity":{},"enabled":true,"image":"polytomic-vector","imagePullPolicy":"IfNotPresent","nodeSelector":{},"podLabelSelector":"vector.dev/include=true","resources":{"limits":{"cpu":"200m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"serviceAccount":{"annotations":{},"roleArn":""},"tag":"","tolerations":[]}` | Vector DaemonSet for stdout/stderr log collection Collects container logs from all Polytomic pods on each node Default: true (matches ECS behavior where polytomic_use_logger defaults to true) |
+| polytomic.vector.daemonset.affinity | object | `{}` | Affinity rules for Vector DaemonSet pods |
+| polytomic.vector.daemonset.enabled | bool | `true` | Set to false to disable DaemonSet log collection Consider disabling for: - Development environments to save resources - Cost-sensitive deployments where only business logs are needed - When using alternative cluster-wide log collection - Security/compliance restrictions on DaemonSets |
+| polytomic.vector.daemonset.image | string | `"polytomic-vector"` | Image name for Vector DaemonSet (registry is set via imageRegistry). MUST use Polytomic's Vector image with ptconf for secret decryption. |
+| polytomic.vector.daemonset.nodeSelector | object | `{}` | Node selector for Vector DaemonSet pods |
+| polytomic.vector.daemonset.podLabelSelector | string | `"vector.dev/include=true"` | Label selector to filter which pods to collect logs from. Uses vector.dev/include=true which is set on all Polytomic pod templates, making collection independent of the Helm release name. |
+| polytomic.vector.daemonset.serviceAccount | object | `{"annotations":{},"roleArn":""}` | ServiceAccount configuration for Vector DaemonSet |
+| polytomic.vector.daemonset.serviceAccount.annotations | object | `{}` | Additional service account annotations (for example GKE Workload Identity) |
+| polytomic.vector.daemonset.serviceAccount.roleArn | string | `""` | IAM role ARN for IRSA (EKS only) |
+| polytomic.vector.daemonset.tag | string | `""` | Tag for the Vector image. Defaults to image.tag when not set. |
+| polytomic.vector.daemonset.tolerations | list | `[]` | Additional tolerations for the Vector DaemonSet pods. By default no tolerations are set, so Vector only runs on schedulable worker nodes. Add tolerations here if your nodes have custom taints that Polytomic pods also tolerate. |
+| polytomic.vector.managedLogs | bool | `false` | Enable forwarding to Datadog Logs API When true, sets SEND_LOGS=true for both: - Embedded Vector (structured app logs) - DaemonSet Vector (stdout/stderr logs) Default: false (opt-in) |
 | postgresql.auth.database | string | `"polytomic"` |  |
 | postgresql.auth.password | string | `"polytomic"` |  |
 | postgresql.auth.username | string | `"polytomic"` |  |
 | postgresql.enabled | bool | `true` |  |
+| postgresql.primary.persistence.enabled | bool | `true` |  |
+| postgresql.primary.persistence.size | string | `"8Gi"` |  |
 | redis.architecture | string | `"standalone"` |  |
 | redis.auth.enabled | bool | `true` |  |
 | redis.auth.password | string | `"polytomic"` |  |
 | redis.enabled | bool | `true` |  |
+| redis.master.persistence.enabled | bool | `true` |  |
+| redis.master.persistence.size | string | `"8Gi"` |  |
+| scheduler.affinity | object | `{}` |  |
+| scheduler.nodeSelector | object | `{}` |  |
+| scheduler.podAnnotations | object | `{}` |  |
+| scheduler.podSecurityContext.fsGroup | int | `2000` |  |
+| scheduler.resources.limits.cpu | string | `"500m"` |  |
+| scheduler.resources.limits.memory | string | `"1Gi"` |  |
+| scheduler.resources.requests.cpu | string | `"250m"` |  |
+| scheduler.resources.requests.memory | string | `"512Mi"` |  |
+| scheduler.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| scheduler.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| scheduler.securityContext.runAsNonRoot | bool | `false` |  |
+| scheduler.securityContext.runAsUser | int | `0` |  |
+| scheduler.sidecarContainers | list | `[]` |  |
+| scheduler.tolerations | list | `[]` |  |
+| schemacache.affinity | object | `{}` |  |
+| schemacache.nodeSelector | object | `{}` |  |
+| schemacache.podAnnotations | object | `{}` |  |
+| schemacache.podSecurityContext.fsGroup | int | `2000` |  |
+| schemacache.resources.limits.cpu | string | `"500m"` |  |
+| schemacache.resources.limits.memory | string | `"1Gi"` |  |
+| schemacache.resources.requests.cpu | string | `"250m"` |  |
+| schemacache.resources.requests.memory | string | `"512Mi"` |  |
+| schemacache.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| schemacache.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| schemacache.securityContext.runAsNonRoot | bool | `false` |  |
+| schemacache.securityContext.runAsUser | int | `0` |  |
+| schemacache.sidecarContainers | list | `[]` |  |
+| schemacache.tolerations | list | `[]` |  |
 | secret.name | string | `""` |  |
 | service.port | int | `80` |  |
 | service.type | string | `"ClusterIP"` |  |
@@ -171,46 +325,64 @@ helm install helm/charts/polytomic polytomic
 | serviceAccount.name | string | `""` |  |
 | sync.affinity | object | `{}` |  |
 | sync.autoscaling.enabled | bool | `true` |  |
-| sync.autoscaling.maxReplicas | int | `100` |  |
-| sync.autoscaling.minReplicas | int | `1` |  |
+| sync.autoscaling.maxReplicas | int | `10` |  |
+| sync.autoscaling.minReplicas | int | `2` |  |
 | sync.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | sync.autoscaling.targetMemoryUtilizationPercentage | int | `80` |  |
 | sync.nodeSelector | object | `{}` |  |
 | sync.podAnnotations | object | `{}` |  |
-| sync.podSecurityContext | object | `{}` |  |
-| sync.replicaCount | int | `1` |  |
-| sync.resources | object | `{}` |  |
-| sync.securityContext | object | `{}` |  |
+| sync.podSecurityContext.fsGroup | int | `2000` |  |
+| sync.replicaCount | int | `2` |  |
+| sync.resources.limits.cpu | string | `"1000m"` |  |
+| sync.resources.limits.memory | string | `"2Gi"` |  |
+| sync.resources.requests.cpu | string | `"500m"` |  |
+| sync.resources.requests.memory | string | `"1Gi"` |  |
+| sync.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| sync.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| sync.securityContext.runAsNonRoot | bool | `false` |  |
+| sync.securityContext.runAsUser | int | `0` |  |
 | sync.sidecarContainers | list | `[]` |  |
 | sync.tolerations | list | `[]` |  |
 | web.affinity | object | `{}` |  |
 | web.autoscaling.enabled | bool | `true` |  |
-| web.autoscaling.maxReplicas | int | `100` |  |
-| web.autoscaling.minReplicas | int | `1` |  |
+| web.autoscaling.maxReplicas | int | `10` |  |
+| web.autoscaling.minReplicas | int | `2` |  |
 | web.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | web.autoscaling.targetMemoryUtilizationPercentage | int | `80` |  |
 | web.nodeSelector | object | `{}` |  |
 | web.podAnnotations | object | `{}` |  |
-| web.podSecurityContext | object | `{}` |  |
-| web.replicaCount | int | `1` |  |
-| web.resources | object | `{}` |  |
-| web.securityContext | object | `{}` |  |
+| web.podSecurityContext.fsGroup | int | `2000` |  |
+| web.replicaCount | int | `2` |  |
+| web.resources.limits.cpu | string | `"1000m"` |  |
+| web.resources.limits.memory | string | `"2Gi"` |  |
+| web.resources.requests.cpu | string | `"500m"` |  |
+| web.resources.requests.memory | string | `"1Gi"` |  |
+| web.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| web.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| web.securityContext.runAsNonRoot | bool | `false` |  |
+| web.securityContext.runAsUser | int | `0` |  |
 | web.sidecarContainers | string | `nil` |  |
 | web.tolerations | list | `[]` |  |
 | worker.affinity | object | `{}` |  |
-| worker.autoscaling.enabled | bool | `true` |  |
+| worker.autoscaling.enabled | bool | `false` |  |
 | worker.autoscaling.maxReplicas | int | `100` |  |
 | worker.autoscaling.minReplicas | int | `1` |  |
 | worker.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | worker.autoscaling.targetMemoryUtilizationPercentage | int | `80` |  |
 | worker.nodeSelector | object | `{}` |  |
 | worker.podAnnotations | object | `{}` |  |
-| worker.podSecurityContext | object | `{}` |  |
-| worker.replicaCount | int | `1` |  |
-| worker.resources | object | `{}` |  |
-| worker.securityContext | object | `{}` |  |
+| worker.podSecurityContext.fsGroup | int | `2000` |  |
+| worker.replicaCount | int | `2` |  |
+| worker.resources.limits.cpu | string | `"500m"` |  |
+| worker.resources.limits.memory | string | `"1Gi"` |  |
+| worker.resources.requests.cpu | string | `"250m"` |  |
+| worker.resources.requests.memory | string | `"512Mi"` |  |
+| worker.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| worker.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| worker.securityContext.runAsNonRoot | bool | `false` |  |
+| worker.securityContext.runAsUser | int | `0` |  |
 | worker.sidecarContainers | list | `[]` |  |
 | worker.tolerations | list | `[]` |  |
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
+Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)

@@ -1,0 +1,107 @@
+{{- if not .Values.development -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "polytomic.fullname" . }}-scheduler
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "polytomic.scheduler-selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.scheduler.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "polytomic.scheduler-selectorLabels" . | nindent 8 }}
+        vector.dev/include: "true"
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "polytomic.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.scheduler.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.scheduler.securityContext | nindent 12 }}
+          image: {{ include "polytomic.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+          - secretRef:
+              {{- if .Values.secret.name }}
+              name: {{ .Values.secret.name }}
+              {{- else }}
+              name: {{ include "polytomic.fullname" . }}-config
+              {{- end }}
+          {{- range .Values.extraSecrets }}
+          - secretRef:
+              name: {{ .name }}
+          {{- end }}
+          env:
+          - name: ROLE
+            value: scheduler
+          {{- if .Values.externalPostgresql.existingSecret.name }}
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "polytomic.postgresql.secretName" . }}
+                key: {{ include "polytomic.postgresql.secretKey" . }}
+          {{- end }}
+          {{- if .Values.externalRedis.existingSecret.name }}
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "polytomic.redis.secretName" . }}
+                key: {{ include "polytomic.redis.secretKey" . }}
+          {{- end }}
+          volumeMounts:
+          - mountPath: /etc/podinfo
+            name: podinfo
+          - mountPath: {{ .Values.polytomic.sharedVolume.mountPath }}
+            name: shared-volume
+            {{- if .Values.polytomic.sharedVolume.subPath }}
+            subPath: {{ .Values.polytomic.sharedVolume.subPath }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.scheduler.resources | nindent 12 }}
+      {{- if .Values.scheduler.sidecarContainers }}
+      {{- toYaml .Values.scheduler.sidecarContainers | nindent 8 }}
+      {{- end }}
+      {{- with .Values.scheduler.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.scheduler.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.scheduler.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      {{- if and .Values.polytomic.sharedVolume.enabled (ne .Values.polytomic.sharedVolume.mode "emptyDir") }}
+      - name: shared-volume
+        persistentVolumeClaim:
+          claimName: {{ .Values.polytomic.sharedVolume.volumeName }}
+      {{- else }}
+      - name: shared-volume
+        emptyDir: {}
+      {{- end }}
+      - downwardAPI:
+          defaultMode: 420
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.annotations
+            path: annotations
+        name: podinfo
+{{- end }}

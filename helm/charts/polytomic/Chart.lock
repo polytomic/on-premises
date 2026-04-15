@@ -1,0 +1,12 @@
+dependencies:
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 18.2.3
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 24.1.2
+- name: nfs-server-provisioner
+  repository: https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
+  version: 1.6.0
+digest: sha256:1be02ee41e9d1ff23781956244026416d688eb8e4bf2570763d910f77093bc6b
+generated: "2026-01-20T11:43:08.142347-08:00"

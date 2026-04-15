@@ -310,7 +310,6 @@ module "polytomic-ecs" {
 | <a name="input_load_balancer_redirect_https"></a> [load\_balancer\_redirect\_https](#input\_load\_balancer\_redirect\_https) | enable https listener on load balancer | `bool` | `false` | no |
 | <a name="input_load_balancer_security_groups"></a> [load\_balancer\_security\_groups](#input\_load\_balancer\_security\_groups) | security groups for load balancer | `list(string)` | `[]` | no |
 | <a name="input_log_retention_days"></a> [log\_retention\_days](#input\_log\_retention\_days) | Cloudwatch log retention days | `number` | `120` | no |
-| <a name="input_polyotmic_efs_caching"></a> [polyotmic\_efs\_caching](#input\_polyotmic\_efs\_caching) | Enable EFS caching | `bool` | `false` | no |
 | <a name="input_polytomic_bootstrap"></a> [polytomic\_bootstrap](#input\_polytomic\_bootstrap) | Whether to bootstrap Polytomic | `bool` | `false` | no |
 | <a name="input_polytomic_data_path"></a> [polytomic\_data\_path](#input\_polytomic\_data\_path) | Filesystem path to local data cache | `string` | `"/var/polytomic"` | no |
 | <a name="input_polytomic_dd_agent_image"></a> [polytomic\_dd\_agent\_image](#input\_polytomic\_dd\_agent\_image) | Docker image to use for the Datadog agent | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-dd-agent:latest"` | no |
@@ -368,7 +367,7 @@ module "polytomic-ecs" {
 | <a name="input_redis_endpoint"></a> [redis\_endpoint](#input\_redis\_endpoint) | Redis endpoint | `string` | `""` | no |
 | <a name="input_redis_engine_version"></a> [redis\_engine\_version](#input\_redis\_engine\_version) | Redis engine version | `string` | `"6.2"` | no |
 | <a name="input_redis_family"></a> [redis\_family](#input\_redis\_family) | Redis family | `string` | `"redis6.x"` | no |
-| <a name="input_redis_instance_type"></a> [redis\_instance\_type](#input\_redis\_instance\_type) | Redis instance type | `string` | `"cache.t2.micro"` | no |
+| <a name="input_redis_instance_type"></a> [redis\_instance\_type](#input\_redis\_instance\_type) | Redis instance type | `string` | `"cache.t4g.micro"` | no |
 | <a name="input_redis_maintenance_window"></a> [redis\_maintenance\_window](#input\_redis\_maintenance\_window) | Redis maintenance window | `string` | `"mon:03:00-mon:04:00"` | no |
 | <a name="input_redis_port"></a> [redis\_port](#input\_redis\_port) | Redis port | `number` | `6379` | no |
 | <a name="input_redis_snapshot_retention_limit"></a> [redis\_snapshot\_retention\_limit](#input\_redis\_snapshot\_retention\_limit) | Redis snapshot retention limit | `string` | `"7"` | no |

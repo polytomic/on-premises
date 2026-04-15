@@ -2,18 +2,41 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# -- Registry prefix for all Polytomic images.
+# Override to use a different ECR region, e.g.:
+#   imageRegistry: "568237466542.dkr.ecr.us-east-1.amazonaws.com"
+imageRegistry: "568237466542.dkr.ecr.us-west-2.amazonaws.com"
+
 image:
-  # -- Image repository
-  repository: 568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem
+  # -- Image name (registry is set via imageRegistry)
+  repository: polytomic-onprem
   # -- Image pull policy
   pullPolicy: IfNotPresent
-  # -- Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  # -- Image tag. Defaults to Chart.appVersion if not specified.
+  # For production, always specify a concrete version (e.g., "rel2021.11.04")
+  # See https://docs.polytomic.com/changelog for available versions
+  tag: ""
 
 # -- Reference to one or more secrets to be used when pulling images
+# Used both for chart-managed pods and passed to Polytomic for dynamically created job pods
+# Example: imagePullSecrets:
+#   - name: polytomic-ecr
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+
+# -- Global health probe configuration
+healthProbes:
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
 
 service:
   type: ClusterIP
@@ -58,7 +81,65 @@ polytomic:
   query_workers: 10
   sync_retry_errors: true
   sync_workers: 10
-  task_executor_cleanup_delay_seconds: 10
+  # -- Per-role executor configuration.
+  # Fields map to the {prefix}_* environment variables read by the application.
+  # Prefixes: task → TASK_EXECUTOR, bulk → BULK_EXECUTOR, ingest → INGEST_EXECUTOR,
+  #           proxy → PROXY_EXECUTOR, scheduler → SCHEDULER_ROLE.
+  #
+  # The task role is the base: any field left at 0/"" in bulk/ingest/proxy/scheduler
+  # will inherit the corresponding task value at runtime (setDefaultRoleConfig).
+  # Only override the other roles when you need role-specific values.
+  roles:
+    task:
+      # -- Seconds to sleep after task completion before cleaning up
+      cleanup_delay_seconds: 10
+      # -- CPU request for executor pods (milliCPU). Maps to K8s resource request.
+      cpu: 1000
+      # -- Memory request for executor pods (MiB). Maps to K8s resource request.
+      memory_reservation: 2048
+      # -- Memory limit for executor pods (MiB). Maps to K8s resource limit.
+      memory_maximum: 8192
+      # -- Memory request for mega-sized tasks (MiB). Overrides memory_reservation when task.MegaSize is true.
+      memory_mega: 8192
+      database_pool_size: 0
+      redis_pool_size: 0
+      tags: ""
+    bulk:
+      cleanup_delay_seconds: 0
+      cpu: 0
+      memory_reservation: 0
+      memory_maximum: 0
+      memory_mega: 0
+      database_pool_size: 0
+      redis_pool_size: 0
+      tags: ""
+    ingest:
+      cleanup_delay_seconds: 0
+      cpu: 0
+      memory_reservation: 0
+      memory_maximum: 0
+      memory_mega: 0
+      database_pool_size: 0
+      redis_pool_size: 0
+      tags: ""
+    proxy:
+      cleanup_delay_seconds: 0
+      cpu: 0
+      memory_reservation: 0
+      memory_maximum: 0
+      memory_mega: 0
+      database_pool_size: 0
+      redis_pool_size: 0
+      tags: ""
+    scheduler:
+      cleanup_delay_seconds: 0
+      cpu: 0
+      memory_reservation: 0
+      memory_maximum: 0
+      memory_mega: 0
+      database_pool_size: 0
+      redis_pool_size: 0
+      tags: ""
   tx_buffer_size: 1000
 
   auth:
@@ -86,52 +167,12 @@ polytomic:
     workos_api_key: ""
     workos_client_id: ""
 
-  # Postgres connection settings
-  postgres:
-    # -- Postgres user name
-    username: polytomic
-    # -- Password for given user
-    password: polytomic
-    # -- Host address
-    host: polytomic-postgresql
-    # -- Port number
-    port: 5432
-    # -- Database name
-    database: polytomic
-    # -- enable/disable SSL
-    ssl: false
-
-    auto_migrate: true
-
-  # Redis connection settings
-  redis:
-    username:
-    password: polytomic
-    host: polytomic-redis-master
-    port: 6379
-    ssl: false
-
   # The bucket stores log files containing records involved in a sync execution.
   # Record logging is enabled from the Settings page within the app ({POLYTOMIC_URL}/user).
   # Credentials for AWS are pulled through the AWS-SDK's credential chain and the user/role must have permissions for the bucket.
   # We recommend setting a bucket lifecycle rule to automatically expire objects.
   s3:
     operational_bucket: "s3://operations"
-
-    # -- Holds record logs for syncs
-    record_log_bucket: "records"
-
-
-    # -- DEPRECATED!!
-    #
-    # use operational_bucket instead of log_bucket and query_bucket
-    #
-    # -- The bucket stores log files containing records involved in a sync execution
-    log_bucket: ""
-    # -- The bucket is used to store query exports from Polytomic's SQL Runner.
-    query_bucket: ""
-    #
-    #
 
     # -- Access key ID
     access_key_id: ""
@@ -140,63 +181,202 @@ polytomic:
     # -- S3 region e.g. us-east-1
     region: us-east-1
 
-  cache:
+  # Shared volume configuration for worker and sync pods
+  # This volume is used for caching and temporary data shared between pods
+  sharedVolume:
+    # -- Enable shared volume (if false, uses emptyDir)
     enabled: true
-    volume_name: polytomic-cache
-    size: 20Mi
-    storage_class: ""
+    # -- Provisioning mode: "dynamic" (StorageClass), "static" (pre-existing PV), or "emptyDir"
+    mode: dynamic
+    # -- Volume size
+    size: 20Gi
+    # -- Mount path in containers
+    mountPath: /var/polytomic
+    # -- Access modes
+    accessModes:
+      - ReadWriteMany
+    # -- Volume name for PV/PVC
+    volumeName: polytomic-shared
+    # -- Optional subPath within the volume
+    subPath: ""
 
-  internal_execution_logs: false
+    # Static provisioning configuration (for pre-existing volumes like EFS)
+    # Only used when mode=static
+    static:
+      # -- CSI driver (e.g., efs.csi.aws.com, nfs.csi.k8s.io)
+      driver: efs.csi.aws.com
+      # -- Volume handle (e.g., EFS filesystem ID: fs-12345678)
+      volumeHandle: ""
+      # -- Optional volume attributes for CSI driver
+      volumeAttributes: {}
+        # Example for EFS:
+        # path: /
+        # Example for other drivers:
+        # server: nfs-server.example.com
+        # share: /exports/polytomic
 
-  # Integrations
-  airtable_client_secret: ""
-  asana_client_id: ""
-  asana_client_secret: ""
-  bingads_client_id: ""
-  bingads_client_secret: ""
-  bingads_developer_token: ""
-  ccloud_api_key: ""
-  ccloud_api_secret: ""
-  fbaudience_client_id: ""
-  fbaudience_client_secret: ""
-  fb_login_configuration_id: ""
-  front_client_id: ""
-  front_client_secret: ""
-  github_client_id: ""
-  github_client_secret: ""
-  github_deploy_key: ""
-  googleads_client_id: ""
-  googleads_client_secret: ""
-  googleads_developer_token: ""
-  googlesearchconsole_client_id: ""
-  googlesearchconsole_client_secret: ""
-  googleworkspace_client_id: ""
-  googleworkspace_client_secret: ""
-  gsheets_api_key: ""
-  gsheets_app_id: ""
-  gsheets_client_id: ""
-  gsheets_client_secret: ""
-  hubspot_client_id: ""
-  hubspot_client_secret: ""
-  intercom_client_id: ""
-  intercom_client_secret: ""
-  linkedinads_client_id: ""
-  linkedinads_client_secret: ""
-  outreach_client_id: ""
-  outreach_client_secret: ""
-  pardot_client_id: ""
-  pardot_client_secret: ""
-  salesforce_client_id: ""
-  salesforce_client_secret: ""
-  shipbob_client_id: ""
-  shipbob_client_secret: ""
-  shopify_client_id: ""
-  shopify_client_secret: ""
-  smartsheet_client_id: ""
-  smartsheet_client_secret: ""
-  stripe_secret_key: ""
-  zendesk_client_id: ""
-  zendesk_client_secret: ""
+    # Dynamic provisioning configuration (StorageClass-based)
+    # Only used when mode=dynamic
+    dynamic:
+      # -- Storage class name (empty = cluster default)
+      storageClassName: ""
+
+  # -- Enable the embedded Vector process for log routing.
+  # Only needed for non-DaemonSet deployments (e.g. ECS) where the in-pod
+  # Vector process handles routing execution logs to S3 via a unix socket.
+  # When vector.daemonset.enabled=true, this is NOT required — the app writes
+  # structured JSON to stdout and the DaemonSet handles collection and routing.
+  embeddedVector:
+    enabled: false
+
+  # -- Kubernetes task executor scheduling configuration
+  # These settings control how Polytomic schedules dynamically created job pods
+  kubernetes:
+    # -- Node selectors for task executor pods (comma-separated key=value pairs)
+    # Format: key=value,key=value
+    # Example: "disktype=ssd,node-type=sync-worker"
+    nodeSelectors: ""
+    # -- Tolerations for task executor pods (comma-separated)
+    # Format: key:operator:value:effect,key:operator:value:effect
+    # Example: "dedicated:Equal:sync-jobs:NoSchedule,gpu:Exists::NoSchedule"
+    tolerations: ""
+
+  # Vector logging configuration
+  vector:
+    # -- Vector DaemonSet for stdout/stderr log collection
+    # Collects container logs from all Polytomic pods on each node
+    # Default: true (matches ECS behavior where polytomic_use_logger defaults to true)
+    daemonset:
+      # -- Set to false to disable DaemonSet log collection
+      # Consider disabling for:
+      # - Development environments to save resources
+      # - Cost-sensitive deployments where only business logs are needed
+      # - When using alternative cluster-wide log collection
+      # - Security/compliance restrictions on DaemonSets
+      enabled: true
+
+      # -- Image name for Vector DaemonSet (registry is set via imageRegistry).
+      # MUST use Polytomic's Vector image with ptconf for secret decryption.
+      image: polytomic-vector
+      # -- Tag for the Vector image. Defaults to image.tag when not set.
+      tag: ""
+      imagePullPolicy: IfNotPresent
+
+      # -- Label selector to filter which pods to collect logs from.
+      # Uses vector.dev/include=true which is set on all Polytomic pod templates,
+      # making collection independent of the Helm release name.
+      podLabelSelector: "vector.dev/include=true"
+
+      resources:
+        requests:
+          memory: "128Mi"
+          cpu: "100m"
+        limits:
+          memory: "256Mi"
+          cpu: "200m"
+
+      # -- Additional tolerations for the Vector DaemonSet pods.
+      # By default no tolerations are set, so Vector only runs on schedulable worker nodes.
+      # Add tolerations here if your nodes have custom taints that Polytomic pods also tolerate.
+      tolerations: []
+      # -- Node selector for Vector DaemonSet pods
+      nodeSelector: {}
+      # -- Affinity rules for Vector DaemonSet pods
+      affinity: {}
+
+      # -- ServiceAccount configuration for Vector DaemonSet
+      serviceAccount:
+        # -- Additional service account annotations (for example GKE Workload Identity)
+        annotations: {}
+        # -- IAM role ARN for IRSA (EKS only)
+        roleArn: ""
+
+    # -- Enable forwarding to Datadog Logs API
+    # When true, sets SEND_LOGS=true for both:
+    # - Embedded Vector (structured app logs)
+    # - DaemonSet Vector (stdout/stderr logs)
+    # Default: false (opt-in)
+    managedLogs: false
+
+  # Datadog Agent DaemonSet for APM and metrics collection
+  datadog:
+    daemonset:
+      # -- Enable Datadog Agent DaemonSet for APM tracing
+      # When enabled, all Polytomic pods will have DD_AGENT_HOST set to the Datadog service name,
+      # and the service routes to the local node via internalTrafficPolicy: Local.
+      enabled: false
+
+      # -- Image name for Datadog Agent DaemonSet (registry is set via imageRegistry).
+      # MUST use Polytomic's Datadog agent image with ptconf for secret decryption.
+      image: polytomic-dd-agent
+      # -- Tag for the Datadog agent image. Defaults to image.tag when not set.
+      tag: ""
+      imagePullPolicy: IfNotPresent
+
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "200m"
+        limits:
+          memory: "768Mi"
+          cpu: "500m"
+
+      # -- Enable container metrics collection (CPU, memory) via kubelet
+      containerMetrics:
+        enabled: true
+
+      # -- Enable process agent for live container monitoring
+      processAgent:
+        enabled: true
+
+      # -- Optional container filters for scoping metrics collection.
+      # Supports kube_namespace:, image:, name:, kube_label: prefixes.
+      # Example: "kube_namespace:polytomic kube_namespace:monitoring"
+      # Defaults to "kube_namespace:<release namespace>" when empty.
+      # See https://docs.datadoghq.com/containers/guide/autodiscovery-management/
+      includeContainers: ""
+      # -- Optional container exclude filter. Same syntax as includeContainers.
+      excludeContainers: ""
+
+      # -- Additional tolerations for the Datadog DaemonSet pods.
+      tolerations: []
+      # -- Node selector for Datadog DaemonSet pods
+      nodeSelector: {}
+      # -- Affinity rules for Datadog DaemonSet pods
+      affinity: {}
+
+  # -- Integration credentials
+  # Configure OAuth credentials and API keys for third-party integrations.
+  # Only non-empty values will be included in the deployment secret.
+  # Supports all integration environment variables in UPPER_CASE format.
+  #
+  # Common integrations:
+  #   SALESFORCE_CLIENT_ID / SALESFORCE_CLIENT_SECRET
+  #   HUBSPOT_CLIENT_ID / HUBSPOT_CLIENT_SECRET
+  #   GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET / GITHUB_DEPLOY_KEY
+  #   SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET
+  #   STRIPE_SECRET_KEY
+  #   GOOGLEADS_CLIENT_ID / GOOGLEADS_CLIENT_SECRET / GOOGLEADS_DEVELOPER_TOKEN
+  #   GSHEETS_API_KEY / GSHEETS_APP_ID / GSHEETS_CLIENT_ID / GSHEETS_CLIENT_SECRET
+  #   And many more - see documentation for full list
+  #
+  # Example:
+  #   integrations:
+  #     SALESFORCE_CLIENT_ID: "your-client-id"
+  #     SALESFORCE_CLIENT_SECRET: "your-client-secret"
+  #     HUBSPOT_CLIENT_ID: "your-hubspot-id"
+  #     HUBSPOT_CLIENT_SECRET: "your-hubspot-secret"
+  integrations: {}
+
+  # -- Extra environment variables to add to the Polytomic secret.
+  # These are added as-is to the secret's stringData, allowing arbitrary
+  # key-value pairs to be set without modifying the chart.
+  #
+  # Example:
+  #   extraEnv:
+  #     MY_CUSTOM_VAR: "some-value"
+  #     ANOTHER_VAR: "another-value"
+  extraEnv: {}
 
 
   # -- Telemetry
@@ -204,20 +384,98 @@ polytomic:
   tracing: false
 
 #############################################################################################
-# Convience subcharts for dependencies
+# DATABASE CONFIGURATION
+# Choose ONE option per service:
+#   1. Embedded: Set enabled=true (default, for testing/development)
+#   2. External: Set enabled=false and configure external* section
+
+# PostgreSQL Database
+# Option 1: Embedded PostgreSQL (Bitnami subchart)
 postgresql:
-  enabled: true
+  enabled: true  # Set to false to use external database
   auth:
     username: polytomic
     password: polytomic
     database: polytomic
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+  # For production embedded PostgreSQL, configure proper resources, backups, etc.
+  # See: https://artifacthub.io/packages/helm/bitnami/postgresql
 
+# Option 2: External PostgreSQL (RDS, CloudSQL, self-hosted, etc.)
+# Only used when postgresql.enabled=false
+externalPostgresql:
+  # -- External PostgreSQL host (required if postgresql.enabled=false)
+  host: ""
+  # -- External PostgreSQL port
+  port: 5432
+  # -- Database username
+  username: "polytomic"
+  # -- Database password (consider using existing secret)
+  password: ""
+  # -- Database name
+  database: "polytomic"
+  # -- Enable SSL/TLS
+  ssl: false
+  # -- SSL mode (disable, require, verify-ca, verify-full)
+  sslMode: "disable"
+  # -- Connection pool size
+  poolSize: "15"
+  # -- Idle timeout
+  idleTimeout: "5s"
+  # -- Auto-run database migrations on startup
+  autoMigrate: true
+  # -- Use existing secret for the database password (optional).
+  # If set, the password field above is ignored.
+  # The secret must exist in the same namespace as the Helm release
+  # and contain the raw password (not a connection URL).
+  existingSecret:
+    # -- Name of the existing Kubernetes secret
+    name: ""
+    # -- Key within the secret that contains the password
+    key: "postgresql-password"
+
+# Redis Cache
+# Option 1: Embedded Redis (Bitnami subchart)
 redis:
-  enabled: true
+  enabled: true  # Set to false to use external Redis
   auth:
     password: polytomic
     enabled: true
   architecture: standalone
+  master:
+    persistence:
+      enabled: true
+      size: 8Gi
+  # For production embedded Redis, configure proper resources, replicas, etc.
+  # See: https://artifacthub.io/packages/helm/bitnami/redis
+
+# Option 2: External Redis (ElastiCache, MemoryStore, self-hosted, etc.)
+# Only used when redis.enabled=false
+# Note: Redis Cluster mode is automatically detected - no special configuration required.
+# Polytomic will try cluster commands first and fall back to single-node mode if not supported.
+externalRedis:
+  # -- External Redis host (required if redis.enabled=false)
+  host: ""
+  # -- External Redis port
+  port: 6379
+  # -- Redis password (consider using existing secret)
+  password: ""
+  # -- Enable SSL/TLS
+  ssl: false
+  # -- Connection pool size (0 = unlimited)
+  poolSize: 0
+  # -- Use existing secret for the Redis password (optional).
+  # If set, the password field above is ignored.
+  # The secret must exist in the same namespace as the Helm release
+  # and contain the raw password (not a connection URL).
+  existingSecret:
+    # -- Name of the existing Kubernetes secret
+    name: ""
+    # -- Key within the secret that contains the password
+    key: "redis-password"
 
 minio:
   enabled: false
@@ -230,8 +488,8 @@ minio:
 nfs-server-provisioner:
   enabled: true
   image:
-    repository: k8s.gcr.io/sig-storage/nfs-provisioner
-    tag: v3.0.1
+    repository: registry.k8s.io/sig-storage/nfs-provisioner
+    tag: v4.0.8
 
   persistence:
     enabled: true
@@ -269,17 +527,64 @@ secret:
   # The name of the secret to use instead of generating one
   name: ""
 
+# -- Additional existing Secrets to mount as environment variables.
+# These are appended after the main secret in envFrom, so values in
+# later secrets override earlier ones.
+# Secrets are also propagated to executor (sync/bulk) jobs.
+# Note: Secrets must exist in the same namespace as the Helm release.
+#
+# Example:
+#   extraSecrets:
+#     - name: my-deployment-keys
+#     - name: my-integration-creds
+extraSecrets: []
+
+# Production hardening features (disabled by default)
+networkPolicy:
+  enabled: false
+  # Ingress controller namespace selector
+  ingressNamespaceSelector:
+    name: ingress-nginx
+  # PostgreSQL access configuration
+  postgresql:
+    # For in-cluster PostgreSQL (when postgresql.enabled=true)
+    podSelector:
+      app.kubernetes.io/name: postgresql
+    namespaceSelector:
+      kubernetes.io/metadata.name: default
+    # For external PostgreSQL (RDS, etc), uncomment and comment out podSelector above:
+    # ipBlock: "10.0.0.0/16"
+  # Redis access configuration
+  redis:
+    # For in-cluster Redis (when redis.enabled=true)
+    podSelector:
+      app.kubernetes.io/name: redis
+    namespaceSelector:
+      kubernetes.io/metadata.name: default
+    # For external Redis (ElastiCache, etc), uncomment and comment out podSelector above:
+    # ipBlock: "10.0.0.0/16"
+  # Allow HTTPS egress for external integrations
+  allowExternalHttps: true
+  # Optional: Restrict to specific CIDR ranges (empty = 0.0.0.0/0)
+  externalHttpsCidrs: []
+
+# PodDisruptionBudget - ensures minimum availability during disruptions
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  # maxUnavailable: 1  # Use either minAvailable OR maxUnavailable, not both
+
 worker:
-  replicaCount: 1
-  resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  replicaCount: 2
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
   autoscaling:
-    enabled: true
+    enabled: false  # Can be enabled if needed
     minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
@@ -289,41 +594,45 @@ worker:
   affinity: {}
   podAnnotations: {}
   podSecurityContext:
-    {}
-    # fsGroup: 2000
+    fsGroup: 2000
   securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
   sidecarContainers: []
 
 
 web:
-  replicaCount: 1
+  replicaCount: 2
   resources:
-    {}
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
   autoscaling:
     enabled: true
-    minReplicas: 1
-    maxReplicas: 100
+    minReplicas: 2
+    maxReplicas: 10
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
   nodeSelector: {}
   tolerations: []
   affinity: {}
   podAnnotations: {}
-  podSecurityContext: {}
-  securityContext: {}
+  podSecurityContext:
+    fsGroup: 2000
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
   sidecarContainers:
   # - image: busybox
   #   name: sidecar-example
@@ -336,12 +645,18 @@ web:
   #       sleep 1;
   #     done
 sync:
-  replicaCount: 1
-  resources: {}
+  replicaCount: 2
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
   autoscaling:
     enabled: true
-    minReplicas: 1
-    maxReplicas: 100
+    minReplicas: 2
+    maxReplicas: 10
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
   nodeSelector: {}
@@ -349,34 +664,129 @@ sync:
   affinity: {}
   podAnnotations: {}
   podSecurityContext:
-    {}
-    # fsGroup: 2000
+    fsGroup: 2000
   securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
   sidecarContainers: []
 
-dev:
-  resources: {}
+schemacache:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
   nodeSelector: {}
   tolerations: []
   affinity: {}
   podAnnotations: {}
   podSecurityContext:
-    {}
-    # fsGroup: 2000
+    fsGroup: 2000
   securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+  sidecarContainers: []
+
+scheduler:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 2000
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+  sidecarContainers: []
+
+jobworker:
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 2000
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+  sidecarContainers: []
+
+healthcheck:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 2000
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+  sidecarContainers: []
+
+dev:
+  enabled: false  # Development deployment disabled by default
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 2000
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
 
 development: false

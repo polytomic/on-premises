@@ -1,5 +1,13 @@
+variable "ecr_registry" {
+  description = "ECR registry base URL for all Polytomic images (e.g., 568237466542.dkr.ecr.us-east-1.amazonaws.com). Defaults to us-west-2."
+  type        = string
+  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com"
+}
+
 variable "polytomic_image" {
-  description = "The image to use for the polytomic container"
+  description = "Image name for the Polytomic container. Defaults to polytomic-onprem; override only when using a custom image."
+  type        = string
+  default     = "polytomic-onprem"
 }
 
 variable "polytomic_image_tag" {
@@ -54,7 +62,8 @@ variable "postgres_host" {
 }
 
 variable "certificate_arn" {
-  description = "The arn of the certificate to use for the polytomic deployment"
+  description = "The arn of the certificate to use for the polytomic deployment. If not provided, the ALB will listen on HTTP (port 80) only."
+  default     = ""
 }
 
 variable "subnets" {
@@ -82,4 +91,100 @@ variable "polytomic_service_account_role_arn" {
 variable "polytomic_api_key" {
   default     = ""
   description = "The api key for the polytomic deployment"
+}
+
+variable "chart_repository" {
+  description = "The Helm chart repository URL. Leave empty to use local chart."
+  type        = string
+  default     = "https://charts.polytomic.com"
+}
+
+variable "chart_version" {
+  description = "The version of the Polytomic Helm chart to install. Only used when chart_repository is set."
+  type        = string
+  default     = ""
+}
+
+variable "chart_path" {
+  description = "Path to local Helm chart. Only used when chart_repository is empty. Defaults to relative path to chart in this repository."
+  type        = string
+  default     = ""
+}
+
+variable "polytomic_logger_image" {
+  description = "Image name for the Vector DaemonSet. Defaults to polytomic-vector; override only when using a custom image."
+  type        = string
+  default     = "polytomic-vector"
+}
+
+variable "polytomic_logger_image_tag" {
+  description = "Tag for the Vector DaemonSet image. Defaults to polytomic_image_tag when not set."
+  type        = string
+  default     = null
+}
+
+variable "polytomic_use_logger" {
+  description = "Deploy Vector DaemonSet for stdout/stderr log collection. Disable to reduce costs in dev environments or if using alternative log collection. Matches ECS module variable."
+  type        = bool
+  default     = true
+}
+
+variable "polytomic_managed_logs" {
+  description = "Enable Datadog log forwarding for both embedded Vector and DaemonSet. Matches ECS module variable."
+  type        = bool
+  default     = false
+}
+
+variable "oidc_provider_arn" {
+  description = "OIDC provider ARN for IRSA (IAM Roles for Service Accounts). Required for Vector DaemonSet IAM role."
+  type        = string
+  default     = ""
+}
+
+variable "execution_log_bucket_arn" {
+  description = "ARN of the S3 bucket for execution logs. Used for Vector DaemonSet IAM permissions."
+  type        = string
+  default     = ""
+}
+
+variable "polytomic_use_dd_agent" {
+  description = "Deploy Datadog Agent DaemonSet for APM tracing. Matches ECS module variable."
+  type        = bool
+  default     = false
+}
+
+variable "polytomic_dd_agent_image" {
+  description = "Image name for the Datadog Agent DaemonSet. Defaults to polytomic-dd-agent."
+  type        = string
+  default     = "polytomic-dd-agent"
+}
+
+variable "polytomic_dd_agent_image_tag" {
+  description = "Tag for the Datadog Agent DaemonSet image. Defaults to polytomic_image_tag when not set."
+  type        = string
+  default     = null
+}
+
+variable "force_update" {
+  description = "Force Helm to update the release even if no changes are detected. Useful for CI/CD pipelines."
+  type        = bool
+  default     = false
+}
+
+variable "wait" {
+  description = "Wait for all Kubernetes resources to be ready before marking the release as successful."
+  type        = bool
+  default     = false
+}
+
+variable "timeout" {
+  description = "Timeout in seconds for waiting for resources to be ready. Only used when wait is true."
+  type        = number
+  default     = 600 # 10 minutes
+}
+
+variable "extra_helm_values" {
+  description = "Additional Helm values in raw YAML format. Merged after the module's default values, so these take precedence."
+  type        = string
+  default     = ""
 }

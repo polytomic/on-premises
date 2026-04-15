@@ -1,0 +1,17 @@
+{{- if .Values.polytomic.vector.daemonset.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "polytomic.fullname" . }}-vector
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+    app.kubernetes.io/component: vector
+subjects:
+- kind: ServiceAccount
+  name: {{ include "polytomic.fullname" . }}-vector
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "polytomic.fullname" . }}-vector
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

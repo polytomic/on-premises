@@ -1,0 +1,4 @@
+# Minimal values for ct lint / helm lint in CI.
+# Sets required fields that have no safe default.
+image:
+  tag: ci-test

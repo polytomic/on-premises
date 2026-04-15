@@ -1,79 +1,70 @@
-## 2.7.0 (3 Sept 2025)
+# Polytomic On-Premises Changelog
 
-- Updated schema cache ECS service to use the correct task definition.
+This repository contains multiple deployment components, each with its own changelog.
 
-## 2.6.0 (3 July 2025)
+## Component Changelogs
 
-- Pinned AWS module to less than v6 for compatibility with other dependencies.
+### Helm Chart
 
-## 2.5.2 (26 Jun 2025)
+See [helm/charts/polytomic/CHANGELOG.md](helm/charts/polytomic/CHANGELOG.md)
 
-- Pinned S3 bucket module to last AWS v5-compatible release.
+- **Current Version**: 1.4.0
+- **Latest Tag**: `polytomic-1.4.0`
 
-## 2.5.1 (2 Apr 2025)
+### Terraform Modules
 
-- Support for attaching deny insecure transport policy to S3 bucket.
+#### ECS Module
 
-## 2.5.0 (24 Mar 2025)
+See [terraform/modules/ecs/CHANGELOG.md](terraform/modules/ecs/CHANGELOG.md)
 
-- Isolate schema cache activity in dedicated service.
-- Increased default ephemeral storage for sync containers.
+- **Current Version**: 2.7.0
+- **Latest Tag**: `terraform/ecs/v2.7.0`
 
-## 2.4.2 (13 Jan 2025)
+#### EKS Infrastructure Module
 
-- Expose VPC ID to Fargate sync tasks.
+See [terraform/modules/eks/CHANGELOG.md](terraform/modules/eks/CHANGELOG.md)
 
-## 2.4.1 (10 Jan 2025)
+- **Current Version**: 1.0.0
+- **Latest Tag**: `terraform/eks/v1.0.0`
 
-- Expose deployment key secret into supporting containers in ECS tasks.
+#### EKS Addons Module
 
-## ~~2.4.0 (9 Jan 2025)~~
+See [terraform/modules/eks-addons/CHANGELOG.md](terraform/modules/eks-addons/CHANGELOG.md)
 
-**This release did not work correctly when managed logging is enabled; 2.4.1
-should be used instead.**
+- **Current Version**: 1.0.0
+- **Latest Tag**: `terraform/eks-addons/v1.0.0`
 
-- Secrets are stored in AWS SSM, rather than directly in the environment.
-- Removed container-specific memory reservations. These were redundant and
-  prevented overriding tasks to use a smaller memory footprint than the default.
+#### EKS Helm Deployment Module
 
-## 2.3.4 (20 Nov 2024)
+See [terraform/modules/eks-helm/CHANGELOG.md](terraform/modules/eks-helm/CHANGELOG.md)
 
-- Remove hard-coded profiling, tracing settings from ECS task definitions.
+- **Current Version**: 1.2.0
+- **Latest Tag**: `terraform/eks-helm/v1.2.0`
 
-## 2.3.3 (30 Apr 2024)
+#### GKE Infrastructure Module
 
-- Updated RDS CA Cert Identifier to `rds-ca-rsa2048-g1`.
+See [terraform/modules/gke/CHANGELOG.md](terraform/modules/gke/CHANGELOG.md)
 
-## 2.3.2 (20 Mar 2024)
+- **Current Version**: 1.1.0
+- **Latest Tag**: `terraform/gke/v1.1.0`
 
-- Explicitly allow sync execution tasks to use sts:AssumeRole.
+#### GKE Helm Deployment Module
 
-## 2.3.1 (8 Mar 2024)
+See [terraform/modules/gke-helm/CHANGELOG.md](terraform/modules/gke-helm/CHANGELOG.md)
 
-- Version lock EFS module
+- **Current Version**: 1.2.0
+- **Latest Tag**: `terraform/gke-helm/v1.2.0`
 
-## 2.3.0 (5 Mar 2024)
+## Versioning Strategy
 
-- Explicitly allow tagging of ECS resources by Polytomic containers.
+As of January 2026, this repository uses a structured monorepo versioning approach with component-specific tags. See [VERSIONING.md](VERSIONING.md) for details on our versioning and release process.
 
-## 2.2.12 (29 Jan 2024)
+### Legacy Tags
 
-- Add redundancy for web service.
+Prior to January 2026:
 
-## 2.2.8 (28 Nov 2023)
+- `polytomic-0.0.x` tags referred to Helm chart releases
+- `v1.x.x` and `v2.x.x` tags referred to ECS module releases
+- Some components had no tagged releases
 
-- Expose Datadog Agent & Logging settings to Polytomic containers.
-
-## 2.2.7 (10 Aug 2023)
-
-- Add GCS bucket resource to GKE terraform module
-- Various helm chart improvements (see polytomic-x.x.x releases for details)
-- Add support for `schemacache` role
-
-## 2.2.6 (7 Jul 2023)
-
-- Add resource `Name` tags to AWS resources in ECS module
-
-## 1.0.0 (18 May 2023)
-
-- Initial release
+All components now follow the structured tagging format described in VERSIONING.md.

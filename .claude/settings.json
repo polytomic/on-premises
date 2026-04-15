@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(helm dependency list:*)",
+      "Bash(terraform-docs markdown table:*)",
+      "Bash(git log:*)",
+      "Bash(gh release list:*)",
+      "Bash(gh release view:*)"
+    ]
+  }
+}

@@ -1,7 +1,12 @@
+locals {
+  # Use explicit bucket_name if provided, otherwise default to ${prefix}-operations
+  bucket_name = var.bucket_name != "" ? var.bucket_name : "${var.prefix}-operations"
+}
+
 module "s3_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
 
-  bucket = "${var.prefix}-${var.bucket_name}"
+  bucket = local.bucket_name
   acl    = "private"
 
   block_public_acls       = true
@@ -23,7 +28,7 @@ module "s3_bucket" {
   tags = merge(
     var.tags,
     {
-      Name = "${var.prefix}${var.bucket_name}"
+      Name = local.bucket_name
     }
   )
 }
