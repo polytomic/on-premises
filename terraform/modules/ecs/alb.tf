@@ -2,6 +2,7 @@ locals {
   lb_public_subnets  = var.vpc_id == "" ? module.vpc[0].public_subnets : var.public_subnet_ids
   lb_private_subnets = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
   lb_sgs             = length(var.load_balancer_security_groups) == 0 ? module.lb_sg.*.security_group_id : var.load_balancer_security_groups
+  mcp_host           = var.polytomic_mcp_enabled ? element(compact([trimspace(var.polytomic_mcp_host)]), 0) : ""
 }
 
 resource "aws_alb" "main" {
@@ -112,6 +113,8 @@ resource "aws_alb_listener_rule" "mcp" {
   count        = var.polytomic_mcp_enabled ? 1 : 0
   listener_arn = aws_alb_listener.http.arn
 
+  # The module does not provision an HTTPS listener for MCP, so keep the
+  # host-based rule on the HTTP listener instead of redirecting it away.
   action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.mcp[0].arn
@@ -119,7 +122,7 @@ resource "aws_alb_listener_rule" "mcp" {
 
   condition {
     host_header {
-      values = [var.polytomic_mcp_host]
+      values = [local.mcp_host]
     }
   }
 
