@@ -2,7 +2,7 @@ locals {
   lb_public_subnets  = var.vpc_id == "" ? module.vpc[0].public_subnets : var.public_subnet_ids
   lb_private_subnets = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
   lb_sgs             = length(var.load_balancer_security_groups) == 0 ? module.lb_sg.*.security_group_id : var.load_balancer_security_groups
-  mcp_host           = var.polytomic_mcp_enabled ? element(compact([trimspace(var.polytomic_mcp_host)]), 0) : ""
+  mcp_host           = trimspace(var.polytomic_mcp_host)
 }
 
 resource "aws_alb" "main" {
@@ -112,6 +112,13 @@ resource "aws_alb_target_group" "mcp" {
 resource "aws_alb_listener_rule" "mcp" {
   count        = var.polytomic_mcp_enabled ? 1 : 0
   listener_arn = aws_alb_listener.http.arn
+
+  lifecycle {
+    precondition {
+      condition     = local.mcp_host != ""
+      error_message = "polytomic_mcp_host must be set to a non-empty hostname when polytomic_mcp_enabled is true."
+    }
+  }
 
   # The module does not provision an HTTPS listener for MCP, so keep the
   # host-based rule on the HTTP listener instead of redirecting it away.
