@@ -78,10 +78,24 @@
     "name": "vector",
     "essential": true,
     "environment": [
+        %{ for key, value in env ~}
+        {
+            "name": "${key}",
+            "value": "${value}"
+        },
+        %{ endfor ~}
         {
             "name": "ROLE",
             "value": "logger"
         }
+    ],
+    "secrets": [
+%{ for key, _ in support_secrets ~}
+        {
+            "name": "${key}",
+            "valueFrom": "${task_secret_arn}:${key}::"
+        }%{ if key != keys(support_secrets)[length(keys(support_secrets)) - 1] },%{ endif }
+%{ endfor ~}
     ],
     "healthCheck": {
       "command": [
@@ -101,6 +115,12 @@
     "image": "${polytomic_dd_agent_image}",
     "essential": true,
     "environment": [
+        %{ for key, value in env ~}
+        {
+        "name": "${key}",
+        "value": "${value}"
+        },
+        %{ endfor ~}
         {
             "name": "DD_API_KEY",
             "value": "ENC[DD_API_KEY]"
@@ -125,6 +145,14 @@
             "name": "ECS_FARGATE",
             "value": "true"
         }
+    ],
+    "secrets": [
+%{ for key, _ in support_secrets ~}
+        {
+            "name": "${key}",
+            "valueFrom": "${task_secret_arn}:${key}::"
+        }%{ if key != keys(support_secrets)[length(keys(support_secrets)) - 1] },%{ endif }
+%{ endfor ~}
     ]
 }
  %{ endif }

@@ -437,12 +437,15 @@ resource "aws_ecs_task_definition" "mcp" {
       mcp_image                 = var.polytomic_mcp_image
       mcp_log_group             = module.ecs_log_groups["mcp"].cloudwatch_log_group_name
       region                    = var.region
+      env                       = local.environment.env
       polytomic_url             = var.polytomic_url == "" ? "http://${aws_alb.main.dns_name}/" : local.parsed_polytomic_url.scheme == null ? "https://${var.polytomic_url}" : var.polytomic_url
       polytomic_mcp_api_version = var.polytomic_mcp_api_version
       polytomic_logger          = var.polytomic_use_logger
       polytomic_logger_image    = var.polytomic_logger_image
       polytomic_dd_agent        = var.polytomic_use_dd_agent
       polytomic_dd_agent_image  = var.polytomic_dd_agent_image
+      support_secrets           = local.environment.support_secrets
+      task_secret_arn           = local.environment.task_secret_arn
     }
   )
 }
