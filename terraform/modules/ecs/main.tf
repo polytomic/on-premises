@@ -53,6 +53,8 @@ locals {
     FARGATE_EXECUTOR_SUBNETS            = join(",", var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids),
     GA_MEASUREMENT_ID                   = var.polytomic_ga_measurement_id,
     GOOGLE_CLIENT_ID                    = var.polytomic_google_client_id,
+    INGEST_EXECUTOR_CPU                 = var.polytomic_resource_ingest_cpu,
+    INGEST_EXECUTOR_MEMORY_RESERVATION  = var.polytomic_resource_ingest_memory,
     JOB_PAYLOAD_PATH                    = "${var.polytomic_data_path}/jobs",
     LEGACY_CONFIG                       = var.polytomic_legacy_config
     LOCAL_DATA                          = var.polytomic_data_path != "",
