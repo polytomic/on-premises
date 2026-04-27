@@ -2,8 +2,10 @@ locals {
   project_id = "project"
   region     = "us-east1"
 
-  # The domain/hostname where Polytomic will be accessed
-  # After deployment, create a DNS A record pointing this domain to the load balancer IP
+  # The domain/hostname where Polytomic will be accessed. Must match the
+  # polytomic_url passed to the cluster module so the managed SSL cert
+  # provisioned there covers this hostname. After deployment, create a DNS
+  # A record pointing this domain to the load balancer IP.
   url = "polytomic.example.com"
 
   polytomic_deployment           = "deployment"
@@ -49,7 +51,7 @@ data "google_container_cluster" "my_cluster" {
 module "gke_helm" {
   source = "github.com/polytomic/on-premises/terraform/modules/gke-helm"
 
-  polytomic_cert_name            = google_compute_managed_ssl_certificate.cert.name
+  polytomic_cert_name            = data.terraform_remote_state.gke.outputs.cert_name
   polytomic_ip_name              = data.terraform_remote_state.gke.outputs.load_balancer_name
   polytomic_url                  = local.url
   polytomic_deployment           = local.polytomic_deployment
@@ -69,6 +71,16 @@ module "gke_helm" {
   polytomic_service_account      = data.terraform_remote_state.gke.outputs.workload_identity_user_sa
   polytomic_google_client_id     = local.polytomic_google_client_id
   polytomic_google_client_secret = local.polytomic_google_client_secret
+
+  # Optional: deploy the Polytomic MCP server.
+  # Set polytomic_mcp_url on the cluster module to provision a static IP and
+  # managed SSL cert for the MCP host, then wire them in here:
+  #
+  # polytomic_mcp_enabled         = true
+  # polytomic_mcp_ingress_enabled = true
+  # polytomic_mcp_url             = "mcp.polytomic.example.com"
+  # polytomic_mcp_cert_name       = data.terraform_remote_state.gke.outputs.mcp_cert_name
+  # polytomic_mcp_ip_name         = data.terraform_remote_state.gke.outputs.mcp_load_balancer_name
 
   # Vector DaemonSet log collection (enabled by default)
   # By default, the DaemonSet reuses the main workload identity service account.
@@ -92,16 +104,12 @@ module "gke_helm" {
   # EOT
 }
 
-resource "google_compute_managed_ssl_certificate" "cert" {
-  name    = "polytomic-cert"
-  project = local.project_id
-
-  managed {
-    domains = ["${local.url}."]
-  }
-}
-
 # After deployment:
 # 1. Get the load balancer IP from the cluster outputs
 # 2. Create a DNS A record pointing your domain to the load balancer IP
 # 3. Wait for the managed SSL certificate to be provisioned (can take up to 60 minutes)
+#
+# To bring your own SSL certificate instead of letting the cluster module
+# provision one, set create_managed_certificate = false on the gke module
+# and pass polytomic_cert_name with the name of your own
+# google_compute_managed_ssl_certificate (or compatible) resource.

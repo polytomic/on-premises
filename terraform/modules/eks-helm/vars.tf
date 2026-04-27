@@ -165,6 +165,54 @@ variable "polytomic_dd_agent_image_tag" {
   default     = null
 }
 
+variable "polytomic_mcp_enabled" {
+  description = "Deploy the Polytomic MCP server."
+  type        = bool
+  default     = false
+}
+
+variable "polytomic_mcp_image" {
+  description = "Image name for the MCP server (registry is set via ecr_registry)."
+  type        = string
+  default     = "polytomic-mcp"
+}
+
+variable "polytomic_mcp_image_tag" {
+  description = "Tag for the MCP server image. Defaults to polytomic_image_tag when not set."
+  type        = string
+  default     = null
+}
+
+variable "polytomic_mcp_replica_count" {
+  description = "Number of MCP server replicas."
+  type        = number
+  default     = 1
+}
+
+variable "polytomic_mcp_api_version" {
+  description = "Polytomic API version for the MCP server."
+  type        = string
+  default     = "2025-09-18"
+}
+
+variable "polytomic_mcp_ingress_enabled" {
+  description = "Expose the MCP server via a separate ALB ingress. Requires polytomic_mcp_url."
+  type        = bool
+  default     = false
+}
+
+variable "polytomic_mcp_url" {
+  description = "Hostname for the MCP ingress (e.g., mcp.polytomic.example.com). Required when polytomic_mcp_ingress_enabled is true."
+  type        = string
+  default     = ""
+}
+
+variable "polytomic_mcp_certificate_arn" {
+  description = "ACM certificate ARN for the MCP ingress ALB. If empty, the ALB listens on HTTP only."
+  type        = string
+  default     = ""
+}
+
 variable "force_update" {
   description = "Force Helm to update the release even if no changes are detected. Useful for CI/CD pipelines."
   type        = bool

@@ -14,7 +14,7 @@ locals {
   polytomic_image                = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem"
   polytomic_image_tag            = "latest"
   polytomic_root_user            = "user@example.com"
-  polytomic_api_key              = ""  # Optional: Polytomic API key
+  polytomic_api_key              = "" # Optional: Polytomic API key
   polytomic_google_client_id     = "google-client-id"
   polytomic_google_client_secret = "google-client-secret"
 }
@@ -97,6 +97,16 @@ module "eks_helm" {
   polytomic_bucket_region            = local.region
   efs_id                             = data.terraform_remote_state.eks.outputs.filesystem_id
   polytomic_service_account_role_arn = module.addons.polytomic_role_arn
+
+  # Optional: deploy the Polytomic MCP server.
+  # Set polytomic_mcp_ingress_enabled = true to expose it on a separate ALB
+  # at the polytomic_mcp_url hostname. Provide polytomic_mcp_certificate_arn
+  # to terminate TLS on that ALB; otherwise it will listen on HTTP only.
+  #
+  # polytomic_mcp_enabled          = true
+  # polytomic_mcp_ingress_enabled  = true
+  # polytomic_mcp_url              = "mcp.polytomic-staging.net"
+  # polytomic_mcp_certificate_arn  = "arn:aws:acm:us-east-2:123456789:certificate/your-mcp-cert-id"
 
   depends_on = [
     module.addons

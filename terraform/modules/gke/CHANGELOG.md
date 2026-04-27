@@ -5,6 +5,18 @@ All notable changes to the GKE infrastructure module will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Managed SSL certificate provisioning**: The module now provisions a Google-managed SSL certificate alongside the static IP, removing the need for callers to declare a `google_compute_managed_ssl_certificate` resource in their root config.
+  - `polytomic_url` variable (default `""`): hostname for the main Polytomic deployment.
+  - `create_managed_certificate` variable (default `true`): set to `false` to bring your own cert.
+  - `cert_name` output: name of the provisioned managed cert (empty when not created).
+- **Optional MCP ingress resources**: When `polytomic_mcp_url` is set, the module provisions a second global static IP and (when `create_managed_certificate = true`) a managed SSL certificate for the MCP host.
+  - `polytomic_mcp_url` variable (default `""`).
+  - `mcp_lb_ip`, `mcp_lb_name`, `mcp_cert_name` outputs.
+
 ## [1.1.0] - 2026-04-07
 
 This release brings the GKE module in sync with the EKS module (v1.1.0), upgrading all

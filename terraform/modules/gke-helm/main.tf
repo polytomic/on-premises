@@ -6,6 +6,8 @@ locals {
   # Use explicit logger tag if provided, otherwise match the main Polytomic image tag
   vector_image_tag             = coalesce(var.polytomic_logger_image_tag, var.polytomic_image_tag)
   vector_service_account_email = coalesce(var.polytomic_logger_service_account, var.polytomic_service_account)
+
+  mcp_image_tag = coalesce(var.polytomic_mcp_image_tag, var.polytomic_image_tag)
 }
 
 resource "helm_release" "polytomic" {
@@ -96,6 +98,26 @@ polytomic:
     size: 20Gi
     dynamic:
       storageClassName: nfs
+
+mcp:
+  enabled: ${var.polytomic_mcp_enabled}
+  replicaCount: ${var.polytomic_mcp_replica_count}
+  apiVersion: "${var.polytomic_mcp_api_version}"
+  image:
+    repository: ${var.polytomic_mcp_image}
+    tag: ${local.mcp_image_tag}
+  ingress:
+    enabled: ${var.polytomic_mcp_ingress_enabled}
+    className: gce
+    annotations:
+      kubernetes.io/ingress.class: gce
+      ingress.gcp.kubernetes.io/pre-shared-cert: '${var.polytomic_mcp_cert_name}'
+      kubernetes.io/ingress.global-static-ip-name: '${var.polytomic_mcp_ip_name}'
+    hosts:
+      - host: ${var.polytomic_mcp_url}
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
 
 # Disable embedded databases - use external Cloud SQL and MemoryStore
 postgresql:

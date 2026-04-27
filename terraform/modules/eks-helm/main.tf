@@ -5,6 +5,8 @@ locals {
 
   # Use explicit logger tag if provided, otherwise match the main Polytomic image tag
   vector_image_tag = coalesce(var.polytomic_logger_image_tag, var.polytomic_image_tag)
+
+  mcp_image_tag = coalesce(var.polytomic_mcp_image_tag, var.polytomic_image_tag)
 }
 
 resource "helm_release" "polytomic" {
@@ -91,6 +93,31 @@ polytomic:
     static:
       driver: efs.csi.aws.com
       volumeHandle: ${var.efs_id}
+
+mcp:
+  enabled: ${var.polytomic_mcp_enabled}
+  replicaCount: ${var.polytomic_mcp_replica_count}
+  apiVersion: "${var.polytomic_mcp_api_version}"
+  image:
+    repository: ${var.polytomic_mcp_image}
+    tag: ${local.mcp_image_tag}
+  ingress:
+    enabled: ${var.polytomic_mcp_ingress_enabled}
+    className: alb
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: 'ip'
+      alb.ingress.kubernetes.io/subnets: "${var.subnets}"
+      alb.ingress.kubernetes.io/listen-ports: '${var.polytomic_mcp_certificate_arn != "" ? "[{\"HTTPS\":443}]" : "[{\"HTTP\":80}]"}'
+      ${var.polytomic_mcp_certificate_arn != "" ? "alb.ingress.kubernetes.io/certificate-arn: '${var.polytomic_mcp_certificate_arn}'" : "# certificate-arn not configured - using HTTP only"}
+      alb.ingress.kubernetes.io/ip-address-type: ipv4
+      alb.ingress.kubernetes.io/inbound-cidrs: 0.0.0.0/0
+    hosts:
+      - host: ${var.polytomic_mcp_url}
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
 
 # Disable embedded databases - use external RDS and ElastiCache
 postgresql:

@@ -187,6 +187,62 @@ variable "polytomic_dd_agent_image_tag" {
   default     = null
 }
 
+# MCP server
+
+variable "polytomic_mcp_enabled" {
+  description = "Deploy the Polytomic MCP server."
+  type        = bool
+  default     = false
+}
+
+variable "polytomic_mcp_image" {
+  description = "Image name for the MCP server (registry is set via image_registry)."
+  type        = string
+  default     = "polytomic-mcp"
+}
+
+variable "polytomic_mcp_image_tag" {
+  description = "Tag for the MCP server image. Defaults to polytomic_image_tag when not set."
+  type        = string
+  default     = null
+}
+
+variable "polytomic_mcp_replica_count" {
+  description = "Number of MCP server replicas."
+  type        = number
+  default     = 1
+}
+
+variable "polytomic_mcp_api_version" {
+  description = "Polytomic API version for the MCP server."
+  type        = string
+  default     = "2025-09-18"
+}
+
+variable "polytomic_mcp_ingress_enabled" {
+  description = "Expose the MCP server via a separate GKE ingress. Requires polytomic_mcp_url, polytomic_mcp_cert_name, and polytomic_mcp_ip_name."
+  type        = bool
+  default     = false
+}
+
+variable "polytomic_mcp_url" {
+  description = "Hostname for the MCP ingress (e.g., mcp.polytomic.example.com). Required when polytomic_mcp_ingress_enabled is true."
+  type        = string
+  default     = ""
+}
+
+variable "polytomic_mcp_cert_name" {
+  description = "Name of the GCP managed SSL certificate for the MCP ingress. Required when polytomic_mcp_ingress_enabled is true."
+  type        = string
+  default     = ""
+}
+
+variable "polytomic_mcp_ip_name" {
+  description = "Name of the GCP global static IP for the MCP ingress. Required when polytomic_mcp_ingress_enabled is true."
+  type        = string
+  default     = ""
+}
+
 # Helm release behavior
 
 variable "force_update" {

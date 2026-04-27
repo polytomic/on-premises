@@ -67,6 +67,36 @@ resource "google_compute_global_address" "load_balancer" {
   labels  = var.labels
 }
 
+resource "google_compute_managed_ssl_certificate" "polytomic" {
+  count = var.create_managed_certificate && var.polytomic_url != "" ? 1 : 0
+
+  name    = "${var.prefix}-cert"
+  project = var.project_id
+
+  managed {
+    domains = ["${var.polytomic_url}."]
+  }
+}
+
+resource "google_compute_global_address" "mcp" {
+  count = var.polytomic_mcp_url != "" ? 1 : 0
+
+  name    = "${var.prefix}-mcp-load-balancer"
+  project = var.project_id
+  labels  = var.labels
+}
+
+resource "google_compute_managed_ssl_certificate" "mcp" {
+  count = var.create_managed_certificate && var.polytomic_mcp_url != "" ? 1 : 0
+
+  name    = "${var.prefix}-mcp-cert"
+  project = var.project_id
+
+  managed {
+    domains = ["${var.polytomic_mcp_url}."]
+  }
+}
+
 
 module "memorystore" {
   count = var.create_redis ? 1 : 0

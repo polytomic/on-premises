@@ -18,6 +18,26 @@ output "load_balancer_name" {
   value       = module.gke.lb_name
 }
 
+output "cert_name" {
+  description = "Managed SSL certificate name for the main Polytomic host"
+  value       = module.gke.cert_name
+}
+
+output "mcp_load_balancer_ip" {
+  description = "MCP load balancer IP"
+  value       = module.gke.mcp_lb_ip
+}
+
+output "mcp_load_balancer_name" {
+  description = "MCP load balancer name"
+  value       = module.gke.mcp_lb_name
+}
+
+output "mcp_cert_name" {
+  description = "Managed SSL certificate name for the MCP host"
+  value       = module.gke.mcp_cert_name
+}
+
 output "cluster_sa" {
   description = "Cluster service account"
   value       = module.gke_cluster_service_account.email

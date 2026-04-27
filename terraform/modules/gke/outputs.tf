@@ -18,6 +18,26 @@ output "lb_name" {
   value       = google_compute_global_address.load_balancer.name
 }
 
+output "cert_name" {
+  description = "Name of the managed SSL certificate for the main Polytomic host. Empty when create_managed_certificate is false or polytomic_url is unset."
+  value       = length(google_compute_managed_ssl_certificate.polytomic) > 0 ? google_compute_managed_ssl_certificate.polytomic[0].name : ""
+}
+
+output "mcp_lb_ip" {
+  description = "MCP load balancer IP address. Empty when polytomic_mcp_url is unset."
+  value       = length(google_compute_global_address.mcp) > 0 ? google_compute_global_address.mcp[0].address : ""
+}
+
+output "mcp_lb_name" {
+  description = "MCP load balancer IP name. Empty when polytomic_mcp_url is unset."
+  value       = length(google_compute_global_address.mcp) > 0 ? google_compute_global_address.mcp[0].name : ""
+}
+
+output "mcp_cert_name" {
+  description = "Name of the managed SSL certificate for the MCP host. Empty when create_managed_certificate is false or polytomic_mcp_url is unset."
+  value       = length(google_compute_managed_ssl_certificate.mcp) > 0 ? google_compute_managed_ssl_certificate.mcp[0].name : ""
+}
+
 output "network_name" {
   description = "VPC network name"
   value       = module.gcp_network.network_name

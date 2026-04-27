@@ -10,7 +10,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | >= 6.0, < 8.0.0 |
+| <a name="provider_google"></a> [google](#provider\_google) | 6.50.0 |
 
 ## Modules
 
@@ -26,7 +26,10 @@
 | Name | Type |
 |------|------|
 | [google_compute_global_address.load_balancer](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_global_address) | resource |
+| [google_compute_global_address.mcp](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_global_address) | resource |
 | [google_compute_global_address.private_ip_address](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_global_address) | resource |
+| [google_compute_managed_ssl_certificate.mcp](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_managed_ssl_certificate) | resource |
+| [google_compute_managed_ssl_certificate.polytomic](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_managed_ssl_certificate) | resource |
 | [google_compute_network_peering_routes_config.peering_routes](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering_routes_config) | resource |
 | [google_compute_router.router](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_router) | resource |
 | [google_compute_router_nat.nat](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_router_nat) | resource |
@@ -44,6 +47,7 @@
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The GCS bucket name to use. Must be globally unique. | `string` | `""` | no |
 | <a name="input_cluster_deletion_protection"></a> [cluster\_deletion\_protection](#input\_cluster\_deletion\_protection) | Whether to enable deletion protection on the GKE cluster | `bool` | `true` | no |
 | <a name="input_cluster_service_account"></a> [cluster\_service\_account](#input\_cluster\_service\_account) | The service account to use for the cluster | `string` | n/a | yes |
+| <a name="input_create_managed_certificate"></a> [create\_managed\_certificate](#input\_create\_managed\_certificate) | Provision Google-managed SSL certificates for polytomic\_url and (when set) polytomic\_mcp\_url. Set to false to bring your own certs. | `bool` | `true` | no |
 | <a name="input_create_postgres"></a> [create\_postgres](#input\_create\_postgres) | Whether to create a Cloud SQL PostgreSQL instance | `bool` | `true` | no |
 | <a name="input_create_redis"></a> [create\_redis](#input\_create\_redis) | Whether to create a Memorystore Redis instance | `bool` | `true` | no |
 | <a name="input_database_availability_type"></a> [database\_availability\_type](#input\_database\_availability\_type) | Availability type for Cloud SQL (REGIONAL for HA, ZONAL for single zone) | `string` | `"REGIONAL"` | no |
@@ -66,6 +70,8 @@
 | <a name="input_logger_workload_identity_sa"></a> [logger\_workload\_identity\_sa](#input\_logger\_workload\_identity\_sa) | Optional email of a dedicated logger workload identity service account that should also receive bucket write access | `string` | `""` | no |
 | <a name="input_max_size"></a> [max\_size](#input\_max\_size) | Maximum number of nodes in the node pool | `number` | `4` | no |
 | <a name="input_min_size"></a> [min\_size](#input\_min\_size) | Minimum number of nodes in the node pool | `number` | `2` | no |
+| <a name="input_polytomic_mcp_url"></a> [polytomic\_mcp\_url](#input\_polytomic\_mcp\_url) | Optional hostname for the MCP server (e.g., mcp.polytomic.example.com). When set, a separate global static IP is provisioned, and a managed SSL certificate when create\_managed\_certificate is true. | `string` | `""` | no |
+| <a name="input_polytomic_url"></a> [polytomic\_url](#input\_polytomic\_url) | Hostname for the main Polytomic deployment (e.g., polytomic.example.com). Used to provision a Google-managed SSL certificate when create\_managed\_certificate is true. | `string` | `""` | no |
 | <a name="input_postgres_instance_tier"></a> [postgres\_instance\_tier](#input\_postgres\_instance\_tier) | The tier (machine type) of the Cloud SQL instance | `string` | `"db-custom-2-7680"` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix for all resource names | `string` | `"polytomic"` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The GCP project ID to host the cluster in | `string` | n/a | yes |
@@ -83,11 +89,15 @@
 | Name | Description |
 |------|-------------|
 | <a name="output_bucket"></a> [bucket](#output\_bucket) | GCS bucket name |
+| <a name="output_cert_name"></a> [cert\_name](#output\_cert\_name) | Name of the managed SSL certificate for the main Polytomic host. Empty when create\_managed\_certificate is false or polytomic\_url is unset. |
 | <a name="output_cluster_name"></a> [cluster\_name](#output\_cluster\_name) | GKE cluster name |
 | <a name="output_database_name"></a> [database\_name](#output\_database\_name) | Configured PostgreSQL database name |
 | <a name="output_database_username"></a> [database\_username](#output\_database\_username) | Configured PostgreSQL database username |
 | <a name="output_lb_ip"></a> [lb\_ip](#output\_lb\_ip) | Load balancer IP address |
 | <a name="output_lb_name"></a> [lb\_name](#output\_lb\_name) | Load balancer IP name |
+| <a name="output_mcp_cert_name"></a> [mcp\_cert\_name](#output\_mcp\_cert\_name) | Name of the managed SSL certificate for the MCP host. Empty when create\_managed\_certificate is false or polytomic\_mcp\_url is unset. |
+| <a name="output_mcp_lb_ip"></a> [mcp\_lb\_ip](#output\_mcp\_lb\_ip) | MCP load balancer IP address. Empty when polytomic\_mcp\_url is unset. |
+| <a name="output_mcp_lb_name"></a> [mcp\_lb\_name](#output\_mcp\_lb\_name) | MCP load balancer IP name. Empty when polytomic\_mcp\_url is unset. |
 | <a name="output_network_id"></a> [network\_id](#output\_network\_id) | VPC network ID |
 | <a name="output_network_name"></a> [network\_name](#output\_network\_name) | VPC network name |
 | <a name="output_postgres_host"></a> [postgres\_host](#output\_postgres\_host) | PostgreSQL instance connection name |

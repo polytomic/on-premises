@@ -9,8 +9,8 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.42.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | 3.1.1 |
 
 ## Modules
 
@@ -54,6 +54,14 @@
 | <a name="input_polytomic_logger_image"></a> [polytomic\_logger\_image](#input\_polytomic\_logger\_image) | Image name for the Vector DaemonSet. Defaults to polytomic-vector; override only when using a custom image. | `string` | `"polytomic-vector"` | no |
 | <a name="input_polytomic_logger_image_tag"></a> [polytomic\_logger\_image\_tag](#input\_polytomic\_logger\_image\_tag) | Tag for the Vector DaemonSet image. Defaults to polytomic\_image\_tag when not set. | `string` | `null` | no |
 | <a name="input_polytomic_managed_logs"></a> [polytomic\_managed\_logs](#input\_polytomic\_managed\_logs) | Enable Datadog log forwarding for both embedded Vector and DaemonSet. Matches ECS module variable. | `bool` | `false` | no |
+| <a name="input_polytomic_mcp_api_version"></a> [polytomic\_mcp\_api\_version](#input\_polytomic\_mcp\_api\_version) | Polytomic API version for the MCP server. | `string` | `"2025-09-18"` | no |
+| <a name="input_polytomic_mcp_certificate_arn"></a> [polytomic\_mcp\_certificate\_arn](#input\_polytomic\_mcp\_certificate\_arn) | ACM certificate ARN for the MCP ingress ALB. If empty, the ALB listens on HTTP only. | `string` | `""` | no |
+| <a name="input_polytomic_mcp_enabled"></a> [polytomic\_mcp\_enabled](#input\_polytomic\_mcp\_enabled) | Deploy the Polytomic MCP server. | `bool` | `false` | no |
+| <a name="input_polytomic_mcp_image"></a> [polytomic\_mcp\_image](#input\_polytomic\_mcp\_image) | Image name for the MCP server (registry is set via ecr\_registry). | `string` | `"polytomic-mcp"` | no |
+| <a name="input_polytomic_mcp_image_tag"></a> [polytomic\_mcp\_image\_tag](#input\_polytomic\_mcp\_image\_tag) | Tag for the MCP server image. Defaults to polytomic\_image\_tag when not set. | `string` | `null` | no |
+| <a name="input_polytomic_mcp_ingress_enabled"></a> [polytomic\_mcp\_ingress\_enabled](#input\_polytomic\_mcp\_ingress\_enabled) | Expose the MCP server via a separate ALB ingress. Requires polytomic\_mcp\_url. | `bool` | `false` | no |
+| <a name="input_polytomic_mcp_replica_count"></a> [polytomic\_mcp\_replica\_count](#input\_polytomic\_mcp\_replica\_count) | Number of MCP server replicas. | `number` | `1` | no |
+| <a name="input_polytomic_mcp_url"></a> [polytomic\_mcp\_url](#input\_polytomic\_mcp\_url) | Hostname for the MCP ingress (e.g., mcp.polytomic.example.com). Required when polytomic\_mcp\_ingress\_enabled is true. | `string` | `""` | no |
 | <a name="input_polytomic_root_user"></a> [polytomic\_root\_user](#input\_polytomic\_root\_user) | The root user for the polytomic deployment | `string` | `"root"` | no |
 | <a name="input_polytomic_service_account_role_arn"></a> [polytomic\_service\_account\_role\_arn](#input\_polytomic\_service\_account\_role\_arn) | ARN of the role to use for the polytomic deployment service account | `any` | n/a | yes |
 | <a name="input_polytomic_url"></a> [polytomic\_url](#input\_polytomic\_url) | The url for the polytomic deployment | `any` | n/a | yes |

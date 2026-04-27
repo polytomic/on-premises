@@ -9,7 +9,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | 3.1.1 |
 
 ## Modules
 
@@ -49,6 +49,15 @@ No modules.
 | <a name="input_polytomic_logger_image_tag"></a> [polytomic\_logger\_image\_tag](#input\_polytomic\_logger\_image\_tag) | Tag for the Vector DaemonSet image. Defaults to polytomic\_image\_tag when not set. | `string` | `null` | no |
 | <a name="input_polytomic_logger_service_account"></a> [polytomic\_logger\_service\_account](#input\_polytomic\_logger\_service\_account) | Optional GCP service account email for Vector DaemonSet Workload Identity. Defaults to polytomic\_service\_account when unset. | `string` | `null` | no |
 | <a name="input_polytomic_managed_logs"></a> [polytomic\_managed\_logs](#input\_polytomic\_managed\_logs) | Enable Datadog log forwarding for both embedded Vector and DaemonSet. | `bool` | `false` | no |
+| <a name="input_polytomic_mcp_api_version"></a> [polytomic\_mcp\_api\_version](#input\_polytomic\_mcp\_api\_version) | Polytomic API version for the MCP server. | `string` | `"2025-09-18"` | no |
+| <a name="input_polytomic_mcp_cert_name"></a> [polytomic\_mcp\_cert\_name](#input\_polytomic\_mcp\_cert\_name) | Name of the GCP managed SSL certificate for the MCP ingress. Required when polytomic\_mcp\_ingress\_enabled is true. | `string` | `""` | no |
+| <a name="input_polytomic_mcp_enabled"></a> [polytomic\_mcp\_enabled](#input\_polytomic\_mcp\_enabled) | Deploy the Polytomic MCP server. | `bool` | `false` | no |
+| <a name="input_polytomic_mcp_image"></a> [polytomic\_mcp\_image](#input\_polytomic\_mcp\_image) | Image name for the MCP server (registry is set via image\_registry). | `string` | `"polytomic-mcp"` | no |
+| <a name="input_polytomic_mcp_image_tag"></a> [polytomic\_mcp\_image\_tag](#input\_polytomic\_mcp\_image\_tag) | Tag for the MCP server image. Defaults to polytomic\_image\_tag when not set. | `string` | `null` | no |
+| <a name="input_polytomic_mcp_ingress_enabled"></a> [polytomic\_mcp\_ingress\_enabled](#input\_polytomic\_mcp\_ingress\_enabled) | Expose the MCP server via a separate GKE ingress. Requires polytomic\_mcp\_url, polytomic\_mcp\_cert\_name, and polytomic\_mcp\_ip\_name. | `bool` | `false` | no |
+| <a name="input_polytomic_mcp_ip_name"></a> [polytomic\_mcp\_ip\_name](#input\_polytomic\_mcp\_ip\_name) | Name of the GCP global static IP for the MCP ingress. Required when polytomic\_mcp\_ingress\_enabled is true. | `string` | `""` | no |
+| <a name="input_polytomic_mcp_replica_count"></a> [polytomic\_mcp\_replica\_count](#input\_polytomic\_mcp\_replica\_count) | Number of MCP server replicas. | `number` | `1` | no |
+| <a name="input_polytomic_mcp_url"></a> [polytomic\_mcp\_url](#input\_polytomic\_mcp\_url) | Hostname for the MCP ingress (e.g., mcp.polytomic.example.com). Required when polytomic\_mcp\_ingress\_enabled is true. | `string` | `""` | no |
 | <a name="input_polytomic_root_user"></a> [polytomic\_root\_user](#input\_polytomic\_root\_user) | The root user for the polytomic deployment | `string` | `"root"` | no |
 | <a name="input_polytomic_service_account"></a> [polytomic\_service\_account](#input\_polytomic\_service\_account) | GCP service account email for Workload Identity annotation on the Polytomic pods | `string` | n/a | yes |
 | <a name="input_polytomic_url"></a> [polytomic\_url](#input\_polytomic\_url) | The url for the polytomic deployment (hostname only, e.g., polytomic.example.com) | `string` | n/a | yes |

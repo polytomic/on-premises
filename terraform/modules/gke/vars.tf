@@ -26,6 +26,26 @@ variable "cluster_service_account" {
   type        = string
 }
 
+# Ingress / TLS
+
+variable "polytomic_url" {
+  description = "Hostname for the main Polytomic deployment (e.g., polytomic.example.com). Used to provision a Google-managed SSL certificate when create_managed_certificate is true."
+  type        = string
+  default     = ""
+}
+
+variable "polytomic_mcp_url" {
+  description = "Optional hostname for the MCP server (e.g., mcp.polytomic.example.com). When set, a separate global static IP is provisioned, and a managed SSL certificate when create_managed_certificate is true."
+  type        = string
+  default     = ""
+}
+
+variable "create_managed_certificate" {
+  description = "Provision Google-managed SSL certificates for polytomic_url and (when set) polytomic_mcp_url. Set to false to bring your own certs."
+  type        = bool
+  default     = true
+}
+
 # Networking
 
 variable "ip_range_pods_name" {

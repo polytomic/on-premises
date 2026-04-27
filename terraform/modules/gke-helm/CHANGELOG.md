@@ -5,6 +5,19 @@ All notable changes to the GKE Helm deployment module will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **MCP server support**: Variables to enable and configure the Polytomic MCP server deployment, matching the support added to the ECS module in chart v1.4.0.
+  - `polytomic_mcp_enabled` (default: `false`): Enables the MCP server deployment.
+  - `polytomic_mcp_image` (default: `polytomic-mcp`): Image name for the MCP server.
+  - `polytomic_mcp_image_tag` (default: inherits `polytomic_image_tag`): Tag for the MCP image.
+  - `polytomic_mcp_replica_count` (default: `1`): Number of MCP replicas.
+  - `polytomic_mcp_api_version` (default: `2025-09-18`): Polytomic API version for MCP.
+  - `polytomic_mcp_ingress_enabled` (default: `false`): Expose MCP via a separate GKE ingress.
+  - `polytomic_mcp_url`, `polytomic_mcp_cert_name`, `polytomic_mcp_ip_name`: Hostname, GCP managed SSL cert, and global static IP for the MCP ingress.
+
 ## [1.2.0] - 2026-04-07
 
 This release brings the GKE Helm module in sync with the EKS Helm module (v1.2.0),
