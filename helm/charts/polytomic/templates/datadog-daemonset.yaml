@@ -33,6 +33,17 @@ spec:
         - containerPort: 8125
           name: dogstatsd
           protocol: UDP
+        envFrom:
+        - secretRef:
+            {{- if .Values.secret.name }}
+            name: {{ .Values.secret.name }}
+            {{- else }}
+            name: {{ include "polytomic.fullname" . }}-config
+            {{- end }}
+        {{- range .Values.extraSecrets }}
+        - secretRef:
+            name: {{ .name }}
+        {{- end }}
         env:
         # Datadog secret backend configuration (uses ptctl from custom image)
         - name: DD_API_KEY
@@ -93,25 +104,7 @@ spec:
         - name: DD_CONTAINER_EXCLUDE
           value: {{ .Values.polytomic.datadog.daemonset.excludeContainers | quote }}
         {{- end }}
-        # Required for ptconf secret resolution
-        - name: DEPLOYMENT
-          valueFrom:
-            secretKeyRef:
-              {{- if .Values.secret.name }}
-              name: {{ .Values.secret.name }}
-              {{- else }}
-              name: {{ include "polytomic.fullname" . }}-config
-              {{- end }}
-              key: DEPLOYMENT
-        - name: DEPLOYMENT_KEY
-          valueFrom:
-            secretKeyRef:
-              {{- if .Values.secret.name }}
-              name: {{ .Values.secret.name }}
-              {{- else }}
-              name: {{ include "polytomic.fullname" . }}-config
-              {{- end }}
-              key: DEPLOYMENT_KEY
+        # DEPLOYMENT and DEPLOYMENT_KEY are provided via envFrom above
         {{- if .Values.polytomic.datadog.daemonset.containerMetrics.enabled }}
         volumeMounts:
         - name: cgroups
