@@ -112,8 +112,8 @@ module "gke_helm" {
   # extra_helm_values = <<-EOT
   #   polytomic:
   #     integrations:
-  #       REDDITADS_CLIENT_ID: "your-reddit-client-id"
-  #       REDDITADS_CLIENT_SECRET: "your-reddit-client-secret"
+  #       REDDIT_APPLICATION_ID: "your-reddit-app-id"
+  #       REDDIT_CLIENT_SECRET: "your-reddit-client-secret"
   # EOT
 }
 
