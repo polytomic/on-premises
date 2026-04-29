@@ -102,6 +102,19 @@ module "gke_helm" {
   #   worker:
   #     replicas: 3
   # EOT
+
+  # Optional: Extra environment variables for the Polytomic deployment.
+  # Use polytomic.integrations for OAuth/API credentials (UPPER_CASE keys
+  # are added to the deployment secret), or polytomic.extraEnv for arbitrary
+  # key/value pairs.
+  #
+  # Example: wire Reddit Ads OAuth credentials.
+  # extra_helm_values = <<-EOT
+  #   polytomic:
+  #     integrations:
+  #       REDDITADS_CLIENT_ID: "your-reddit-client-id"
+  #       REDDITADS_CLIENT_SECRET: "your-reddit-client-secret"
+  # EOT
 }
 
 # After deployment:
