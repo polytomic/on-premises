@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.0] - 2026-04-27
 
+> **Pinning this version:** this release is tagged `terraform/gke-helm/v1.3.0`. Terraform's `git::` source handler requires the slashes to be URL-encoded as `%2F` in the `ref=` value, e.g. `?ref=terraform%2Fgke-helm%2Fv1.3.0`. Future releases use the slash-free format `gke-helm-v<version>` and do not require encoding. See [VERSIONING.md](../../../VERSIONING.md).
+
 ### Added
 
 - **MCP server support**: Variables to enable and configure the Polytomic MCP server deployment, matching the support added to the ECS module in chart v1.4.0.

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.0] - 2026-04-27
 
+> **Pinning this version:** this release is tagged `terraform/gke/v1.2.0`. Terraform's `git::` source handler requires the slashes to be URL-encoded as `%2F` in the `ref=` value, e.g. `?ref=terraform%2Fgke%2Fv1.2.0`. Future releases use the slash-free format `gke-v<version>` and do not require encoding. See [VERSIONING.md](../../../VERSIONING.md).
+
 ### Added
 
 - **Managed SSL certificate provisioning**: The module now provisions a Google-managed SSL certificate alongside the static IP, removing the need for callers to declare a `google_compute_managed_ssl_certificate` resource in their root config.

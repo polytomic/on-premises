@@ -1,7 +1,5 @@
 # Versioning and Release Strategy
 
-**Adopted**: January 20, 2026
-
 This repository uses component-specific tags for releases. Each Terraform module and the Helm chart are versioned independently.
 
 ## Tag Format
@@ -10,24 +8,50 @@ This repository uses component-specific tags for releases. Each Terraform module
 Tags follow the pattern: `polytomic-<version>` (required by chart-releaser)
 
 **Terraform Modules:**
-Tags follow the pattern: `terraform/<module>/v<version>`
+Tags follow the pattern: `<module>-v<version>`
 
 **Examples:**
 ```
 polytomic-1.0.2
-terraform/ecs/v2.7.0
-terraform/eks/v1.0.0
-terraform/gke/v1.0.0
+ecs-v2.9.0
+eks-v1.2.0
+gke-v1.3.0
 ```
 
 **Component prefixes:**
 - `polytomic-` - Helm chart (no v prefix)
-- `terraform/ecs/` - ECS module
-- `terraform/eks/` - EKS module
-- `terraform/eks-addons/` - EKS addons module
-- `terraform/eks-helm/` - EKS Helm deployment module
-- `terraform/gke/` - GKE module
-- `terraform/gke-helm/` - GKE Helm deployment module
+- `ecs-v` - ECS module
+- `eks-v` - EKS module
+- `eks-addons-v` - EKS addons module
+- `eks-helm-v` - EKS Helm deployment module
+- `gke-v` - GKE module
+- `gke-helm-v` - GKE Helm deployment module
+
+### Legacy tag format
+
+Terraform module tags created before this change used a slash-separated path:
+
+```
+terraform/<module>/v<version>
+```
+
+For example: `terraform/ecs/v2.8.0`, `terraform/gke-helm/v1.3.0`.
+
+These tags are still valid and continue to resolve. However, Terraform's `git::` source handler passes the `ref` value through `go-getter`, which parses unencoded slashes as additional URL path segments and fails the lookup. Consumers pinning a legacy tag must URL-encode the slashes as `%2F`:
+
+```hcl
+module "polytomic" {
+  source = "git::https://github.com/polytomic/on-premises.git//terraform/modules/ecs?ref=terraform%2Fecs%2Fv2.8.0"
+}
+```
+
+New releases use the slash-free format above and do not require encoding:
+
+```hcl
+module "polytomic" {
+  source = "git::https://github.com/polytomic/on-premises.git//terraform/modules/ecs?ref=ecs-v2.9.0"
+}
+```
 
 ## Semantic Versioning
 
@@ -92,9 +116,21 @@ git push origin master
 ```
 
 ## 5. For Terraform only: Create and push tag
+
+Use the Makefile target in `terraform/`:
+
 ```bash
-git tag -a terraform/eks/v1.2.0 -m "Release EKS module v1.2.0"
-git push origin terraform/eks/v1.2.0
+cd terraform
+make release-tag MODULE=eks VERSION=1.2.0
+```
+
+This validates that you're on `master` with a clean tree, that the version appears in the module's CHANGELOG, creates the annotated tag in the `<module>-v<version>` format, and pushes it to `origin`.
+
+To create the tag manually:
+
+```bash
+git tag -a eks-v1.2.0 -m "Release EKS module v1.2.0"
+git push origin eks-v1.2.0
 ```
 
 ## 6. Update root CHANGELOG.md
@@ -102,7 +138,7 @@ Update the version number for your component:
 ```markdown
 #### EKS Infrastructure Module
 - **Current Version**: 1.2.0  ← Update this
-- **Latest Tag**: `terraform/eks/v1.2.0`  ← Update this
+- **Latest Tag**: `eks-v1.2.0`  ← Update this
 ```
 
 Commit and push:
@@ -126,13 +162,14 @@ Done!
 
 ```bash
 # What changed since last release?
-git log terraform/eks/v1.0.0..HEAD -- terraform/modules/eks/
+git log eks-v1.0.0..HEAD -- terraform/modules/eks/
 
 # See existing tags
-git tag -l "terraform/eks/*"
+git tag -l "eks-v*"
+git tag -l "terraform/eks/*"      # legacy
 git tag -l "polytomic-*"
 
 # Delete a tag (if you messed up)
-git tag -d terraform/eks/v1.2.0
-git push origin :refs/tags/terraform/eks/v1.2.0
+git tag -d eks-v1.2.0
+git push origin :refs/tags/eks-v1.2.0
 ```
