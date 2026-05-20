@@ -193,9 +193,9 @@ module "polytomic-ecs" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.27.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | 3.2.2 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.0, < 6.0.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 3.0 |
 
 ## Resources
 
@@ -316,7 +316,7 @@ module "polytomic-ecs" {
 | <a name="input_log_retention_days"></a> [log\_retention\_days](#input\_log\_retention\_days) | Cloudwatch log retention days | `number` | `120` | no |
 | <a name="input_polytomic_bootstrap"></a> [polytomic\_bootstrap](#input\_polytomic\_bootstrap) | Whether to bootstrap Polytomic | `bool` | `false` | no |
 | <a name="input_polytomic_data_path"></a> [polytomic\_data\_path](#input\_polytomic\_data\_path) | Filesystem path to local data cache | `string` | `"/var/polytomic"` | no |
-| <a name="input_polytomic_dd_agent_image"></a> [polytomic\_dd\_agent\_image](#input\_polytomic\_dd\_agent\_image) | Docker image to use for the Datadog agent | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-dd-agent:latest"` | no |
+| <a name="input_polytomic_dd_agent_image"></a> [polytomic\_dd\_agent\_image](#input\_polytomic\_dd\_agent\_image) | Override URI for the Datadog agent sidecar container. Defaults to <polytomic\_image\_registry>/polytomic-dd-agent:<polytomic\_image\_tag>. | `string` | `""` | no |
 | <a name="input_polytomic_deployment"></a> [polytomic\_deployment](#input\_polytomic\_deployment) | A unique identifier for your on premises deploy, provided by Polytomic | `string` | `""` | no |
 | <a name="input_polytomic_deployment_api_key"></a> [polytomic\_deployment\_api\_key](#input\_polytomic\_deployment\_api\_key) | API key used to authenticate with the Polytomic management API | `string` | `""` | no |
 | <a name="input_polytomic_deployment_key"></a> [polytomic\_deployment\_key](#input\_polytomic\_deployment\_key) | The license key for your deployment, provided by Polytomic | `string` | `""` | no |
@@ -325,10 +325,12 @@ module "polytomic-ecs" {
 | <a name="input_polytomic_ga_measurement_id"></a> [polytomic\_ga\_measurement\_id](#input\_polytomic\_ga\_measurement\_id) | Google Analytics Measurement ID | `string` | `""` | no |
 | <a name="input_polytomic_google_client_id"></a> [polytomic\_google\_client\_id](#input\_polytomic\_google\_client\_id) | Google OAuth Client ID, obtained by creating a OAuth 2.0 Client ID | `string` | `""` | no |
 | <a name="input_polytomic_google_client_secret"></a> [polytomic\_google\_client\_secret](#input\_polytomic\_google\_client\_secret) | Google OAuth Client Secret, obtained by creating a OAuth 2.0 Client ID | `string` | `""` | no |
-| <a name="input_polytomic_image"></a> [polytomic\_image](#input\_polytomic\_image) | Docker image to use for the Polytomic ECS cluster | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"` | no |
+| <a name="input_polytomic_image"></a> [polytomic\_image](#input\_polytomic\_image) | Override URI for the Polytomic app container. Defaults to <polytomic\_image\_registry>/polytomic-onprem:<polytomic\_image\_tag>. | `string` | `""` | no |
+| <a name="input_polytomic_image_registry"></a> [polytomic\_image\_registry](#input\_polytomic\_image\_registry) | Container registry that hosts the Polytomic images. Combined with polytomic\_image\_tag to compose the default image URIs for the app, logger (Vector), and Datadog agent containers. Override the individual *\_image variables to opt out of this composition. | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com"` | no |
+| <a name="input_polytomic_image_tag"></a> [polytomic\_image\_tag](#input\_polytomic\_image\_tag) | Tag applied to the Polytomic app, logger, and Datadog agent images. A single release tag (e.g. "rel2026.05.15") moves all three containers together; override individual *\_image variables for fine-grained control. | `string` | `"latest"` | no |
 | <a name="input_polytomic_legacy_config"></a> [polytomic\_legacy\_config](#input\_polytomic\_legacy\_config) | Use legacy configuration | `bool` | `false` | no |
 | <a name="input_polytomic_log_level"></a> [polytomic\_log\_level](#input\_polytomic\_log\_level) | The log level to use for Polytomic | `string` | `"info"` | no |
-| <a name="input_polytomic_logger_image"></a> [polytomic\_logger\_image](#input\_polytomic\_logger\_image) | Docker image to use for the Polytomic log aggregator | `string` | `"568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest"` | no |
+| <a name="input_polytomic_logger_image"></a> [polytomic\_logger\_image](#input\_polytomic\_logger\_image) | Override URI for the Polytomic Vector (log aggregator) sidecar container. Defaults to <polytomic\_image\_registry>/polytomic-vector:<polytomic\_image\_tag>. | `string` | `""` | no |
 | <a name="input_polytomic_managed_logs"></a> [polytomic\_managed\_logs](#input\_polytomic\_managed\_logs) | Use managed logs | `bool` | `false` | no |
 | <a name="input_polytomic_mcp_api_version"></a> [polytomic\_mcp\_api\_version](#input\_polytomic\_mcp\_api\_version) | Polytomic API version for the MCP server | `string` | `"2025-09-18"` | no |
 | <a name="input_polytomic_mcp_enabled"></a> [polytomic\_mcp\_enabled](#input\_polytomic\_mcp\_enabled) | Enable the MCP server service | `bool` | `false` | no |

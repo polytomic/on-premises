@@ -10,9 +10,19 @@ variable "aws_profile" {
   description = "AWS profile to use"
 }
 
+variable "polytomic_image_registry" {
+  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com"
+  description = "Container registry that hosts the Polytomic images. Combined with polytomic_image_tag to compose the default image URIs for the app, logger (Vector), and Datadog agent containers. Override the individual *_image variables to opt out of this composition."
+}
+
+variable "polytomic_image_tag" {
+  default     = "latest"
+  description = "Tag applied to the Polytomic app, logger, and Datadog agent images. A single release tag (e.g. \"rel2026.05.15\") moves all three containers together; override individual *_image variables for fine-grained control."
+}
+
 variable "polytomic_image" {
-  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"
-  description = "Docker image to use for the Polytomic ECS cluster"
+  default     = ""
+  description = "Override URI for the Polytomic app container. Defaults to <polytomic_image_registry>/polytomic-onprem:<polytomic_image_tag>."
 }
 
 variable "polytomic_single_player" {
@@ -208,8 +218,8 @@ variable "polytomic_use_logger" {
 }
 
 variable "polytomic_logger_image" {
-  description = "Docker image to use for the Polytomic log aggregator"
-  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-vector:latest"
+  description = "Override URI for the Polytomic Vector (log aggregator) sidecar container. Defaults to <polytomic_image_registry>/polytomic-vector:<polytomic_image_tag>."
+  default     = ""
 }
 
 variable "polytomic_use_dd_agent" {
@@ -218,8 +228,8 @@ variable "polytomic_use_dd_agent" {
 }
 
 variable "polytomic_dd_agent_image" {
-  description = "Docker image to use for the Datadog agent"
-  default     = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-dd-agent:latest"
+  description = "Override URI for the Datadog agent sidecar container. Defaults to <polytomic_image_registry>/polytomic-dd-agent:<polytomic_image_tag>."
+  default     = ""
 }
 
 variable "polytomic_mcp_enabled" {
