@@ -34,6 +34,13 @@ locals {
   alert_emails               = var.alert_emails == [] ? [local.monitoring_email] : concat(var.alert_emails, [local.monitoring_email])
   parsed_polytomic_url       = regex("(?:(?P<scheme>[^:/?#]+):)?(?://(?P<authority>[^/?#]*))?(?P<path>[^?#]*)(?:\\?(?P<query>[^#]*))?(?:#(?P<fragment>.*))?", var.polytomic_url)
 
+  # Image URIs. Each var.polytomic_*_image acts as an opt-out override; when
+  # unset the registry+tag pair composes the default. A single release tag
+  # (var.polytomic_image_tag) moves all three containers together, matching
+  # how the release pipeline (release-onprem.yml) tags everything at once.
+  polytomic_image          = var.polytomic_image != "" ? var.polytomic_image : "${var.polytomic_image_registry}/polytomic-onprem:${var.polytomic_image_tag}"
+  polytomic_logger_image   = var.polytomic_logger_image != "" ? var.polytomic_logger_image : "${var.polytomic_image_registry}/polytomic-vector:${var.polytomic_image_tag}"
+  polytomic_dd_agent_image = var.polytomic_dd_agent_image != "" ? var.polytomic_dd_agent_image : "${var.polytomic_image_registry}/polytomic-dd-agent:${var.polytomic_image_tag}"
 
   standard_env_vars = {
     AWS_REGION                          = var.region,
@@ -82,9 +89,9 @@ locals {
     WORKOS_CLIENT_ID                    = var.polytomic_workos_client_id,
 
     POLYTOMIC_DD_AGENT       = var.polytomic_use_dd_agent,
-    POLYTOMIC_DD_AGENT_IMAGE = var.polytomic_dd_agent_image
+    POLYTOMIC_DD_AGENT_IMAGE = local.polytomic_dd_agent_image
     POLYTOMIC_LOGGER         = var.polytomic_use_logger,
-    POLYTOMIC_LOGGER_IMAGE   = var.polytomic_logger_image,
+    POLYTOMIC_LOGGER_IMAGE   = local.polytomic_logger_image,
 
     RUST_BACKTRACE = 1
   }
@@ -96,15 +103,15 @@ locals {
     scheduler_memory       = var.polytomic_resource_scheduler_memory
     schemacache_memory     = var.polytomic_resource_schemacache_memory
     ingest_memory          = var.polytomic_resource_ingest_memory
-    image                  = var.polytomic_image,
+    image                  = local.polytomic_image,
     region                 = var.region,
     polytomic_port         = var.polytomic_port,
     mount_path             = var.polytomic_data_path,
     polytomic_logger       = var.polytomic_use_logger
-    polytomic_logger_image = var.polytomic_logger_image,
+    polytomic_logger_image = local.polytomic_logger_image,
 
     polytomic_dd_agent       = var.polytomic_use_dd_agent,
-    polytomic_dd_agent_image = var.polytomic_dd_agent_image,
+    polytomic_dd_agent_image = local.polytomic_dd_agent_image,
 
     env     = merge(local.standard_env_vars, var.extra_environment)
     secrets = merge(local.deployment_secrets, local.standard_secrets, var.extra_secrets)
