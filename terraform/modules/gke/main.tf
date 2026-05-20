@@ -41,8 +41,9 @@ module "gke" {
   ip_range_pods     = var.ip_range_pods_name
   ip_range_services = var.ip_range_services_name
 
-  deletion_protection = var.cluster_deletion_protection
-  service_account     = var.cluster_service_account
+  deletion_protection    = var.cluster_deletion_protection
+  service_account        = var.cluster_service_account
+  create_service_account = var.create_cluster_service_account
 
   node_pools = [
     {
