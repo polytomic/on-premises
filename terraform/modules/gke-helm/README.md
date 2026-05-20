@@ -2,7 +2,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0 |
 
 ## Providers
@@ -35,7 +35,8 @@ No modules.
 | <a name="input_image_registry"></a> [image\_registry](#input\_image\_registry) | Container image registry for all Polytomic images (e.g., us.gcr.io/polytomic-container-distro or us-docker.pkg.dev/project/repo). Equivalent to imageRegistry in the Helm chart. | `string` | n/a | yes |
 | <a name="input_polytomic_api_key"></a> [polytomic\_api\_key](#input\_polytomic\_api\_key) | The api key for the polytomic deployment | `string` | `""` | no |
 | <a name="input_polytomic_bucket"></a> [polytomic\_bucket](#input\_polytomic\_bucket) | The GCS bucket name for operational data | `string` | n/a | yes |
-| <a name="input_polytomic_cert_name"></a> [polytomic\_cert\_name](#input\_polytomic\_cert\_name) | The name of the GCP managed SSL certificate for ingress | `string` | n/a | yes |
+| <a name="input_polytomic_cert_name"></a> [polytomic\_cert\_name](#input\_polytomic\_cert\_name) | Name of the legacy GCP managed SSL certificate (google\_compute\_managed\_ssl\_certificate) for the main ingress. Ignored when polytomic\_certmap\_name is set; required otherwise. | `string` | `""` | no |
+| <a name="input_polytomic_certmap_name"></a> [polytomic\_certmap\_name](#input\_polytomic\_certmap\_name) | Name of a Certificate Manager certificate map (google\_certificate\_manager\_certificate\_map) covering polytomic\_url. When set, the ingress is annotated with networking.gke.io/certmap=<name> instead of the legacy ingress.gcp.kubernetes.io/pre-shared-cert annotation, so a single shared/wildcard cert can serve many ingresses with no per-deployment provisioning wait. Leave empty to keep the legacy per-deployment pre-shared-cert behavior. | `string` | `""` | no |
 | <a name="input_polytomic_dd_agent_image"></a> [polytomic\_dd\_agent\_image](#input\_polytomic\_dd\_agent\_image) | Image name for the Datadog Agent DaemonSet. | `string` | `"polytomic-dd-agent"` | no |
 | <a name="input_polytomic_dd_agent_image_tag"></a> [polytomic\_dd\_agent\_image\_tag](#input\_polytomic\_dd\_agent\_image\_tag) | Tag for the Datadog Agent DaemonSet image. Defaults to polytomic\_image\_tag when not set. | `string` | `null` | no |
 | <a name="input_polytomic_deployment"></a> [polytomic\_deployment](#input\_polytomic\_deployment) | The name of the polytomic deployment | `string` | n/a | yes |
@@ -50,11 +51,12 @@ No modules.
 | <a name="input_polytomic_logger_service_account"></a> [polytomic\_logger\_service\_account](#input\_polytomic\_logger\_service\_account) | Optional GCP service account email for Vector DaemonSet Workload Identity. Defaults to polytomic\_service\_account when unset. | `string` | `null` | no |
 | <a name="input_polytomic_managed_logs"></a> [polytomic\_managed\_logs](#input\_polytomic\_managed\_logs) | Enable Datadog log forwarding for both embedded Vector and DaemonSet. | `bool` | `false` | no |
 | <a name="input_polytomic_mcp_api_version"></a> [polytomic\_mcp\_api\_version](#input\_polytomic\_mcp\_api\_version) | Polytomic API version for the MCP server. | `string` | `"2025-09-18"` | no |
-| <a name="input_polytomic_mcp_cert_name"></a> [polytomic\_mcp\_cert\_name](#input\_polytomic\_mcp\_cert\_name) | Name of the GCP managed SSL certificate for the MCP ingress. Required when polytomic\_mcp\_ingress\_enabled is true. | `string` | `""` | no |
+| <a name="input_polytomic_mcp_cert_name"></a> [polytomic\_mcp\_cert\_name](#input\_polytomic\_mcp\_cert\_name) | Name of the legacy GCP managed SSL certificate for the MCP ingress. Ignored when polytomic\_mcp\_certmap\_name is set; required otherwise when polytomic\_mcp\_ingress\_enabled is true. | `string` | `""` | no |
+| <a name="input_polytomic_mcp_certmap_name"></a> [polytomic\_mcp\_certmap\_name](#input\_polytomic\_mcp\_certmap\_name) | Name of a Certificate Manager certificate map covering polytomic\_mcp\_url. Mirrors polytomic\_certmap\_name for the MCP ingress. | `string` | `""` | no |
 | <a name="input_polytomic_mcp_enabled"></a> [polytomic\_mcp\_enabled](#input\_polytomic\_mcp\_enabled) | Deploy the Polytomic MCP server. | `bool` | `false` | no |
 | <a name="input_polytomic_mcp_image"></a> [polytomic\_mcp\_image](#input\_polytomic\_mcp\_image) | Image name for the MCP server (registry is set via image\_registry). | `string` | `"polytomic-mcp"` | no |
 | <a name="input_polytomic_mcp_image_tag"></a> [polytomic\_mcp\_image\_tag](#input\_polytomic\_mcp\_image\_tag) | Tag for the MCP server image. Defaults to polytomic\_image\_tag when not set. | `string` | `null` | no |
-| <a name="input_polytomic_mcp_ingress_enabled"></a> [polytomic\_mcp\_ingress\_enabled](#input\_polytomic\_mcp\_ingress\_enabled) | Expose the MCP server via a separate GKE ingress. Requires polytomic\_mcp\_url, polytomic\_mcp\_cert\_name, and polytomic\_mcp\_ip\_name. | `bool` | `false` | no |
+| <a name="input_polytomic_mcp_ingress_enabled"></a> [polytomic\_mcp\_ingress\_enabled](#input\_polytomic\_mcp\_ingress\_enabled) | Expose the MCP server via a separate GKE ingress. Requires polytomic\_mcp\_url, polytomic\_mcp\_ip\_name, and either polytomic\_mcp\_certmap\_name or polytomic\_mcp\_cert\_name. | `bool` | `false` | no |
 | <a name="input_polytomic_mcp_ip_name"></a> [polytomic\_mcp\_ip\_name](#input\_polytomic\_mcp\_ip\_name) | Name of the GCP global static IP for the MCP ingress. Required when polytomic\_mcp\_ingress\_enabled is true. | `string` | `""` | no |
 | <a name="input_polytomic_mcp_replica_count"></a> [polytomic\_mcp\_replica\_count](#input\_polytomic\_mcp\_replica\_count) | Number of MCP server replicas. | `number` | `1` | no |
 | <a name="input_polytomic_mcp_url"></a> [polytomic\_mcp\_url](#input\_polytomic\_mcp\_url) | Hostname for the MCP ingress (e.g., mcp.polytomic.example.com). Required when polytomic\_mcp\_ingress\_enabled is true. | `string` | `""` | no |

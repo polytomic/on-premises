@@ -37,8 +37,15 @@ variable "polytomic_url" {
 }
 
 variable "polytomic_cert_name" {
-  description = "The name of the GCP managed SSL certificate for ingress"
+  description = "Name of the legacy GCP managed SSL certificate (google_compute_managed_ssl_certificate) for the main ingress. Ignored when polytomic_certmap_name is set; required otherwise."
   type        = string
+  default     = ""
+}
+
+variable "polytomic_certmap_name" {
+  description = "Name of a Certificate Manager certificate map (google_certificate_manager_certificate_map) covering polytomic_url. When set, the ingress is annotated with networking.gke.io/certmap=<name> instead of the legacy ingress.gcp.kubernetes.io/pre-shared-cert annotation, so a single shared/wildcard cert can serve many ingresses with no per-deployment provisioning wait. Leave empty to keep the legacy per-deployment pre-shared-cert behavior."
+  type        = string
+  default     = ""
 }
 
 variable "polytomic_ip_name" {
@@ -220,7 +227,7 @@ variable "polytomic_mcp_api_version" {
 }
 
 variable "polytomic_mcp_ingress_enabled" {
-  description = "Expose the MCP server via a separate GKE ingress. Requires polytomic_mcp_url, polytomic_mcp_cert_name, and polytomic_mcp_ip_name."
+  description = "Expose the MCP server via a separate GKE ingress. Requires polytomic_mcp_url, polytomic_mcp_ip_name, and either polytomic_mcp_certmap_name or polytomic_mcp_cert_name."
   type        = bool
   default     = false
 }
@@ -232,7 +239,13 @@ variable "polytomic_mcp_url" {
 }
 
 variable "polytomic_mcp_cert_name" {
-  description = "Name of the GCP managed SSL certificate for the MCP ingress. Required when polytomic_mcp_ingress_enabled is true."
+  description = "Name of the legacy GCP managed SSL certificate for the MCP ingress. Ignored when polytomic_mcp_certmap_name is set; required otherwise when polytomic_mcp_ingress_enabled is true."
+  type        = string
+  default     = ""
+}
+
+variable "polytomic_mcp_certmap_name" {
+  description = "Name of a Certificate Manager certificate map covering polytomic_mcp_url. Mirrors polytomic_certmap_name for the MCP ingress."
   type        = string
   default     = ""
 }
