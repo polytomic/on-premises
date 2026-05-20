@@ -1,5 +1,7 @@
 ## 2.8.0 (15 Apr 2026)
 
+> **Pinning this version:** this release is tagged `terraform/ecs/v2.8.0`. Terraform's `git::` source handler requires the slashes to be URL-encoded as `%2F` in the `ref=` value, e.g. `?ref=terraform%2Fecs%2Fv2.8.0`. Future releases use the slash-free format `ecs-v<version>` and do not require encoding. See [VERSIONING.md](../../../VERSIONING.md).
+
 ### Added
 
 - MCP server task definition, ECS service, ALB target group/listener rule, and associated variables for deploying the Polytomic MCP server on premises (#135).
