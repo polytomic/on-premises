@@ -5,6 +5,12 @@ All notable changes to the GKE infrastructure module will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `create_cluster_service_account` variable (default `true`): opt out of the upstream `kubernetes-engine` module's cluster SA creation. Set to `false` when reusing a pre-bootstrapped node SA across many cluster workspaces in a single project, where the default would otherwise leave a dangling `tf-gke-*` SA per apply and require `iam.serviceAccountAdmin` on the project. Default preserves prior behavior.
+
 ## [1.2.0] - 2026-04-27
 
 > **Pinning this version:** this release is tagged `terraform/gke/v1.2.0`. Terraform's `git::` source handler requires the slashes to be URL-encoded as `%2F` in the `ref=` value, e.g. `?ref=terraform%2Fgke%2Fv1.2.0`. Future releases use the slash-free format `gke-v<version>` and do not require encoding. See [VERSIONING.md](../../../VERSIONING.md).

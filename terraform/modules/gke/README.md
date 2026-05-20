@@ -10,7 +10,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | >= 6.0, < 8.0.0 |
+| <a name="provider_google"></a> [google](#provider\_google) | 6.50.0 |
 
 ## Modules
 
@@ -46,7 +46,8 @@
 |------|-------------|------|---------|:--------:|
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The GCS bucket name to use. Must be globally unique. | `string` | `""` | no |
 | <a name="input_cluster_deletion_protection"></a> [cluster\_deletion\_protection](#input\_cluster\_deletion\_protection) | Whether to enable deletion protection on the GKE cluster | `bool` | `true` | no |
-| <a name="input_cluster_service_account"></a> [cluster\_service\_account](#input\_cluster\_service\_account) | The service account to use for the cluster | `string` | n/a | yes |
+| <a name="input_cluster_service_account"></a> [cluster\_service\_account](#input\_cluster\_service\_account) | Email of the service account the cluster's nodes run as. Required, and always used by the node pools regardless of create\_cluster\_service\_account. | `string` | n/a | yes |
+| <a name="input_create_cluster_service_account"></a> [create\_cluster\_service\_account](#input\_create\_cluster\_service\_account) | Whether to also have the upstream kubernetes-engine module create a tf-gke-* service account in project\_id during apply. Default true matches that module's default behavior; the created SA dangles unused because cluster\_service\_account is the one actually bound to the node pools. Set to false when the deploy identity lacks iam.serviceAccountAdmin on the project, or when sharing one pre-bootstrapped node SA across many cluster workspaces in a single project. | `bool` | `true` | no |
 | <a name="input_create_managed_certificate"></a> [create\_managed\_certificate](#input\_create\_managed\_certificate) | Provision Google-managed SSL certificates for polytomic\_url and (when set) polytomic\_mcp\_url. Set to false to bring your own certs. | `bool` | `true` | no |
 | <a name="input_create_postgres"></a> [create\_postgres](#input\_create\_postgres) | Whether to create a Cloud SQL PostgreSQL instance | `bool` | `true` | no |
 | <a name="input_create_redis"></a> [create\_redis](#input\_create\_redis) | Whether to create a Memorystore Redis instance | `bool` | `true` | no |
