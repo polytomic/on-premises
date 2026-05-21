@@ -9,7 +9,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | 3.1.1 |
 
 ## Modules
 
@@ -73,4 +73,9 @@ No modules.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_chart_version"></a> [chart\_version](#output\_chart\_version) | Deployed Helm chart version |
+| <a name="output_release_name"></a> [release\_name](#output\_release\_name) | Helm release name |
+| <a name="output_release_namespace"></a> [release\_namespace](#output\_release\_namespace) | Kubernetes namespace for the Helm release |
+| <a name="output_url"></a> [url](#output\_url) | Full Polytomic URL |

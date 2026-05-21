@@ -8,8 +8,8 @@ This repository contains multiple deployment components, each with its own chang
 
 See [helm/charts/polytomic/CHANGELOG.md](helm/charts/polytomic/CHANGELOG.md)
 
-- **Current Version**: 1.5.0
-- **Latest Tag**: `polytomic-1.5.0`
+- **Current Version**: 1.5.2
+- **Latest Tag**: `polytomic-1.5.2`
 
 ### Terraform Modules
 
@@ -17,15 +17,15 @@ See [helm/charts/polytomic/CHANGELOG.md](helm/charts/polytomic/CHANGELOG.md)
 
 See [terraform/modules/ecs/CHANGELOG.md](terraform/modules/ecs/CHANGELOG.md)
 
-- **Current Version**: 2.8.0
-- **Latest Tag**: `terraform/ecs/v2.8.0`
+- **Current Version**: 2.9.0
+- **Latest Tag**: `ecs-v2.9.0`
 
 #### EKS Infrastructure Module
 
 See [terraform/modules/eks/CHANGELOG.md](terraform/modules/eks/CHANGELOG.md)
 
-- **Current Version**: 1.0.0
-- **Latest Tag**: `terraform/eks/v1.0.0`
+- **Current Version**: 1.1.0
+- **Latest Tag**: `terraform/eks/v1.1.0`
 
 #### EKS Addons Module
 
@@ -38,22 +38,22 @@ See [terraform/modules/eks-addons/CHANGELOG.md](terraform/modules/eks-addons/CHA
 
 See [terraform/modules/eks-helm/CHANGELOG.md](terraform/modules/eks-helm/CHANGELOG.md)
 
-- **Current Version**: 1.3.0
-- **Latest Tag**: `terraform/eks-helm/v1.3.0`
+- **Current Version**: 1.4.0
+- **Latest Tag**: `terraform/eks-helm/v1.4.0`
 
 #### GKE Infrastructure Module
 
 See [terraform/modules/gke/CHANGELOG.md](terraform/modules/gke/CHANGELOG.md)
 
-- **Current Version**: 1.1.0
-- **Latest Tag**: `terraform/gke/v1.1.0`
+- **Current Version**: 1.3.0
+- **Latest Tag**: `gke-v1.3.0`
 
 #### GKE Helm Deployment Module
 
 See [terraform/modules/gke-helm/CHANGELOG.md](terraform/modules/gke-helm/CHANGELOG.md)
 
-- **Current Version**: 1.2.0
-- **Latest Tag**: `terraform/gke-helm/v1.2.0`
+- **Current Version**: 1.3.0
+- **Latest Tag**: `terraform/gke-helm/v1.3.0`
 
 ## Versioning Strategy
 
