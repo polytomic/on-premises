@@ -533,10 +533,16 @@ data:
 {{- end }}
 
 {{- if .Values.polytomic.vector.managedLogs }}
+    # Record logs may carry customer payload data and must never reach Datadog;
+    # route only non-record events through the Datadog sink.
+    [transforms.datadog_eligible]
+    type = "filter"
+    inputs = [ "parse" ]
+    condition = '!exists(.record_log)'
 
     [transforms.datadog_metadata]
     type = "remap"
-    inputs = [ "parse" ]
+    inputs = [ "datadog_eligible" ]
     source = """
     .deployment = get_env_var!("DEPLOYMENT")
     .ddsource = get_env_var!("DEPLOYMENT")
