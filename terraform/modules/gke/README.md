@@ -61,6 +61,7 @@
 | <a name="input_database_maintenance_window_day"></a> [database\_maintenance\_window\_day](#input\_database\_maintenance\_window\_day) | Day of the week for maintenance window (1=Mon, 7=Sun) | `number` | `7` | no |
 | <a name="input_database_maintenance_window_hour"></a> [database\_maintenance\_window\_hour](#input\_database\_maintenance\_window\_hour) | Hour of the day for maintenance window (0-23) | `number` | `0` | no |
 | <a name="input_database_name"></a> [database\_name](#input\_database\_name) | Name of the database to create | `string` | `"polytomic"` | no |
+| <a name="input_database_user_deletion_policy"></a> [database\_user\_deletion\_policy](#input\_database\_user\_deletion\_policy) | Deletion policy for the default Cloud SQL user. Set to "ABANDON" to skip the DROP USER API call on destroy; the user is removed along with the instance. Useful when the role owns objects (e.g. autoMigrate-created tables) that would otherwise block teardown. | `string` | `null` | no |
 | <a name="input_database_username"></a> [database\_username](#input\_database\_username) | Username for the database | `string` | `"polytomic"` | no |
 | <a name="input_database_version"></a> [database\_version](#input\_database\_version) | Cloud SQL database version | `string` | `"POSTGRES_17"` | no |
 | <a name="input_desired_size"></a> [desired\_size](#input\_desired\_size) | Initial number of nodes in the node pool | `number` | `3` | no |

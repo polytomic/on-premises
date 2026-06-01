@@ -142,6 +142,17 @@ variable "database_deletion_protection" {
   default     = true
 }
 
+variable "database_user_deletion_policy" {
+  description = "Deletion policy for the default Cloud SQL user. Set to \"ABANDON\" to skip the DROP USER API call on destroy; the user is removed along with the instance. Useful when the role owns objects (e.g. autoMigrate-created tables) that would otherwise block teardown."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.database_user_deletion_policy == null || var.database_user_deletion_policy == "ABANDON"
+    error_message = "database_user_deletion_policy must be null or \"ABANDON\"."
+  }
+}
+
 variable "database_backup_retention" {
   description = "Number of backups to retain"
   type        = number

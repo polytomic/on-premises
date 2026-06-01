@@ -186,9 +186,10 @@ module "postgres" {
     transaction_log_retention_days = null
   }
 
-  db_name     = var.database_name
-  user_name   = var.database_username
-  user_labels = var.labels
+  db_name              = var.database_name
+  user_name            = var.database_username
+  user_deletion_policy = var.database_user_deletion_policy
+  user_labels          = var.labels
 
   depends_on = [google_service_networking_connection.default]
 }
