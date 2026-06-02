@@ -22,8 +22,14 @@ variable "labels" {
 }
 
 variable "cluster_service_account" {
-  description = "The service account to use for the cluster"
+  description = "Email of the service account the cluster's nodes run as. Required, and always used by the node pools regardless of create_cluster_service_account."
   type        = string
+}
+
+variable "create_cluster_service_account" {
+  description = "Whether to also have the upstream kubernetes-engine module create a tf-gke-* service account in project_id during apply. Default true matches that module's default behavior; the created SA dangles unused because cluster_service_account is the one actually bound to the node pools. Set to false when the deploy identity lacks iam.serviceAccountAdmin on the project, or when sharing one pre-bootstrapped node SA across many cluster workspaces in a single project."
+  type        = bool
+  default     = true
 }
 
 # Ingress / TLS
@@ -134,6 +140,17 @@ variable "database_deletion_protection" {
   description = "Whether to enable deletion protection on the database"
   type        = bool
   default     = true
+}
+
+variable "database_user_deletion_policy" {
+  description = "Deletion policy for the default Cloud SQL user. Set to \"ABANDON\" to skip the DROP USER API call on destroy; the user is removed along with the instance. Useful when the role owns objects (e.g. autoMigrate-created tables) that would otherwise block teardown."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.database_user_deletion_policy == null || var.database_user_deletion_policy == "ABANDON"
+    error_message = "database_user_deletion_policy must be null or \"ABANDON\"."
+  }
 }
 
 variable "database_backup_retention" {

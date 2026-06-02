@@ -1,3 +1,13 @@
+## 2.9.0 (21 May 2026)
+
+### Added
+
+- `polytomic_image_tag` (default `"latest"`) and `polytomic_image_registry` (default `568237466542.dkr.ecr.us-west-2.amazonaws.com`) variables. The three sidecar image URIs (app, Vector logger, Datadog agent) are now composed from this single registry+tag pair, so pinning a release moves all three containers together — matching how the release pipeline tags them (#137).
+
+### Changed
+
+- `polytomic_image`, `polytomic_logger_image`, and `polytomic_dd_agent_image` now default to `""` and act as opt-out overrides: set one to a fully-qualified URI to bypass composition (e.g. when mirroring to a different registry). Leaving them unset reproduces the previous default URIs, so existing configurations are unaffected.
+
 ## 2.8.0 (15 Apr 2026)
 
 > **Pinning this version:** this release is tagged `terraform/ecs/v2.8.0`. Terraform's `git::` source handler requires the slashes to be URL-encoded as `%2F` in the `ref=` value, e.g. `?ref=terraform%2Fecs%2Fv2.8.0`. Future releases use the slash-free format `ecs-v<version>` and do not require encoding. See [VERSIONING.md](../../../VERSIONING.md).

@@ -57,3 +57,13 @@ resource "google_service_account_iam_member" "vector_workload_identity_role" {
   role               = "roles/iam.workloadIdentityUser"
   member             = local.vector_workload_identity_member
 }
+
+# Allow the GSA to sign blobs on itself so pods running under Workload
+# Identity can mint GCS signed URLs (e.g. record-log exports). Without a
+# key file the gocloud.dev signer falls back to IAM Credentials' SignBlob,
+# which requires iam.serviceAccounts.signBlob on the GSA being impersonated.
+resource "google_service_account_iam_member" "workload_identity_sign_blob" {
+  service_account_id = google_service_account.workload-identity-user-sa.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:${google_service_account.workload-identity-user-sa.email}"
+}

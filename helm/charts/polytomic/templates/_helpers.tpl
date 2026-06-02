@@ -400,9 +400,9 @@ AWS_REGION: {{ .Values.polytomic.s3.region | quote }}
 AWS_ACCESS_KEY_ID: {{ .Values.polytomic.s3.access_key_id | quote }}
 AWS_SECRET_ACCESS_KEY: {{ .Values.polytomic.s3.secret_access_key | quote }}
 RECORD_LOG_BUCKET: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | trimPrefix "gs://" | quote }}
-RECORD_LOG_REGION: {{ .Values.polytomic.s3.region | quote }}
+RECORD_LOG_REGION: {{ if .Values.polytomic.s3.gcs }}"gcs"{{ else }}{{ .Values.polytomic.s3.region | quote }}{{ end }}
 EXECUTION_LOG_BUCKET: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | trimPrefix "gs://" | quote }}
-EXECUTION_LOG_REGION: {{ .Values.polytomic.s3.region | quote }}
+EXECUTION_LOG_REGION: {{ if .Values.polytomic.s3.gcs }}"gcs"{{ else }}{{ .Values.polytomic.s3.region | quote }}{{ end }}
 KUBERNETES: "true"
 KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
 KUBERNETES_IMAGE: {{ include "polytomic.image" . }}

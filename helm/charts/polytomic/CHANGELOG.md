@@ -22,6 +22,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.2] - 2026-05-21
+
+### Fixed
+
+- **GCS record/execution log resource**: Correctly set `RECORD_LOG_REGION` for GCP deployments.
+- **Vector DaemonSet routing**: Revised log routing to avoid duplicating record logs.
+
+---
+
 ## [1.5.1] - 2026-05-15
 
 ### Fixed

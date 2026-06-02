@@ -46,7 +46,8 @@
 |------|-------------|------|---------|:--------:|
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | The GCS bucket name to use. Must be globally unique. | `string` | `""` | no |
 | <a name="input_cluster_deletion_protection"></a> [cluster\_deletion\_protection](#input\_cluster\_deletion\_protection) | Whether to enable deletion protection on the GKE cluster | `bool` | `true` | no |
-| <a name="input_cluster_service_account"></a> [cluster\_service\_account](#input\_cluster\_service\_account) | The service account to use for the cluster | `string` | n/a | yes |
+| <a name="input_cluster_service_account"></a> [cluster\_service\_account](#input\_cluster\_service\_account) | Email of the service account the cluster's nodes run as. Required, and always used by the node pools regardless of create\_cluster\_service\_account. | `string` | n/a | yes |
+| <a name="input_create_cluster_service_account"></a> [create\_cluster\_service\_account](#input\_create\_cluster\_service\_account) | Whether to also have the upstream kubernetes-engine module create a tf-gke-* service account in project\_id during apply. Default true matches that module's default behavior; the created SA dangles unused because cluster\_service\_account is the one actually bound to the node pools. Set to false when the deploy identity lacks iam.serviceAccountAdmin on the project, or when sharing one pre-bootstrapped node SA across many cluster workspaces in a single project. | `bool` | `true` | no |
 | <a name="input_create_managed_certificate"></a> [create\_managed\_certificate](#input\_create\_managed\_certificate) | Provision Google-managed SSL certificates for polytomic\_url and (when set) polytomic\_mcp\_url. Set to false to bring your own certs. | `bool` | `true` | no |
 | <a name="input_create_postgres"></a> [create\_postgres](#input\_create\_postgres) | Whether to create a Cloud SQL PostgreSQL instance | `bool` | `true` | no |
 | <a name="input_create_redis"></a> [create\_redis](#input\_create\_redis) | Whether to create a Memorystore Redis instance | `bool` | `true` | no |
@@ -60,6 +61,7 @@
 | <a name="input_database_maintenance_window_day"></a> [database\_maintenance\_window\_day](#input\_database\_maintenance\_window\_day) | Day of the week for maintenance window (1=Mon, 7=Sun) | `number` | `7` | no |
 | <a name="input_database_maintenance_window_hour"></a> [database\_maintenance\_window\_hour](#input\_database\_maintenance\_window\_hour) | Hour of the day for maintenance window (0-23) | `number` | `0` | no |
 | <a name="input_database_name"></a> [database\_name](#input\_database\_name) | Name of the database to create | `string` | `"polytomic"` | no |
+| <a name="input_database_user_deletion_policy"></a> [database\_user\_deletion\_policy](#input\_database\_user\_deletion\_policy) | Deletion policy for the default Cloud SQL user. Set to "ABANDON" to skip the DROP USER API call on destroy; the user is removed along with the instance. Useful when the role owns objects (e.g. autoMigrate-created tables) that would otherwise block teardown. | `string` | `null` | no |
 | <a name="input_database_username"></a> [database\_username](#input\_database\_username) | Username for the database | `string` | `"polytomic"` | no |
 | <a name="input_database_version"></a> [database\_version](#input\_database\_version) | Cloud SQL database version | `string` | `"POSTGRES_17"` | no |
 | <a name="input_desired_size"></a> [desired\_size](#input\_desired\_size) | Initial number of nodes in the node pool | `number` | `3` | no |
