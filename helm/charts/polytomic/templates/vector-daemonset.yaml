@@ -13,8 +13,6 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
-      annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/vector-configmap.yaml") . | sha256sum }}
       labels:
         app.kubernetes.io/name: {{ include "polytomic.name" . }}-vector
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -22,42 +20,53 @@ spec:
       serviceAccountName: {{ include "polytomic.fullname" . }}-vector
       # Vector must run as root to read /var/log/pods from the host.
       # No securityContext override is provided; the default (root) is required.
-      initContainers:
-      - name: init-vector-config
-        image: {{ .Values.imageRegistry }}/{{ .Values.polytomic.vector.daemonset.image }}:{{ .Values.polytomic.vector.daemonset.tag | default .Values.image.tag }}
-        imagePullPolicy: {{ .Values.polytomic.vector.daemonset.imagePullPolicy }}
-        command: ['sh', '-c', 'cp /etc/vector-base/vector.toml /etc/vector/vector.toml']
-        volumeMounts:
-        - name: config-base
-          mountPath: /etc/vector-base
-          readOnly: true
-        - name: config-writable
-          mountPath: /etc/vector
       containers:
       - name: vector
+        # The image bakes the Vector routing fragments at /etc/vector/conf.d/
+        # (from deploy/polytomic/vector/ in the app repo) and its entrypoint
+        # composes --config flags based on the env vars below. The chart no
+        # longer carries log-routing logic.
         image: {{ .Values.imageRegistry }}/{{ .Values.polytomic.vector.daemonset.image }}:{{ .Values.polytomic.vector.daemonset.tag | default .Values.image.tag }}
         imagePullPolicy: {{ .Values.polytomic.vector.daemonset.imagePullPolicy }}
         command:
           - /entrypoint.sh
         env:
-        # entrypoint.sh reads SEND_LOGS but detects Kubernetes via VECTOR_SELF_NODE_NAME
-        # and skips appending config; the Datadog sink is controlled by the ConfigMap instead.
-        - name: SEND_LOGS
-          value: {{ .Values.polytomic.vector.managedLogs | quote }}
-        # Required by kubernetes_logs source to identify which node to collect from
+        # Required by kubernetes_logs source to identify which node to collect from.
+        # Presence of this var is also how the entrypoint chooses kubernetes_logs
+        # over splunk_hec.
         - name: VECTOR_SELF_NODE_NAME
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
-        # Pod label selector for filtering
+        # Pod label selector for filtering kubernetes_logs to Polytomic pods.
         - name: POD_LABEL_SELECTOR
           value: {{ .Values.polytomic.vector.daemonset.podLabelSelector | quote }}
-        # S3 configuration
+        # Self-exclude glob for the kubernetes_logs source so the DaemonSet
+        # doesn't ingest its own pod's stdout (would loop). Pattern matches
+        # the DaemonSet's pod logs under /var/log/pods.
+        - name: VECTOR_KUBE_EXCLUDE_GLOB
+          value: "/var/log/pods/*_{{ include "polytomic.fullname" . }}-vector-*_*/**"
+        # Operational bucket: record_logs/, logs/syncs/, logs/audit/ all live here.
+        - name: RECORD_LOG_BUCKET
+          value: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | trimPrefix "gs://" | quote }}
+        # Legacy combined-org execution_logs path uses the same bucket.
         - name: EXECUTION_LOG_BUCKET
           value: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s3://" | trimPrefix "gs://" | quote }}
         {{- if not .Values.polytomic.s3.gcs }}
+        - name: RECORD_LOG_REGION
+          value: {{ .Values.polytomic.s3.region | quote }}
         - name: AWS_REGION
           value: {{ .Values.polytomic.s3.region | quote }}
+        {{- end }}
+        {{- if .Values.polytomic.s3.gcs }}
+        # Selects gcp_cloud_storage sinks. Auth comes from the workload-identity
+        # annotation on the DaemonSet's ServiceAccount (see vector-serviceaccount.yaml).
+        - name: POLYTOMIC_USE_GCS
+          value: "true"
+        {{- end }}
+        {{- if .Values.polytomic.vector.managedLogs }}
+        - name: SEND_LOGS
+          value: "true"
         {{- end }}
         {{- if .Values.polytomic.s3.access_key_id }}
         - name: AWS_ACCESS_KEY_ID
@@ -67,7 +76,8 @@ spec:
         - name: AWS_SECRET_ACCESS_KEY
           value: {{ .Values.polytomic.s3.secret_access_key | quote }}
         {{- end }}
-        # All the same env vars as app pods for ptconf
+        # DEPLOYMENT / DEPLOYMENT_KEY drive ptconf, which the in-image
+        # secret.toml uses to resolve dd_secret.DD_API_KEY at startup.
         - name: DEPLOYMENT
           valueFrom:
             secretKeyRef:
@@ -87,8 +97,6 @@ spec:
               {{- end }}
               key: DEPLOYMENT_KEY
         volumeMounts:
-        - name: config-writable
-          mountPath: /etc/vector
         - name: var-log
           mountPath: /var/log
           readOnly: true
@@ -97,11 +105,6 @@ spec:
         resources:
           {{- toYaml .Values.polytomic.vector.daemonset.resources | nindent 10 }}
       volumes:
-      - name: config-base
-        configMap:
-          name: {{ include "polytomic.fullname" . }}-vector
-      - name: config-writable
-        emptyDir: {}
       - name: var-log
         hostPath:
           path: /var/log

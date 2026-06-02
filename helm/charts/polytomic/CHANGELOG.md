@@ -5,6 +5,23 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-05-15
+
+### Changed
+
+- **Vector DaemonSet log routing now lives in the polytomic-vector image**: The `vector-configmap.yaml` template is removed; the DaemonSet runs the polytomic-vector image's entrypoint directly, which composes Vector `--config` flags from canonical TOML fragments baked into the image at `/etc/vector/conf.d/`. The chart now sets env vars only (`VECTOR_SELF_NODE_NAME`, `POLYTOMIC_USE_GCS`, `SEND_LOGS`, `RECORD_LOG_BUCKET`, `EXECUTION_LOG_BUCKET`, region/credentials as before) and owns no log-routing logic. Single source of truth for record-log/execution-log/audit paths.
+- **DaemonSet init container removed**: The init container that copied the ConfigMap into a writable emptyDir is no longer needed; the image's fragments are read directly from `/etc/vector/conf.d/`. The `config-base` and `config-writable` volumes are dropped.
+
+### Required
+
+- This chart version requires the polytomic-vector image at or above the SHA where `deploy/polytomic/vector/` fragments are baked in and `deploy/vector/entrypoint.sh` composes `--config` based on env. An older image will start (it still finds `/etc/vector/vector.toml` baked from `vector-ecs.toml`) but will sit idle in DaemonSet mode — the splunk_hec source has no writer in Kubernetes, so no logs are routed. Pin an image at or above the matching app release.
+
+### Compatibility
+
+- The new polytomic-vector image is backward-compatible with chart 1.5.x deployments via an entrypoint shim: if `/etc/vector/vector.toml` is present at startup (the chart 1.5.x init-container + emptyDir scenario), the entrypoint defers to that file instead of composing `--config` from fragments. Customers can upgrade the app image at their normal cadence and pick up 1.6.0 later without the DaemonSet breaking.
+
+---
+
 ## [1.5.2] - 2026-05-21
 
 ### Fixed
