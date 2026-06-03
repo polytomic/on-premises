@@ -5,6 +5,14 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-06-03
+
+### Added
+
+- **Per-role executor ephemeral storage settings**: New `ephemeral_storage_request` and `ephemeral_storage_maximum` values on each executor role (task/bulk/ingest/proxy/scheduler) let operators size the ephemeral-storage request and limit of dynamically created sync/bulk pods. Values map to the `{ROLE}_EPHEMERAL_STORAGE_*` environment variables. Both default to `0` (unset), preserving current behavior. Required on GKE Autopilot, which otherwise evicts pods that exceed its default 1Gi ephemeral-storage limit (#143).
+
+---
+
 ## [1.5.2] - 2026-05-21
 
 ### Fixed
