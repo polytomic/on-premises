@@ -101,6 +101,16 @@ polytomic:
       memory_maximum: 8192
       # -- Memory request for mega-sized tasks (MiB). Overrides memory_reservation when task.MegaSize is true.
       memory_mega: 8192
+      # -- Ephemeral (local) storage request for executor pods (MiB). Maps to the
+      # K8s ephemeral-storage resource request. 0 = leave unset (cluster default).
+      # Set this on GKE Autopilot, which otherwise imposes a default 1Gi
+      # ephemeral-storage limit and evicts pods (e.g. bulk syncs) that exceed it.
+      # Inherited by the bulk/ingest/proxy/scheduler roles unless overridden.
+      ephemeral_storage_request: 0
+      # -- Ephemeral (local) storage limit for executor pods (MiB). Maps to the
+      # K8s ephemeral-storage resource limit. 0 = leave unset. Raised to match
+      # ephemeral_storage_request if set below it.
+      ephemeral_storage_maximum: 0
       database_pool_size: 0
       redis_pool_size: 0
       tags: ""
@@ -110,6 +120,8 @@ polytomic:
       memory_reservation: 0
       memory_maximum: 0
       memory_mega: 0
+      ephemeral_storage_request: 0
+      ephemeral_storage_maximum: 0
       database_pool_size: 0
       redis_pool_size: 0
       tags: ""
@@ -119,6 +131,8 @@ polytomic:
       memory_reservation: 0
       memory_maximum: 0
       memory_mega: 0
+      ephemeral_storage_request: 0
+      ephemeral_storage_maximum: 0
       database_pool_size: 0
       redis_pool_size: 0
       tags: ""
@@ -128,6 +142,8 @@ polytomic:
       memory_reservation: 0
       memory_maximum: 0
       memory_mega: 0
+      ephemeral_storage_request: 0
+      ephemeral_storage_maximum: 0
       database_pool_size: 0
       redis_pool_size: 0
       tags: ""
@@ -137,6 +153,8 @@ polytomic:
       memory_reservation: 0
       memory_maximum: 0
       memory_mega: 0
+      ephemeral_storage_request: 0
+      ephemeral_storage_maximum: 0
       database_pool_size: 0
       redis_pool_size: 0
       tags: ""

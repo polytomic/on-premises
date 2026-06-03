@@ -466,6 +466,12 @@ TASK_EXECUTOR_MEMORY_RESERVATION: {{ .memory_reservation | quote }}
 {{- if .memory_maximum }}
 TASK_EXECUTOR_MEMORY_MAXIMUM: {{ .memory_maximum | quote }}
 {{- end }}
+{{- if .ephemeral_storage_request }}
+TASK_EXECUTOR_EPHEMERAL_STORAGE_REQUEST: {{ .ephemeral_storage_request | quote }}
+{{- end }}
+{{- if .ephemeral_storage_maximum }}
+TASK_EXECUTOR_EPHEMERAL_STORAGE_MAXIMUM: {{ .ephemeral_storage_maximum | quote }}
+{{- end }}
 {{- if .memory_mega }}
 TASK_EXECUTOR_MEMORY_MEGA: {{ .memory_mega | quote }}
 {{- end }}
@@ -491,6 +497,12 @@ BULK_EXECUTOR_MEMORY_RESERVATION: {{ .memory_reservation | quote }}
 {{- end }}
 {{- if .memory_maximum }}
 BULK_EXECUTOR_MEMORY_MAXIMUM: {{ .memory_maximum | quote }}
+{{- end }}
+{{- if .ephemeral_storage_request }}
+BULK_EXECUTOR_EPHEMERAL_STORAGE_REQUEST: {{ .ephemeral_storage_request | quote }}
+{{- end }}
+{{- if .ephemeral_storage_maximum }}
+BULK_EXECUTOR_EPHEMERAL_STORAGE_MAXIMUM: {{ .ephemeral_storage_maximum | quote }}
 {{- end }}
 {{- if .memory_mega }}
 BULK_EXECUTOR_MEMORY_MEGA: {{ .memory_mega | quote }}
@@ -518,6 +530,12 @@ INGEST_EXECUTOR_MEMORY_RESERVATION: {{ .memory_reservation | quote }}
 {{- if .memory_maximum }}
 INGEST_EXECUTOR_MEMORY_MAXIMUM: {{ .memory_maximum | quote }}
 {{- end }}
+{{- if .ephemeral_storage_request }}
+INGEST_EXECUTOR_EPHEMERAL_STORAGE_REQUEST: {{ .ephemeral_storage_request | quote }}
+{{- end }}
+{{- if .ephemeral_storage_maximum }}
+INGEST_EXECUTOR_EPHEMERAL_STORAGE_MAXIMUM: {{ .ephemeral_storage_maximum | quote }}
+{{- end }}
 {{- if .memory_mega }}
 INGEST_EXECUTOR_MEMORY_MEGA: {{ .memory_mega | quote }}
 {{- end }}
@@ -544,6 +562,12 @@ PROXY_EXECUTOR_MEMORY_RESERVATION: {{ .memory_reservation | quote }}
 {{- if .memory_maximum }}
 PROXY_EXECUTOR_MEMORY_MAXIMUM: {{ .memory_maximum | quote }}
 {{- end }}
+{{- if .ephemeral_storage_request }}
+PROXY_EXECUTOR_EPHEMERAL_STORAGE_REQUEST: {{ .ephemeral_storage_request | quote }}
+{{- end }}
+{{- if .ephemeral_storage_maximum }}
+PROXY_EXECUTOR_EPHEMERAL_STORAGE_MAXIMUM: {{ .ephemeral_storage_maximum | quote }}
+{{- end }}
 {{- if .memory_mega }}
 PROXY_EXECUTOR_MEMORY_MEGA: {{ .memory_mega | quote }}
 {{- end }}
@@ -569,6 +593,12 @@ SCHEDULER_ROLE_MEMORY_RESERVATION: {{ .memory_reservation | quote }}
 {{- end }}
 {{- if .memory_maximum }}
 SCHEDULER_ROLE_MEMORY_MAXIMUM: {{ .memory_maximum | quote }}
+{{- end }}
+{{- if .ephemeral_storage_request }}
+SCHEDULER_ROLE_EPHEMERAL_STORAGE_REQUEST: {{ .ephemeral_storage_request | quote }}
+{{- end }}
+{{- if .ephemeral_storage_maximum }}
+SCHEDULER_ROLE_EPHEMERAL_STORAGE_MAXIMUM: {{ .ephemeral_storage_maximum | quote }}
 {{- end }}
 {{- if .memory_mega }}
 SCHEDULER_ROLE_MEMORY_MEGA: {{ .memory_mega | quote }}
