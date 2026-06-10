@@ -5,6 +5,14 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-06-10
+
+### Added
+
+- **Configurable Vector data_dir volume type**: New `polytomic.vector.daemonset.dataDir.type` value (`hostPath` or `emptyDir`) controls the volume backing Vector's data_dir (`/var/lib/vector`), which holds the `kubernetes_logs` source checkpoints. Defaults to `hostPath`, leaving existing EKS and standard-GKE installs unchanged. Set to `emptyDir` on GKE Autopilot, whose Warden admission controller blocks write-mode hostPath volumes (`autogke-no-write-mode-hostpath`). With `emptyDir`, checkpoints live only for the pod's lifetime; a reschedule may re-read recent node logs, but no logs are lost.
+
+---
+
 ## [1.6.0] - 2026-06-03
 
 ### Added
