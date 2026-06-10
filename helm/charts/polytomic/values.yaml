@@ -297,6 +297,16 @@ polytomic:
       # By default no tolerations are set, so Vector only runs on schedulable worker nodes.
       # Add tolerations here if your nodes have custom taints that Polytomic pods also tolerate.
       tolerations: []
+      # -- Volume backing Vector's data_dir (/var/lib/vector), which holds the
+      # kubernetes_logs source checkpoints.
+      dataDir:
+        # -- "hostPath" or "emptyDir".
+        # hostPath (default) persists checkpoints across pod reschedules on a node.
+        # GKE Autopilot blocks write-mode hostPath (autogke-no-write-mode-hostpath),
+        # so set this to "emptyDir" on Autopilot. With emptyDir, checkpoints live
+        # only for the pod's lifetime; a reschedule may re-read recent node logs.
+        type: hostPath
+
       # -- Node selector for Vector DaemonSet pods
       nodeSelector: {}
       # -- Affinity rules for Vector DaemonSet pods

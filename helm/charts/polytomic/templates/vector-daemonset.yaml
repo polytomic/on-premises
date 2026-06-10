@@ -106,9 +106,13 @@ spec:
         hostPath:
           path: /var/log
       - name: var-lib-vector
+        {{- if eq .Values.polytomic.vector.daemonset.dataDir.type "emptyDir" }}
+        emptyDir: {}
+        {{- else }}
         hostPath:
           path: /var/lib/vector
           type: DirectoryOrCreate
+        {{- end }}
       {{- with .Values.polytomic.vector.daemonset.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
