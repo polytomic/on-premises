@@ -179,7 +179,7 @@ variable "database_auto_minor_version_upgrade" {
 
 variable "database_engine_version" {
   description = "Database engine version"
-  default     = "17.2"
+  default     = "17.10"
 }
 
 variable "database_family" {
