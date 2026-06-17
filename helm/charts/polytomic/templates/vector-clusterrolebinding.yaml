@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/component: vector
 subjects:
 - kind: ServiceAccount
-  name: {{ include "polytomic.fullname" . }}-vector
+  name: {{ include "polytomic.vector.serviceAccountName" . }}
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole

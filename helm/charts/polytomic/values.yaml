@@ -314,7 +314,14 @@ polytomic:
 
       # -- ServiceAccount configuration for Vector DaemonSet
       serviceAccount:
-        # -- Additional service account annotations (for example GKE Workload Identity)
+        # -- Create the Vector ServiceAccount. Set to false to bind Vector to
+        # an existing ServiceAccount (for example a shared Workload Identity SA).
+        create: true
+        # -- Name of the ServiceAccount. Required when create is false; when
+        # create is true and left empty, defaults to "<release>-vector".
+        name: ""
+        # -- Additional service account annotations (for example GKE Workload Identity).
+        # Only applied when create is true; annotate an existing SA out-of-band.
         annotations: {}
         # -- IAM role ARN for IRSA (EKS only)
         roleArn: ""

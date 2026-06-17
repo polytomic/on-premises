@@ -155,6 +155,21 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
+Create the name of the Vector DaemonSet service account to use.
+When create is true, defaults to "<fullname>-vector". When create is
+false, an explicit name is required so the operator can point Vector at
+an existing (for example Workload Identity) ServiceAccount.
+*/}}
+{{- define "polytomic.vector.serviceAccountName" -}}
+{{- $sa := .Values.polytomic.vector.daemonset.serviceAccount -}}
+{{- if $sa.create -}}
+{{- default (printf "%s-vector" (include "polytomic.fullname" .)) $sa.name -}}
+{{- else -}}
+{{- required "polytomic.vector.daemonset.serviceAccount.name is required when serviceAccount.create is false" $sa.name -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Get PostgreSQL host
 */}}
 {{- define "polytomic.postgresql.host" -}}

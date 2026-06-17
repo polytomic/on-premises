@@ -2,7 +2,7 @@
 
 Polytomic helm chart for kubernetes
 
-![Version: 1.7.0](https://img.shields.io/badge/Version-1.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 1.8.0](https://img.shields.io/badge/Version-1.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 ## Installing the Chart
 
@@ -63,6 +63,37 @@ polytomic:
 ```
 
 Note: S3 configuration is currently required even when using Datadog, as the S3 sink is always enabled in the Vector config.
+
+### Execution Logs to GCS (GKE)
+
+On GKE, set `polytomic.s3.gcs: true` to route logs to a GCS bucket and authenticate
+both the app and Vector ServiceAccounts via Workload Identity. The Vector
+ServiceAccount supports `create` and `name`, so you can either let the chart create
+it (and annotate it) or bind Vector to an existing ServiceAccount:
+
+```yaml
+polytomic:
+  s3:
+    gcs: true
+    operational_bucket: "gs://your-bucket"
+  vector:
+    daemonset:
+      enabled: true
+      dataDir:
+        type: emptyDir          # required on GKE Autopilot
+      serviceAccount:
+        # Option A: chart-created, dedicated SA (recommended)
+        create: true
+        annotations:
+          iam.gke.io/gcp-service-account: "vector-logs@my-project.iam.gserviceaccount.com"
+        # Option B: reuse an existing SA (e.g. a shared Workload Identity SA)
+        # create: false
+        # name: my-existing-sa
+```
+
+See [`GCP-DEPLOYMENT.md`](../../GCP-DEPLOYMENT.md) for the full Workload Identity
+setup, the shared-vs-dedicated ServiceAccount trade-off, and troubleshooting for
+`403 Forbidden` / `Failed to get implicit GCP token` Vector errors.
 
 ## Redis Configuration
 
@@ -290,7 +321,7 @@ externalRedis:
 | polytomic.sync_workers | int | `10` |  |
 | polytomic.tracing | bool | `false` |  |
 | polytomic.tx_buffer_size | int | `1000` |  |
-| polytomic.vector.daemonset | object | `{"affinity":{},"dataDir":{"type":"hostPath"},"enabled":true,"image":"polytomic-vector","imagePullPolicy":"IfNotPresent","nodeSelector":{},"podLabelSelector":"vector.dev/include=true","resources":{"limits":{"cpu":"200m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"serviceAccount":{"annotations":{},"roleArn":""},"tag":"","tolerations":[]}` | Vector DaemonSet for stdout/stderr log collection Collects container logs from all Polytomic pods on each node Default: true (matches ECS behavior where polytomic_use_logger defaults to true) |
+| polytomic.vector.daemonset | object | `{"affinity":{},"dataDir":{"type":"hostPath"},"enabled":true,"image":"polytomic-vector","imagePullPolicy":"IfNotPresent","nodeSelector":{},"podLabelSelector":"vector.dev/include=true","resources":{"limits":{"cpu":"200m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"serviceAccount":{"annotations":{},"create":true,"name":"","roleArn":""},"tag":"","tolerations":[]}` | Vector DaemonSet for stdout/stderr log collection Collects container logs from all Polytomic pods on each node Default: true (matches ECS behavior where polytomic_use_logger defaults to true) |
 | polytomic.vector.daemonset.affinity | object | `{}` | Affinity rules for Vector DaemonSet pods |
 | polytomic.vector.daemonset.dataDir | object | `{"type":"hostPath"}` | Volume backing Vector's data_dir (/var/lib/vector), which holds the kubernetes_logs source checkpoints. |
 | polytomic.vector.daemonset.dataDir.type | string | `"hostPath"` | "hostPath" or "emptyDir". hostPath (default) persists checkpoints across pod reschedules on a node. GKE Autopilot blocks write-mode hostPath (autogke-no-write-mode-hostpath), so set this to "emptyDir" on Autopilot. With emptyDir, checkpoints live only for the pod's lifetime; a reschedule may re-read recent node logs. |
@@ -298,8 +329,10 @@ externalRedis:
 | polytomic.vector.daemonset.image | string | `"polytomic-vector"` | Image name for Vector DaemonSet (registry is set via imageRegistry). MUST use Polytomic's Vector image with ptconf for secret decryption. |
 | polytomic.vector.daemonset.nodeSelector | object | `{}` | Node selector for Vector DaemonSet pods |
 | polytomic.vector.daemonset.podLabelSelector | string | `"vector.dev/include=true"` | Label selector to filter which pods to collect logs from. Uses vector.dev/include=true which is set on all Polytomic pod templates, making collection independent of the Helm release name. |
-| polytomic.vector.daemonset.serviceAccount | object | `{"annotations":{},"roleArn":""}` | ServiceAccount configuration for Vector DaemonSet |
-| polytomic.vector.daemonset.serviceAccount.annotations | object | `{}` | Additional service account annotations (for example GKE Workload Identity) |
+| polytomic.vector.daemonset.serviceAccount | object | `{"annotations":{},"create":true,"name":"","roleArn":""}` | ServiceAccount configuration for Vector DaemonSet |
+| polytomic.vector.daemonset.serviceAccount.annotations | object | `{}` | Additional service account annotations (for example GKE Workload Identity). Only applied when create is true; annotate an existing SA out-of-band. |
+| polytomic.vector.daemonset.serviceAccount.create | bool | `true` | Create the Vector ServiceAccount. Set to false to bind Vector to an existing ServiceAccount (for example a shared Workload Identity SA). |
+| polytomic.vector.daemonset.serviceAccount.name | string | `""` | Name of the ServiceAccount. Required when create is false; when create is true and left empty, defaults to "<release>-vector". |
 | polytomic.vector.daemonset.serviceAccount.roleArn | string | `""` | IAM role ARN for IRSA (EKS only) |
 | polytomic.vector.daemonset.tag | string | `""` | Tag for the Vector image. Defaults to image.tag when not set. |
 | polytomic.vector.daemonset.tolerations | list | `[]` | Additional tolerations for the Vector DaemonSet pods. By default no tolerations are set, so Vector only runs on schedulable worker nodes. Add tolerations here if your nodes have custom taints that Polytomic pods also tolerate. |

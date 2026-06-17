@@ -5,6 +5,18 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2026-06-17
+
+### Added
+
+- **Bring-your-own Vector ServiceAccount**: New `polytomic.vector.daemonset.serviceAccount.create` and `polytomic.vector.daemonset.serviceAccount.name` values let operators bind the Vector DaemonSet to an existing ServiceAccount instead of the chart-created `<release>-vector`. Set `create: false` and `name: <existing-sa>` to reuse a shared Workload Identity / IRSA ServiceAccount (for example the same SA the app pods use). The Vector ClusterRoleBinding follows the configured name, so the chosen SA still receives the pod-log read permission required by the `kubernetes_logs` source. Defaults (`create: true`, empty `name`) are unchanged and fully backward-compatible. This removes the prior asymmetry where the app ServiceAccount supported `create`/`name` but Vector's did not, forcing a separate Workload Identity binding on GKE.
+
+### Documentation
+
+- **GCP / GKE deployment guide**: Added `helm/GCP-DEPLOYMENT.md` covering execution logging to GCS, Workload Identity setup for both the app and Vector ServiceAccounts, the shared-vs-dedicated ServiceAccount trade-off, and troubleshooting for the `403 Forbidden` / `Failed to get implicit GCP token` Vector errors.
+
+---
+
 ## [1.7.0] - 2026-06-10
 
 ### Added

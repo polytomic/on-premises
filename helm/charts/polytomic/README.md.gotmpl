@@ -56,6 +56,37 @@ polytomic:
 
 Note: S3 configuration is currently required even when using Datadog, as the S3 sink is always enabled in the Vector config.
 
+### Execution Logs to GCS (GKE)
+
+On GKE, set `polytomic.s3.gcs: true` to route logs to a GCS bucket and authenticate
+both the app and Vector ServiceAccounts via Workload Identity. The Vector
+ServiceAccount supports `create` and `name`, so you can either let the chart create
+it (and annotate it) or bind Vector to an existing ServiceAccount:
+
+```yaml
+polytomic:
+  s3:
+    gcs: true
+    operational_bucket: "gs://your-bucket"
+  vector:
+    daemonset:
+      enabled: true
+      dataDir:
+        type: emptyDir          # required on GKE Autopilot
+      serviceAccount:
+        # Option A: chart-created, dedicated SA (recommended)
+        create: true
+        annotations:
+          iam.gke.io/gcp-service-account: "vector-logs@my-project.iam.gserviceaccount.com"
+        # Option B: reuse an existing SA (e.g. a shared Workload Identity SA)
+        # create: false
+        # name: my-existing-sa
+```
+
+See [`GCP-DEPLOYMENT.md`](../../GCP-DEPLOYMENT.md) for the full Workload Identity
+setup, the shared-vs-dedicated ServiceAccount trade-off, and troubleshooting for
+`403 Forbidden` / `Failed to get implicit GCP token` Vector errors.
+
 ## Redis Configuration
 
 Polytomic supports both single-node Redis and Redis Cluster mode.
