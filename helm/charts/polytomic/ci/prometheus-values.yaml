@@ -1,0 +1,12 @@
+# Prometheus endpoint enabled with only the one value an operator sets: the
+# metrics container port, the listen address on the scheduler, and the
+# ClusterIP Service. Also covers operator-supplied pod annotations rendering
+# alongside the chart's own.
+image:
+  tag: ci-test
+polytomic:
+  prometheus:
+    enabled: true
+scheduler:
+  podAnnotations:
+    kubectl.kubernetes.io/default-container: polytomic

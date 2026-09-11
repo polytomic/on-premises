@@ -14,6 +14,11 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- if and (include "polytomic.prometheus.enabled" .) (.Values.polytomic.prometheus).scrapeAnnotations }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ include "polytomic.prometheus.port" . | quote }}
+        prometheus.io/path: /metrics
+        {{- end }}
         {{- with .Values.scheduler.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -61,6 +66,24 @@ spec:
               secretKeyRef:
                 name: {{ include "polytomic.redis.secretName" . }}
                 key: {{ include "polytomic.redis.secretKey" . }}
+          {{- end }}
+          {{- /*
+          Set on the scheduler rather than in the config secret. That secret
+          is shared with every other deployment and with the executor pods
+          the app launches, so the address would start this listener in every
+          role; and secret.name replaces it wholesale with an operator's own
+          Secret, which would leave the Service and the ServiceMonitor
+          pointing at a port nothing is listening on.
+          */}}
+          {{- if include "polytomic.prometheus.enabled" . }}
+          - name: PROMETHEUS_METRICS_ADDR
+            value: {{ printf ":%s" (include "polytomic.prometheus.port" .) | quote }}
+          {{- end }}
+          {{- if include "polytomic.prometheus.enabled" . }}
+          ports:
+          - name: metrics
+            containerPort: {{ include "polytomic.prometheus.port" . }}
+            protocol: TCP
           {{- end }}
           volumeMounts:
           - mountPath: /etc/podinfo

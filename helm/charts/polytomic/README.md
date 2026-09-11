@@ -2,7 +2,7 @@
 
 Polytomic helm chart for kubernetes
 
-![Version: 1.8.0](https://img.shields.io/badge/Version-1.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 1.9.0](https://img.shields.io/badge/Version-1.9.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 ## Installing the Chart
 
@@ -94,6 +94,89 @@ polytomic:
 See [`GCP-DEPLOYMENT.md`](../../GCP-DEPLOYMENT.md) for the full Workload Identity
 setup, the shared-vs-dedicated ServiceAccount trade-off, and troubleshooting for
 `403 Forbidden` / `Failed to get implicit GCP token` Vector errors.
+
+## Prometheus Metrics
+
+The chart can serve Polytomic's own operational state -- bulk sync execution
+outcomes, connection health, schema discovery, and queue backlog -- as
+Prometheus metrics for a Prometheus in your cluster. It is off by default,
+and requires Polytomic `rel2026.09.10` or later:
+
+```yaml
+polytomic:
+  prometheus:
+    enabled: true
+```
+
+### Where the endpoint is
+
+`/metrics` is served by the scheduler pod on `polytomic.prometheus.port`
+(default `9090`), not by the web pods. Your Polytomic URL and ingress route to
+the web pods, so they do not reach it. The chart instead creates a ClusterIP
+Service in front of the scheduler, named with the chart's fullname plus
+`-metrics`, and Kubernetes DNS gives that Service an address inside the
+cluster:
+
+```
+http://<fullname>-metrics.<namespace>.svc:9090/metrics
+```
+
+For a release named `polytomic` in the `polytomic` namespace, that is
+`polytomic-metrics.polytomic.svc:9090`. `helm install` and `helm upgrade`
+print the exact address, and you can list the Service by its label:
+
+```console
+kubectl get svc --namespace <namespace> -l app.kubernetes.io/component=metrics
+```
+
+To check the endpoint responds before connecting Prometheus:
+
+```console
+kubectl port-forward --namespace <namespace> svc/<fullname>-metrics 9090:9090
+curl -s http://127.0.0.1:9090/metrics | grep query_success
+```
+
+`polytomic_ingestion_metrics_query_success 1` means the endpoint is working.
+
+### Connecting Prometheus
+
+Choose **one** way for Prometheus to find the endpoint. Each is a separate
+scrape job, so enabling two scrapes the endpoint twice:
+
+- **Static scrape config.** Nothing else to set in the chart:
+
+  ```yaml
+  scrape_configs:
+    - job_name: polytomic
+      scrape_interval: 60s
+      static_configs:
+        - targets: ["polytomic-metrics.polytomic.svc:9090"]
+  ```
+
+- **Pod annotations.** `polytomic.prometheus.scrapeAnnotations: true`, for a
+  Prometheus that discovers targets by `prometheus.io/scrape` pod annotation.
+- **ServiceMonitor.** `polytomic.prometheus.serviceMonitor.enabled: true`, for
+  the Prometheus Operator. Requires the `monitoring.coreos.com` CRDs, which
+  this chart does not install. Set `polytomic.prometheus.serviceMonitor.labels`
+  to match your Prometheus resource's `serviceMonitorSelector`; a
+  ServiceMonitor that does not match is created without error and never
+  scraped.
+
+With pod annotations or a ServiceMonitor, Prometheus finds the scheduler pod
+through the Kubernetes API and scrapes the pod's IP, so no DNS name is
+involved.
+
+The Service is ClusterIP-only, so its address resolves only inside the
+cluster. A Prometheus or hosted monitoring service outside the cluster needs
+an agent inside it to scrape the endpoint and forward the samples, such as
+Prometheus in agent mode with `remote_write`, Grafana Alloy, or the Datadog
+Agent's OpenMetrics check.
+
+### Restricting access
+
+The chart's optional NetworkPolicy does not select the scheduler pod, so it
+neither blocks nor restricts access to this port. To restrict it, add a
+NetworkPolicy of your own selecting the pods behind the `-metrics` Service.
 
 ## Redis Configuration
 
@@ -293,6 +376,16 @@ externalRedis:
 | polytomic.kubernetes.tolerations | string | `""` | Tolerations for task executor pods (comma-separated) Format: key:operator:value:effect,key:operator:value:effect Example: "dedicated:Equal:sync-jobs:NoSchedule,gpu:Exists::NoSchedule" |
 | polytomic.log_level | string | `"info"` |  |
 | polytomic.metrics | bool | `false` | Telemetry |
+| polytomic.prometheus | object | `{"enabled":false,"port":9090,"scrapeAnnotations":false,"serviceMonitor":{"enabled":false,"interval":"60s","labels":{},"metricRelabelings":[],"relabelings":[],"scrapeTimeout":"10s"}}` | Private Prometheus metrics endpoint, served by the scheduler role.  Off by default: an installation that has not asked for the endpoint does not get one. Enabling it restarts only the scheduler pod, so running syncs are not interrupted. The endpoint is reachable only inside the cluster -- it is never routed through the ingress. Metrics are read from Polytomic's own database at scrape time, so the values are the same whichever pod answers; the scheduler runs a single replica, which is what keeps a scraped series from being counted twice. Requires Polytomic rel2026.09.10 or later; on an earlier release the Service is created but nothing listens behind it. |
+| polytomic.prometheus.enabled | bool | `false` | Serve the metrics endpoint on the scheduler pod, and create a ClusterIP Service in front of it. Prometheus in the cluster scrapes `<fullname>-metrics.<namespace>.svc:<port>`, not your Polytomic URL; the install notes print the exact address. |
+| polytomic.prometheus.port | int | `9090` | Port the endpoint listens on, and the port the Service publishes. Served at /metrics; nothing else is served on this port. |
+| polytomic.prometheus.scrapeAnnotations | bool | `false` | Add prometheus.io/scrape annotations to the scheduler pod, for installations whose Prometheus discovers targets by pod annotation. Leave this off when using the ServiceMonitor below: enabling both makes two Prometheus jobs scrape the same endpoint and doubles its query load. |
+| polytomic.prometheus.serviceMonitor.enabled | bool | `false` | Create a ServiceMonitor for the Prometheus Operator. Requires the monitoring.coreos.com CRDs to be installed; the chart does not install them, and leaving this false is correct without the Operator. |
+| polytomic.prometheus.serviceMonitor.interval | string | `"60s"` | How often Prometheus scrapes the endpoint. The exported values are database state rather than counters, so a slower interval loses resolution but never events. |
+| polytomic.prometheus.serviceMonitor.labels | object | `{}` | Labels added to the ServiceMonitor.  Set this. The Prometheus Operator only adopts ServiceMonitors matching its Prometheus resource's serviceMonitorSelector, which in a kube-prometheus-stack install is usually `release: <stack release name>`. An unlabelled ServiceMonitor is valid, is created without error, and is silently never scraped, so the failure looks like a broken endpoint rather than a selector mismatch. |
+| polytomic.prometheus.serviceMonitor.metricRelabelings | list | `[]` | Relabeling applied to each scraped series. |
+| polytomic.prometheus.serviceMonitor.relabelings | list | `[]` | Relabeling applied to the target before scraping. |
+| polytomic.prometheus.serviceMonitor.scrapeTimeout | string | `"10s"` | How long Prometheus waits for a scrape. The endpoint runs its queries concurrently under one deadline, so this does not need to grow as metric families are added. |
 | polytomic.query_workers | int | `10` |  |
 | polytomic.roles | object | `{"bulk":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"ephemeral_storage_maximum":0,"ephemeral_storage_request":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"ingest":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"ephemeral_storage_maximum":0,"ephemeral_storage_request":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"proxy":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"ephemeral_storage_maximum":0,"ephemeral_storage_request":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"scheduler":{"cleanup_delay_seconds":0,"cpu":0,"database_pool_size":0,"ephemeral_storage_maximum":0,"ephemeral_storage_request":0,"memory_maximum":0,"memory_mega":0,"memory_reservation":0,"redis_pool_size":0,"tags":""},"task":{"cleanup_delay_seconds":10,"cpu":1000,"database_pool_size":0,"ephemeral_storage_maximum":0,"ephemeral_storage_request":0,"memory_maximum":8192,"memory_mega":8192,"memory_reservation":2048,"redis_pool_size":0,"tags":""}}` | Per-role executor configuration. Fields map to the {prefix}_* environment variables read by the application. Prefixes: task → TASK_EXECUTOR, bulk → BULK_EXECUTOR, ingest → INGEST_EXECUTOR,           proxy → PROXY_EXECUTOR, scheduler → SCHEDULER_ROLE.  The task role is the base: any field left at 0/"" in bulk/ingest/proxy/scheduler will inherit the corresponding task value at runtime (setDefaultRoleConfig). Only override the other roles when you need role-specific values. |
 | polytomic.roles.task.cleanup_delay_seconds | int | `10` | Seconds to sleep after task completion before cleaning up |

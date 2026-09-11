@@ -1,0 +1,46 @@
+{{- $serviceMonitor := (.Values.polytomic.prometheus).serviceMonitor | default dict -}}
+{{- if and (not .Values.development) (include "polytomic.prometheus.enabled" .) $serviceMonitor.enabled -}}
+{{/*
+Gated separately from the endpoint itself because monitoring.coreos.com is a
+CRD this chart does not install: an installation without the Prometheus
+Operator can still serve and scrape these metrics, and would fail to install
+if this were rendered unconditionally.
+
+The selector deliberately does not use polytomic.labels. Those include
+helm.sh/chart, which carries the chart version and so would stop matching on
+the next upgrade, and they are shared with the main Service, which has no
+metrics port. Selecting on the stable identity labels plus the component
+label matches exactly the Service above.
+*/}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "polytomic.fullname" . }}-metrics
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+    app.kubernetes.io/component: metrics
+    {{- with $serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "polytomic.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: metrics
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: {{ $serviceMonitor.interval | default "60s" }}
+      scrapeTimeout: {{ $serviceMonitor.scrapeTimeout | default "10s" }}
+      {{- with $serviceMonitor.relabelings }}
+      relabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $serviceMonitor.metricRelabelings }}
+      metricRelabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

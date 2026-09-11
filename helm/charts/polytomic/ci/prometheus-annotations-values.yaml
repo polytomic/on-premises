@@ -1,0 +1,11 @@
+# Prometheus endpoint discovered by pod annotation, on a non-default port, with
+# the chart's NetworkPolicy enabled alongside it.
+image:
+  tag: ci-test
+networkPolicy:
+  enabled: true
+polytomic:
+  prometheus:
+    enabled: true
+    port: 9464
+    scrapeAnnotations: true

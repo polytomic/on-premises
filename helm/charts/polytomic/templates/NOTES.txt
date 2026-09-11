@@ -75,6 +75,58 @@ PodDisruptionBudgets: Enabled (minAvailable: {{ .Values.podDisruptionBudget.minA
 NetworkPolicies: Enabled
 {{- end }}
 
+{{- if and (not .Values.development) (include "polytomic.prometheus.enabled" .) }}
+{{- $metricsService := include "polytomic.prometheus.serviceName" . }}
+{{- $metricsPort := include "polytomic.prometheus.port" . }}
+{{- $scrapeAnnotations := (.Values.polytomic.prometheus).scrapeAnnotations }}
+{{- $serviceMonitor := (.Values.polytomic.prometheus).serviceMonitor | default dict }}
+
+=============================================================================
+PROMETHEUS METRICS
+=============================================================================
+
+Metrics are served by the scheduler pod, not the web pods, so your Polytomic
+URL and ingress do not reach them. A Prometheus in this cluster scrapes:
+
+  http://{{ $metricsService }}.{{ .Release.Namespace }}.svc:{{ $metricsPort }}/metrics
+
+That address resolves only inside the cluster. A Prometheus outside it needs
+an agent in the cluster to scrape and forward, such as Prometheus in agent
+mode with remote_write.
+{{- if and $serviceMonitor.enabled $scrapeAnnotations }}
+
+WARNING: the ServiceMonitor and the scrape annotations are both enabled. Each
+is a separate scrape job, so the endpoint is scraped twice. Turn one off.
+{{- else if $serviceMonitor.enabled }}
+
+Discovery: ServiceMonitor (Prometheus Operator).
+{{- if not $serviceMonitor.labels }}
+
+WARNING: polytomic.prometheus.serviceMonitor.labels is empty. The Prometheus
+Operator only scrapes ServiceMonitors matching its serviceMonitorSelector,
+usually release: <stack release name>, so this one is probably never scraped.
+Print the selector with:
+  kubectl get prometheus -A -o jsonpath='{..serviceMonitorSelector}'
+{{- end }}
+{{- else if $scrapeAnnotations }}
+
+Discovery: prometheus.io/scrape annotations on the scheduler pod.
+{{- else }}
+
+Discovery: none configured in the chart. Add the address above to a static
+scrape config, or set polytomic.prometheus.serviceMonitor.enabled (Prometheus
+Operator) or polytomic.prometheus.scrapeAnnotations (annotation discovery).
+{{- end }}
+
+Check the endpoint responds:
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ $metricsService }} {{ $metricsPort }}:{{ $metricsPort }}
+  curl -s http://127.0.0.1:{{ $metricsPort }}/metrics | grep query_success
+
+"polytomic_ingestion_metrics_query_success 1" means it is working. If the
+port-forward reports "connection refused", the Polytomic image predates the
+endpoint, which requires rel2026.09.10 or later.
+{{- end }}
+
 =============================================================================
 RESOURCES
 =============================================================================

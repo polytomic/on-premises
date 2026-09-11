@@ -87,6 +87,89 @@ See [`GCP-DEPLOYMENT.md`](../../GCP-DEPLOYMENT.md) for the full Workload Identit
 setup, the shared-vs-dedicated ServiceAccount trade-off, and troubleshooting for
 `403 Forbidden` / `Failed to get implicit GCP token` Vector errors.
 
+## Prometheus Metrics
+
+The chart can serve Polytomic's own operational state -- bulk sync execution
+outcomes, connection health, schema discovery, and queue backlog -- as
+Prometheus metrics for a Prometheus in your cluster. It is off by default,
+and requires Polytomic `rel2026.09.10` or later:
+
+```yaml
+polytomic:
+  prometheus:
+    enabled: true
+```
+
+### Where the endpoint is
+
+`/metrics` is served by the scheduler pod on `polytomic.prometheus.port`
+(default `9090`), not by the web pods. Your Polytomic URL and ingress route to
+the web pods, so they do not reach it. The chart instead creates a ClusterIP
+Service in front of the scheduler, named with the chart's fullname plus
+`-metrics`, and Kubernetes DNS gives that Service an address inside the
+cluster:
+
+```
+http://<fullname>-metrics.<namespace>.svc:9090/metrics
+```
+
+For a release named `polytomic` in the `polytomic` namespace, that is
+`polytomic-metrics.polytomic.svc:9090`. `helm install` and `helm upgrade`
+print the exact address, and you can list the Service by its label:
+
+```console
+kubectl get svc --namespace <namespace> -l app.kubernetes.io/component=metrics
+```
+
+To check the endpoint responds before connecting Prometheus:
+
+```console
+kubectl port-forward --namespace <namespace> svc/<fullname>-metrics 9090:9090
+curl -s http://127.0.0.1:9090/metrics | grep query_success
+```
+
+`polytomic_ingestion_metrics_query_success 1` means the endpoint is working.
+
+### Connecting Prometheus
+
+Choose **one** way for Prometheus to find the endpoint. Each is a separate
+scrape job, so enabling two scrapes the endpoint twice:
+
+- **Static scrape config.** Nothing else to set in the chart:
+
+  ```yaml
+  scrape_configs:
+    - job_name: polytomic
+      scrape_interval: 60s
+      static_configs:
+        - targets: ["polytomic-metrics.polytomic.svc:9090"]
+  ```
+
+- **Pod annotations.** `polytomic.prometheus.scrapeAnnotations: true`, for a
+  Prometheus that discovers targets by `prometheus.io/scrape` pod annotation.
+- **ServiceMonitor.** `polytomic.prometheus.serviceMonitor.enabled: true`, for
+  the Prometheus Operator. Requires the `monitoring.coreos.com` CRDs, which
+  this chart does not install. Set `polytomic.prometheus.serviceMonitor.labels`
+  to match your Prometheus resource's `serviceMonitorSelector`; a
+  ServiceMonitor that does not match is created without error and never
+  scraped.
+
+With pod annotations or a ServiceMonitor, Prometheus finds the scheduler pod
+through the Kubernetes API and scrapes the pod's IP, so no DNS name is
+involved.
+
+The Service is ClusterIP-only, so its address resolves only inside the
+cluster. A Prometheus or hosted monitoring service outside the cluster needs
+an agent inside it to scrape the endpoint and forward the samples, such as
+Prometheus in agent mode with `remote_write`, Grafana Alloy, or the Datadog
+Agent's OpenMetrics check.
+
+### Restricting access
+
+The chart's optional NetworkPolicy does not select the scheduler pod, so it
+neither blocks nor restricts access to this port. To restrict it, add a
+NetworkPolicy of your own selecting the pods behind the `-metrics` Service.
+
 ## Redis Configuration
 
 Polytomic supports both single-node Redis and Redis Cluster mode.

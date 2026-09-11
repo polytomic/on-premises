@@ -378,6 +378,39 @@ Build Redis connection URL
 {{- end -}}
 
 {{/*
+Prometheus settings, with the chart's defaults applied.
+
+Read through these rather than reaching into .Values.polytomic.prometheus
+directly. An upgrade run with --reuse-values replaces the new chart's
+defaults with the values recorded for the previous release, and a release
+installed before this map existed has no polytomic.prometheus at all, so a
+direct dereference aborts the upgrade with a nil pointer. The same is true
+one level down: an operator who turns the endpoint on with
+--set polytomic.prometheus.enabled=true supplies that key and nothing else.
+
+Templates cannot return booleans, so this returns "true" or the empty
+string, both of which "if" reads the way you would expect.
+*/}}
+{{- define "polytomic.prometheus.enabled" -}}
+{{- if (.Values.polytomic.prometheus).enabled -}}true{{- end -}}
+{{- end -}}
+
+{{/*
+Port the metrics endpoint listens on, and the port its Service publishes.
+*/}}
+{{- define "polytomic.prometheus.port" -}}
+{{- (.Values.polytomic.prometheus).port | default 9090 -}}
+{{- end -}}
+
+{{/*
+Name of the Service in front of the metrics endpoint. The install notes print
+the scrape address from this, so it has to be the name the Service really has.
+*/}}
+{{- define "polytomic.prometheus.serviceName" -}}
+{{- include "polytomic.fullname" . }}-metrics
+{{- end -}}
+
+{{/*
 Construct Polytomic Configuration
 */}}
 {{- define "polytomic.config" -}}

@@ -1,0 +1,31 @@
+{{- if and (not .Values.development) (include "polytomic.prometheus.enabled" .) -}}
+{{/*
+A Service of its own rather than a port on the main one: that Service selects
+the web pods, and these metrics are served by the scheduler.
+
+The component label is what the ServiceMonitor selects on. It is needed
+because polytomic.labels is shared with every other object in the release,
+including the main Service, so a ServiceMonitor matching those alone would
+also adopt the web Service and report a target that has no metrics port.
+
+ClusterIP is not configurable here on purpose: the endpoint carries
+operational state about every connection and sync in the deployment, and
+nothing about it should be routable from outside the cluster.
+*/}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "polytomic.prometheus.serviceName" . }}
+  labels:
+    {{- include "polytomic.labels" . | nindent 4 }}
+    app.kubernetes.io/component: metrics
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ include "polytomic.prometheus.port" . }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    {{- include "polytomic.scheduler-selectorLabels" . | nindent 4 }}
+{{- end }}

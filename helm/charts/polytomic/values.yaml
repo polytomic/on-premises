@@ -418,6 +418,58 @@ polytomic:
   metrics: false
   tracing: false
 
+  # -- Private Prometheus metrics endpoint, served by the scheduler role.
+  #
+  # Off by default: an installation that has not asked for the endpoint does
+  # not get one. Enabling it restarts only the scheduler pod, so running syncs
+  # are not interrupted. The endpoint is reachable only inside the cluster --
+  # it is never routed through the ingress. Metrics are read from Polytomic's
+  # own database at scrape time, so the values are the same whichever pod
+  # answers; the scheduler runs a single replica, which is what keeps a
+  # scraped series from being counted twice. Requires Polytomic rel2026.09.10
+  # or later; on an earlier release the Service is created but nothing listens
+  # behind it.
+  prometheus:
+    # -- Serve the metrics endpoint on the scheduler pod, and create a
+    # ClusterIP Service in front of it. Prometheus in the cluster scrapes
+    # `<fullname>-metrics.<namespace>.svc:<port>`, not your Polytomic URL;
+    # the install notes print the exact address.
+    enabled: false
+    # -- Port the endpoint listens on, and the port the Service publishes.
+    # Served at /metrics; nothing else is served on this port.
+    port: 9090
+    # -- Add prometheus.io/scrape annotations to the scheduler pod, for
+    # installations whose Prometheus discovers targets by pod annotation.
+    # Leave this off when using the ServiceMonitor below: enabling both makes
+    # two Prometheus jobs scrape the same endpoint and doubles its query load.
+    scrapeAnnotations: false
+    serviceMonitor:
+      # -- Create a ServiceMonitor for the Prometheus Operator. Requires the
+      # monitoring.coreos.com CRDs to be installed; the chart does not
+      # install them, and leaving this false is correct without the Operator.
+      enabled: false
+      # -- Labels added to the ServiceMonitor.
+      #
+      # Set this. The Prometheus Operator only adopts ServiceMonitors matching
+      # its Prometheus resource's serviceMonitorSelector, which in a
+      # kube-prometheus-stack install is usually `release: <stack release
+      # name>`. An unlabelled ServiceMonitor is valid, is created without
+      # error, and is silently never scraped, so the failure looks like a
+      # broken endpoint rather than a selector mismatch.
+      labels: {}
+      # -- How often Prometheus scrapes the endpoint. The exported values are
+      # database state rather than counters, so a slower interval loses
+      # resolution but never events.
+      interval: 60s
+      # -- How long Prometheus waits for a scrape. The endpoint runs its
+      # queries concurrently under one deadline, so this does not need to grow
+      # as metric families are added.
+      scrapeTimeout: 10s
+      # -- Relabeling applied to the target before scraping.
+      relabelings: []
+      # -- Relabeling applied to each scraped series.
+      metricRelabelings: []
+
 #############################################################################################
 # DATABASE CONFIGURATION
 # Choose ONE option per service:

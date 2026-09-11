@@ -5,6 +5,22 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-09-11
+
+### Added
+
+- **Prometheus metrics endpoint**: New `polytomic.prometheus.*` values expose Polytomic's own operational state — bulk sync execution outcomes, queue backlog, schema-refresh health and connection health — to a Prometheus in your cluster. `polytomic.prometheus.enabled` serves the endpoint on the scheduler pod at `/metrics` on `polytomic.prometheus.port` (default `9090`) and creates a ClusterIP Service in front of it. The metrics are read from Polytomic's database when scraped rather than accumulated in the pod, so any pod would report the same values; the scheduler is used because it runs a single replica, which is what keeps a series from being counted twice. Off by default. Enabling it restarts only the scheduler pod, so running syncs are not interrupted. Requires Polytomic `rel2026.09.10` or later; on an earlier release the Service is created but nothing listens behind it.
+
+  The endpoint is not on your Polytomic URL. The ingress routes to the web pods, and the metrics are served by the scheduler, so Prometheus reaches them through the `-metrics` Service instead: `<fullname>-metrics.<namespace>.svc:<port>`, which is `polytomic-metrics.<namespace>.svc:9090` for a release named `polytomic`. That name resolves only inside the cluster; a Prometheus outside it needs an in-cluster agent to scrape and forward. The install notes print the exact address, which discovery mode is in effect, and a port-forward command to check the endpoint, and warn when the ServiceMonitor has no labels or when two discovery modes are enabled at once.
+
+  Discovery is opt-in and mutually exclusive by intent. `polytomic.prometheus.serviceMonitor.enabled` creates a ServiceMonitor for Prometheus Operator installations, gated separately because this chart does not install the `monitoring.coreos.com` CRDs. `polytomic.prometheus.scrapeAnnotations` adds `prometheus.io/*` pod annotations for installations that discover targets by annotation instead. Enabling both makes two Prometheus jobs scrape the same endpoint.
+
+  **Set `polytomic.prometheus.serviceMonitor.labels` when using the ServiceMonitor.** The Prometheus Operator only adopts ServiceMonitors matching its Prometheus resource's `serviceMonitorSelector`, which in a kube-prometheus-stack install is usually `release: <stack release name>`. An unlabelled ServiceMonitor is created without error and then silently never scraped, which presents as a broken endpoint rather than as a selector mismatch.
+
+  The endpoint is ClusterIP-only and is never routed through the ingress: it reports on every connection and sync in the deployment. Note that the chart's optional NetworkPolicy (`networkPolicy.enabled`) selects pods by `app.kubernetes.io/name: polytomic` and so does not select the scheduler pod, meaning it neither restricts nor needs to allow this port today. To restrict which pods can reach the endpoint, add a NetworkPolicy of your own selecting the pods behind the `-metrics` Service.
+
+---
+
 ## [1.8.0] - 2026-06-17
 
 ### Added
