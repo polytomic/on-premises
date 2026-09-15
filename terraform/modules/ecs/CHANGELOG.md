@@ -1,3 +1,11 @@
+## Unreleased
+
+### Added
+
+- Security-group caller rules from load balancers to tasks and from tasks to
+  managed PostgreSQL/Redis. Opt in to removing legacy CIDR ingress with
+  `restrict_ingress_to_security_groups` after deploying the caller rules.
+
 ## 2.9.0 (21 May 2026)
 
 ### Added
