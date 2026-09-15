@@ -1,3 +1,7 @@
+locals {
+  task_http_ports = distinct(concat([tonumber(var.polytomic_port)], var.polytomic_mcp_enabled ? [3000] : []))
+}
+
 module "database_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.0"
@@ -8,7 +12,7 @@ module "database_sg" {
   vpc_id = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
 
   # ingress
-  ingress_with_cidr_blocks = [
+  ingress_with_cidr_blocks = var.restrict_ingress_to_security_groups ? [] : [
     {
       from_port   = var.database_port
       to_port     = var.database_port
@@ -17,6 +21,15 @@ module "database_sg" {
       cidr_blocks = join(",", local.private_subnet_cidrs)
     },
   ]
+
+  computed_ingress_with_source_security_group_id = [{
+    from_port                = var.database_port
+    to_port                  = var.database_port
+    protocol                 = "tcp"
+    description              = "Database access from Polytomic tasks"
+    source_security_group_id = module.fargate_sg.security_group_id
+  }]
+  number_of_computed_ingress_with_source_security_group_id = 1
 
   tags = merge(
     var.tags,
@@ -35,7 +48,7 @@ module "fargate_sg" {
   vpc_id = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
 
   # ingress
-  ingress_with_cidr_blocks = concat(
+  ingress_with_cidr_blocks = var.restrict_ingress_to_security_groups ? [] : concat(
     [
       {
         from_port   = var.polytomic_port
@@ -53,6 +66,19 @@ module "fargate_sg" {
       },
     ] : []
   )
+
+  computed_ingress_with_source_security_group_id = flatten([
+    for sg in local.lb_sgs : [
+      for port in local.task_http_ports : {
+        from_port                = port
+        to_port                  = port
+        protocol                 = "tcp"
+        description              = "HTTP access from Polytomic load balancer"
+        source_security_group_id = sg
+      }
+    ]
+  ])
+  number_of_computed_ingress_with_source_security_group_id = length(local.lb_sgs) * length(local.task_http_ports)
 
   egress_with_cidr_blocks = [
     {

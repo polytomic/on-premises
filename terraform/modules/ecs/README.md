@@ -13,6 +13,20 @@ $ terraform plan
 $ terraform apply
 ```
 
+## Restricting network ingress
+
+The module installs security-group rules allowing the load balancer to reach
+task HTTP ports and tasks to reach managed PostgreSQL and Redis. By default,
+legacy CIDR grants remain for backwards compatibility.
+
+To restrict access, apply this module version once with
+`restrict_ingress_to_security_groups = false`, verify the new rules, then
+apply again with it set to `true`. Separate applies ensure the caller rules
+exist before Terraform removes the old rules. Review any direct task-HTTP
+clients and database/cache consumers outside the task security group first.
+Existing SGs, service attachments, database/cache instances and endpoints
+are preserved. EFS and outbound traffic rules are unchanged.
+
 # Architecture
 ![arch](./aws_arch.png)
 
@@ -165,7 +179,10 @@ module "polytomic-ecs" {
   source = "github.com/polytomic/on-premises//terraform/modules/ecs?ref=v1.0.0"
 
   prefix = "polytomic"
-  region = "us-east-1"
+
+  # Apply once with false to install caller rules, then set true to remove CIDR grants.
+  restrict_ingress_to_security_groups = false
+  region                              = "us-east-1"
 
   ####### Polytomic settings #######
   polytomic_image = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"
@@ -183,7 +200,7 @@ module "polytomic-ecs" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0, < 6.0.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
@@ -192,15 +209,15 @@ module "polytomic-ecs" {
 ## Providers
 
 | Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.27.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | 3.2.2 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
+| ---- | ------- |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.0, < 6.0.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 3.0 |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_alb.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/alb) | resource |
 | [aws_alb_listener.http](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/alb_listener) | resource |
 | [aws_alb_listener_rule.mcp](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/alb_listener_rule) | resource |
@@ -252,7 +269,7 @@ module "polytomic-ecs" {
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_database"></a> [database](#module\_database) | terraform-aws-modules/rds/aws | 5.9.0 |
 | <a name="module_database_sg"></a> [database\_sg](#module\_database\_sg) | terraform-aws-modules/security-group/aws | ~> 4.0 |
 | <a name="module_ecs"></a> [ecs](#module\_ecs) | terraform-aws-modules/ecs/aws | <5.0.0 |
@@ -273,7 +290,7 @@ module "polytomic-ecs" {
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_additional_ecs_security_groups"></a> [additional\_ecs\_security\_groups](#input\_additional\_ecs\_security\_groups) | ECS security group ids | `list` | `[]` | no |
 | <a name="input_alert_emails"></a> [alert\_emails](#input\_alert\_emails) | Email addresses to send alerts to | `list(string)` | `[]` | no |
 | <a name="input_attach_deny_insecure_transport_policy"></a> [attach\_deny\_insecure\_transport\_policy](#input\_attach\_deny\_insecure\_transport\_policy) | Attach a deny insecure transport policy to the S3 buckets | `bool` | `false` | no |
@@ -386,6 +403,7 @@ module "polytomic-ecs" {
 | <a name="input_redis_snapshot_window"></a> [redis\_snapshot\_window](#input\_redis\_snapshot\_window) | Redis snapshot window | `string` | `"04:00-06:00"` | no |
 | <a name="input_redis_transit_encryption_enabled"></a> [redis\_transit\_encryption\_enabled](#input\_redis\_transit\_encryption\_enabled) | Redis transit encryption enabled | `string` | `"true"` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region to use | `string` | `"us-east-1"` | no |
+| <a name="input_restrict_ingress_to_security_groups"></a> [restrict\_ingress\_to\_security\_groups](#input\_restrict\_ingress\_to\_security\_groups) | Restrict task HTTP ingress to the load balancer security groups and managed PostgreSQL/Redis ingress to the task security group. Apply once with false to install these caller rules, then set true to remove legacy CIDR grants. Confirm additional clients before enabling. | `bool` | `false` | no |
 | <a name="input_stats_cron"></a> [stats\_cron](#input\_stats\_cron) | Stats cron | `string` | `"cron(0 0 * * ? *)"` | no |
 | <a name="input_stats_format"></a> [stats\_format](#input\_stats\_format) | Output format for stats reporter | `string` | `"json"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |
@@ -399,7 +417,7 @@ module "polytomic-ecs" {
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_cluster_arn"></a> [cluster\_arn](#output\_cluster\_arn) | n/a |
 | <a name="output_deploy_api_key"></a> [deploy\_api\_key](#output\_deploy\_api\_key) | API key used to authenticate with the Polytomic management API. |
 | <a name="output_loadbalancer_arn"></a> [loadbalancer\_arn](#output\_loadbalancer\_arn) | n/a |
