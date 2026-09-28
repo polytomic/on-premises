@@ -288,13 +288,19 @@ Before installation, validate the chart:
 
 ```bash
 # Lint the chart
-helm lint charts/polytomic -f /tmp/polytomic-test-values.yaml
+helm lint charts/polytomic \
+  -f charts/polytomic/ci/ci-values.yaml \
+  -f /tmp/polytomic-test-values.yaml
 
 # Render templates and check for errors
-helm template polytomic charts/polytomic -f /tmp/polytomic-test-values.yaml --debug
+helm template polytomic charts/polytomic \
+  -f charts/polytomic/ci/ci-values.yaml \
+  -f /tmp/polytomic-test-values.yaml \
+  --debug
 
 # Dry-run installation
 helm install polytomic charts/polytomic \
+  -f charts/polytomic/ci/ci-values.yaml \
   -f /tmp/polytomic-test-values.yaml \
   --dry-run --debug
 ```
