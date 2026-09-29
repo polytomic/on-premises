@@ -38,6 +38,14 @@ Grant these roles at the **bucket** level, as shown below. Do not scope IAM
 policy — or any external tooling — to specific object prefixes: the internal
 key layout is an implementation detail that changes between releases.
 
+The app GSA additionally needs **`roles/iam.serviceAccountTokenCreator` on
+itself** (not on the project). Downloading execution logs from the UI produces a
+signed GCS URL, and a pod running under Workload Identity has no private key to
+sign with, so the app signs through the IAM Credentials API instead — which
+requires `iam.serviceAccounts.signBlob` on the GSA being impersonated. Without
+this binding syncs run normally, but log downloads fail (see
+[Troubleshooting](#troubleshooting)).
+
 ## Required values
 
 ```yaml
@@ -90,6 +98,13 @@ gcloud iam service-accounts add-iam-policy-binding \
   "${APP_GSA}@${PROJECT}.iam.gserviceaccount.com" --project="$PROJECT" \
   --role="roles/iam.workloadIdentityUser" \
   --member="serviceAccount:${PROJECT}.svc.id.goog[${NAMESPACE}/${APP_KSA}]"
+
+# Let the app GSA sign blobs as itself, so pods can mint signed GCS URLs
+# (execution log downloads). This is a binding on the GSA, not the project.
+gcloud iam service-accounts add-iam-policy-binding \
+  "${APP_GSA}@${PROJECT}.iam.gserviceaccount.com" --project="$PROJECT" \
+  --role="roles/iam.serviceAccountTokenCreator" \
+  --member="serviceAccount:${APP_GSA}@${PROJECT}.iam.gserviceaccount.com"
 ```
 
 ```yaml
@@ -98,6 +113,12 @@ serviceAccount:
   annotations:
     iam.gke.io/gcp-service-account: "polytomic-app@<project>.iam.gserviceaccount.com"
 ```
+
+> The `gke-cluster-sa` Terraform module (GKE module `1.3.0` and later) creates
+> the self-signing binding for you. If you are on an earlier module version, or
+> created the GSA by hand before Polytomic `rel2026.07.15`, add it with the
+> command above — it is not granted by `roles/iam.workloadIdentityUser` or by
+> any bucket-level role.
 
 > If you manage the app ServiceAccount yourself (`serviceAccount.create: false`,
 > `serviceAccount.name: <existing>`), annotate that existing SA out-of-band
@@ -206,6 +227,18 @@ pod crash-loops. Usually a symptom of the same broken Workload Identity path
 node pool — on Autopilot it is by default; on Standard the node pool needs
 `--workload-metadata=GKE_METADATA`. Re-check after fixing the annotation/binding;
 bindings can take a minute or two to propagate.
+
+**`PermissionDenied ... Permission 'iam.serviceAccounts.signBlob' denied` when
+downloading execution logs.** Syncs run and the log viewer works, but the
+download button fails with an `rpc error: code = PermissionDenied` naming
+`signBlob`, usually alongside a Policy Troubleshooter URL. The app built the log
+archive fine but could not sign the download URL: under Workload Identity the
+app GSA signs via the IAM Credentials API, which needs
+`roles/iam.serviceAccountTokenCreator` on the GSA **itself**. This is required
+as of Polytomic `rel2026.07.15`, so it commonly surfaces after an upgrade on an
+install whose GSA predates it. → add the self-signing binding shown under
+[App ServiceAccount](#app-serviceaccount). Grant it on the GSA, not on the
+project. Bindings can take a minute or two to propagate.
 
 **The bucket has objects but the UI shows no execution logs.** The app and Vector
 use separate identities, so one can be healthy while the other is not. The app
