@@ -105,3 +105,11 @@ The cluster module creates a GCP service account with
 `polytomic-vector` Kubernetes service accounts in the `polytomic`
 namespace. This allows pods to authenticate to GCS and other GCP
 services without static credentials.
+
+The same service account is also granted
+`roles/iam.serviceAccountTokenCreator` on itself. Pods running under
+Workload Identity have no private key, so the app signs GCS URLs (used
+for execution log downloads) through the IAM Credentials API, which
+requires `iam.serviceAccounts.signBlob` on the impersonated account. If
+you manage this service account outside the module, add that binding
+yourself; see `helm/GCP-DEPLOYMENT.md` for the `gcloud` command.
