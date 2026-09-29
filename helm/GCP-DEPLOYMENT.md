@@ -25,26 +25,26 @@ app pods ──stdout──► Vector DaemonSet ──writes──► gs://<buck
 
 Two distinct identities touch the bucket, and **both** need write access on GCP:
 
-| Identity (KSA)        | Used by                                           | Bucket access it needs                              |
-| --------------------- | ------------------------------------------------- | --------------------------------------------------- |
-| App ServiceAccount    | web, worker, sync, scheduler, … and executor jobs | read + write + delete (`roles/storage.objectAdmin`) |
-| Vector ServiceAccount | the Vector DaemonSet only                         | write-only (`roles/storage.objectCreator`)          |
+| Identity (KSA)        | Used by                                           | Bucket access it needs                              | On its own GSA                          |
+| --------------------- | ------------------------------------------------- | --------------------------------------------------- | --------------------------------------- |
+| App ServiceAccount    | web, worker, sync, scheduler, … and executor jobs | read + write + delete (`roles/storage.objectAdmin`) | `roles/iam.serviceAccountTokenCreator`  |
+| Vector ServiceAccount | the Vector DaemonSet only                         | write-only (`roles/storage.objectCreator`)          | —                                       |
 
 The app reads, lists, signs, and deletes objects (serving logs in the UI,
 building exports, garbage-collecting), so it needs full object access. **Vector
 only ever creates new objects**, so object-create is sufficient.
 
-Grant these roles at the **bucket** level, as shown below. Do not scope IAM
+Grant the bucket roles at the **bucket** level, as shown below. Do not scope IAM
 policy — or any external tooling — to specific object prefixes: the internal
 key layout is an implementation detail that changes between releases.
 
-The app GSA additionally needs **`roles/iam.serviceAccountTokenCreator` on
-itself** (not on the project). Downloading execution logs from the UI produces a
-signed GCS URL, and a pod running under Workload Identity has no private key to
-sign with, so the app signs through the IAM Credentials API instead — which
-requires `iam.serviceAccounts.signBlob` on the GSA being impersonated. Without
-this binding syncs run normally, but log downloads fail (see
-[Troubleshooting](#troubleshooting)).
+The token-creator role is different: it is granted **on the app GSA, to the app
+GSA** (not on the bucket or the project). Downloading execution logs from the UI
+produces a signed GCS URL, and a pod running under Workload Identity has no
+private key to sign with, so the app signs through the IAM Credentials API
+instead — which requires `iam.serviceAccounts.signBlob` on the GSA being
+impersonated. Without this binding syncs run normally, but log downloads fail
+(see [Troubleshooting](#troubleshooting)).
 
 ## Required values
 
