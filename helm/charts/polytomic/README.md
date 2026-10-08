@@ -2,7 +2,7 @@
 
 Polytomic helm chart for kubernetes
 
-![Version: 1.9.0](https://img.shields.io/badge/Version-1.9.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 1.10.0](https://img.shields.io/badge/Version-1.10.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 ## Installing the Chart
 
@@ -295,7 +295,7 @@ externalRedis:
 | mcp.apiVersion | string | `"2025-09-18"` | Polytomic API version for the MCP server |
 | mcp.enabled | bool | `false` | Enable the MCP server deployment |
 | mcp.image.repository | string | `"polytomic-mcp"` | MCP server image name (registry is set via imageRegistry) |
-| mcp.image.tag | string | `""` | MCP image tag. Defaults to image.tag when not set. |
+| mcp.image.tag | string | `""` | MCP image tag. Defaults to image.tag when not set. Must be `<MCP_MIN_IMAGE_TAG>` or later; earlier tags will not work with this chart version. Not enforced by the chart. |
 | mcp.ingress.annotations | object | `{}` |  |
 | mcp.ingress.className | string | `"nginx"` |  |
 | mcp.ingress.enabled | bool | `false` | Enable a separate ingress for the MCP server (e.g. mcp.polytomic.example.com) |
