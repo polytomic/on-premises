@@ -295,7 +295,7 @@ externalRedis:
 | mcp.apiVersion | string | `"2025-09-18"` | Polytomic API version for the MCP server |
 | mcp.enabled | bool | `false` | Enable the MCP server deployment |
 | mcp.image.repository | string | `"polytomic-mcp"` | MCP server image name (registry is set via imageRegistry) |
-| mcp.image.tag | string | `""` | MCP image tag. Defaults to image.tag when not set. Must be `<MCP_MIN_IMAGE_TAG>` or later; earlier tags will not work with this chart version. Not enforced by the chart. |
+| mcp.image.tag | string | `""` | MCP image tag. Defaults to image.tag when not set. Must be `rel2026.10.07.02` or later; earlier tags will not work with this chart version. Not enforced by the chart. |
 | mcp.ingress.annotations | object | `{}` |  |
 | mcp.ingress.className | string | `"nginx"` |  |
 | mcp.ingress.enabled | bool | `false` | Enable a separate ingress for the MCP server (e.g. mcp.polytomic.example.com) |

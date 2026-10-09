@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **MCP server Redis configuration**: The MCP server image stores approval and Connect state in Redis starting with `rel2026.10.07` and refuses to start without it. The MCP deployment now receives `POLYTOMIC_MCP_REDIS_URL`, built from the same `redis` / `externalRedis` settings as Polytomic's own `REDIS_URL`, and `REDIS_PASSWORD` from `externalRedis.existingSecret` when one is configured. Only these Redis values are passed; the MCP container does not load the chart's config secret. As with Polytomic itself, Redis Cluster mode is detected automatically, so no new values are required.
 
-  **Minimum MCP image tag: `<MCP_MIN_IMAGE_TAG>`.** MCP image tags below this will not work with this chart version. The chart does not enforce it; when `mcp.enabled` is set, the install notes print the MCP image in use and a warning naming the minimum tag.
+  **Minimum MCP image tag: `rel2026.10.07.02`.** MCP image tags below this will not work with this chart version. The chart does not enforce it; when `mcp.enabled` is set, the install notes print the MCP image in use and a warning naming the minimum tag.
 
 ---
 

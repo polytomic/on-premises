@@ -860,7 +860,7 @@ mcp:
     # -- MCP server image name (registry is set via imageRegistry)
     repository: polytomic-mcp
     # -- MCP image tag. Defaults to image.tag when not set. Must be
-    # `<MCP_MIN_IMAGE_TAG>` or later; earlier tags will not work with this
+    # `rel2026.10.07.02` or later; earlier tags will not work with this
     # chart version. Not enforced by the chart.
     tag: ""
   # -- Number of MCP server replicas
