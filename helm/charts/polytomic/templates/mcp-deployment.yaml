@@ -46,6 +46,15 @@ spec:
             value: "0.0.0.0"
           - name: POLYTOMIC_HTTP_PORT
             value: {{ .Values.mcp.port | quote }}
+          - name: POLYTOMIC_MCP_REDIS_URL
+            value: {{ include "polytomic.redis.url" . | quote }}
+          {{- if .Values.externalRedis.existingSecret.name }}
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "polytomic.redis.secretName" . }}
+                key: {{ include "polytomic.redis.secretKey" . }}
+          {{- end }}
           ports:
           - name: http
             containerPort: {{ .Values.mcp.port }}

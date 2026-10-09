@@ -127,6 +127,18 @@ port-forward reports "connection refused", the Polytomic image predates the
 endpoint, which requires rel2026.09.10 or later.
 {{- end }}
 
+{{- if .Values.mcp.enabled }}
+
+=============================================================================
+MCP SERVER
+=============================================================================
+
+Image: {{ include "polytomic.mcp-image" . }}
+
+WARNING: this chart version requires MCP image tag rel2026.10.07.02 or
+later. The chart does not check the tag; an earlier image will not work.
+{{- end }}
+
 =============================================================================
 RESOURCES
 =============================================================================
