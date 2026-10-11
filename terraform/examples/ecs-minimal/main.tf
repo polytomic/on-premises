@@ -6,7 +6,10 @@ module "polytomic-ecs" {
   source = "github.com/polytomic/on-premises//terraform/modules/ecs?ref=v1.0.0"
 
   prefix = "polytomic"
-  region = "us-east-1"
+
+  # Apply once with false to install caller rules, then set true to remove CIDR grants.
+  restrict_ingress_to_security_groups = false
+  region                              = "us-east-1"
 
   ####### Polytomic settings #######
   polytomic_image = "568237466542.dkr.ecr.us-west-2.amazonaws.com/polytomic-onprem:latest"

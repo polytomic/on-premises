@@ -26,6 +26,20 @@ content: |-
   $ terraform apply
   ```
 
+  ## Restricting network ingress
+
+  The module installs security-group rules allowing the load balancer to reach
+  task HTTP ports and tasks to reach managed PostgreSQL and Redis. By default,
+  legacy CIDR grants remain for backwards compatibility.
+
+  To restrict access, apply this module version once with
+  `restrict_ingress_to_security_groups = false`, verify the new rules, then
+  apply again with it set to `true`. Separate applies ensure the caller rules
+  exist before Terraform removes the old rules. Review any direct task-HTTP
+  clients and database/cache consumers outside the task security group first.
+  Existing SGs, service attachments, database/cache instances and endpoints
+  are preserved. EFS and outbound traffic rules are unchanged.
+
   # Architecture
   ![arch](./aws_arch.png)
 

@@ -25,7 +25,8 @@ module "redis" {
   subnet_ids = var.vpc_id == "" ? module.vpc[0].private_subnets : var.private_subnet_ids
   vpc_id     = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
 
-  ingress_cidr_blocks = local.private_subnet_cidrs
+  ingress_cidr_blocks     = var.restrict_ingress_to_security_groups ? [] : local.private_subnet_cidrs
+  allowed_security_groups = [module.fargate_sg.security_group_id]
 
   tags = merge(
     var.tags,
