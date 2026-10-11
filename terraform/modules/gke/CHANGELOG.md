@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `create_cluster_service_account` variable (default `true`): opt out of the upstream `kubernetes-engine` module's cluster SA creation. Set to `false` when reusing a pre-bootstrapped node SA across many cluster workspaces in a single project, where the default would otherwise leave a dangling `tf-gke-*` SA per apply and require `iam.serviceAccountAdmin` on the project. Default preserves prior behavior.
 - `gke-cluster-sa` module: grant `roles/iam.serviceAccountTokenCreator` on the workload-identity GSA to itself so pods running under Workload Identity can mint GCS signed URLs (e.g. record-log exports). Without this, the gocloud.dev signer's IAM Credentials `SignBlob` call fails with `PermissionDenied`.
 
+  **Required for Polytomic `rel2026.07.15` and later**, which downloads execution logs via a signed URL. Installs on an older module version, or with a hand-managed workload-identity GSA, will see `Permission 'iam.serviceAccounts.signBlob' denied` on log download until the binding is added — see the App ServiceAccount section of `helm/GCP-DEPLOYMENT.md` for the equivalent `gcloud` command. Syncs themselves are unaffected.
+
 ## [1.2.0] - 2026-04-27
 
 > **Pinning this version:** this release is tagged `terraform/gke/v1.2.0`. Terraform's `git::` source handler requires the slashes to be URL-encoded as `%2F` in the `ref=` value, e.g. `?ref=terraform%2Fgke%2Fv1.2.0`. Future releases use the slash-free format `gke-v<version>` and do not require encoding. See [VERSIONING.md](../../../VERSIONING.md).
