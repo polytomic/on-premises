@@ -36,7 +36,7 @@ GETTING STARTED
    {{- if .Values.polytomic.auth.single_player }}
    Authentication: Single-player mode (no password required)
    {{- else }}
-   Authentication: {{ .Values.polytomic.auth.methods | join ", " | default "OAuth" }}
+   Authentication: {{ .Values.polytomic.auth.methods | join ", " | default "google, sso (default)" }}
    {{- end }}
 
 =============================================================================

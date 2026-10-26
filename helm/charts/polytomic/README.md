@@ -2,7 +2,7 @@
 
 Polytomic helm chart for kubernetes
 
-![Version: 1.10.0](https://img.shields.io/badge/Version-1.10.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 1.11.0](https://img.shields.io/badge/Version-1.11.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 ## Installing the Chart
 
@@ -11,7 +11,7 @@ To install the chart with the release name `polytomic`:
 ```console
 git clone https://github.com/polytomic/on-premises.git
 cd on-premises
-helm install helm/charts/polytomic polytomic
+helm install polytomic helm/charts/polytomic
 ```
 
 ## Requirements
@@ -341,9 +341,9 @@ externalRedis:
 | podDisruptionBudget.minAvailable | int | `1` |  |
 | polytomic.auth.google_client_id | string | `""` | Google OAuth Client ID, obtained by creating a OAuth 2.0 Client ID |
 | polytomic.auth.google_client_secret | string | `""` | Google OAuth Client Secret, obtained by creating a OAuth 2.0 Client ID |
-| polytomic.auth.methods | list | `[]` |  |
+| polytomic.auth.methods | list | `[]` | Allowed sign-in methods, e.g. `[google]`. When empty, Polytomic's default (`google,sso`) applies. |
 | polytomic.auth.root_user | string | `"user@example.com"` |  |
-| polytomic.auth.single_player | bool | `true` | Single player mode If true, no authentication will be required |
+| polytomic.auth.single_player | bool | `false` | Single player mode, for evaluation only. If true, no authentication will be required |
 | polytomic.auth.url | string | `"https://polytomic.mycompany.com"` | Base URL for accessing Polytomic; for example, https://polytomic.mycompany.com. This will be used when redirecting back from Google and other integrations after authenticating with OAuth. |
 | polytomic.auth.workos_api_key | string | `""` |  |
 | polytomic.auth.workos_client_id | string | `""` |  |
@@ -373,7 +373,7 @@ externalRedis:
 | polytomic.integrations | object | `{}` | Integration credentials Configure OAuth credentials and API keys for third-party integrations. Only non-empty values will be included in the deployment secret. Supports all integration environment variables in UPPER_CASE format.  Common integrations:   SALESFORCE_CLIENT_ID / SALESFORCE_CLIENT_SECRET   HUBSPOT_CLIENT_ID / HUBSPOT_CLIENT_SECRET   GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET / GITHUB_DEPLOY_KEY   SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET   STRIPE_SECRET_KEY   GOOGLEADS_CLIENT_ID / GOOGLEADS_CLIENT_SECRET / GOOGLEADS_DEVELOPER_TOKEN   GSHEETS_API_KEY / GSHEETS_APP_ID / GSHEETS_CLIENT_ID / GSHEETS_CLIENT_SECRET   And many more - see documentation for full list  Example:   integrations:     SALESFORCE_CLIENT_ID: "your-client-id"     SALESFORCE_CLIENT_SECRET: "your-client-secret"     HUBSPOT_CLIENT_ID: "your-hubspot-id"     HUBSPOT_CLIENT_SECRET: "your-hubspot-secret" |
 | polytomic.kubernetes | object | `{"nodeSelectors":"","tolerations":""}` | Kubernetes task executor scheduling configuration These settings control how Polytomic schedules dynamically created job pods |
 | polytomic.kubernetes.nodeSelectors | string | `""` | Node selectors for task executor pods (comma-separated key=value pairs) Format: key=value,key=value Example: "disktype=ssd,node-type=sync-worker" |
-| polytomic.kubernetes.tolerations | string | `""` | Tolerations for task executor pods (comma-separated) Format: key:operator:value:effect,key:operator:value:effect Example: "dedicated:Equal:sync-jobs:NoSchedule,gpu:Exists::NoSchedule" |
+| polytomic.kubernetes.tolerations | string | `""` | Tolerations for task executor pods (comma-separated) Format: key=value:effect (Equal) or key:effect (Exists), comma-separated Example: "dedicated=sync-jobs:NoSchedule,gpu:NoSchedule" |
 | polytomic.log_level | string | `"info"` |  |
 | polytomic.metrics | bool | `false` | Telemetry |
 | polytomic.prometheus | object | `{"enabled":false,"port":9090,"scrapeAnnotations":false,"serviceMonitor":{"enabled":false,"interval":"60s","labels":{},"metricRelabelings":[],"relabelings":[],"scrapeTimeout":"10s"}}` | Private Prometheus metrics endpoint, served by the scheduler role.  Off by default: an installation that has not asked for the endpoint does not get one. Enabling it restarts only the scheduler pod, so running syncs are not interrupted. The endpoint is reachable only inside the cluster -- it is never routed through the ingress. Metrics are read from Polytomic's own database at scrape time, so the values are the same whichever pod answers; the scheduler runs a single replica, which is what keeps a scraped series from being counted twice. Requires Polytomic rel2026.09.10 or later; on an earlier release the Service is created but nothing listens behind it. |

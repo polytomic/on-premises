@@ -175,11 +175,12 @@ polytomic:
     # -- Google OAuth Client Secret, obtained by creating a OAuth 2.0 Client ID
     google_client_secret: ""
 
-    # -- Single player mode
+    # -- Single player mode, for evaluation only.
     # If true, no authentication will be required
-    single_player: true
+    single_player: false
 
-    # list of allowed authentication methods
+    # -- Allowed sign-in methods, e.g. `[google]`. When empty, Polytomic's
+    # default (`google,sso`) applies.
     methods: []
 
     workos_api_key: ""
@@ -255,8 +256,8 @@ polytomic:
     # Example: "disktype=ssd,node-type=sync-worker"
     nodeSelectors: ""
     # -- Tolerations for task executor pods (comma-separated)
-    # Format: key:operator:value:effect,key:operator:value:effect
-    # Example: "dedicated:Equal:sync-jobs:NoSchedule,gpu:Exists::NoSchedule"
+    # Format: key=value:effect (Equal) or key:effect (Exists), comma-separated
+    # Example: "dedicated=sync-jobs:NoSchedule,gpu:NoSchedule"
     tolerations: ""
 
   # Vector logging configuration

@@ -5,6 +5,25 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2026-10-26
+
+### Changed
+
+- **Sign-in is required by default**: `polytomic.auth.single_player` now defaults to `false`. Previously it defaulted to `true`, so an install that did not set it allowed anyone who could reach Polytomic to use it without signing in. Single-player mode is intended for evaluation only.
+
+  **Installs that relied on the old default will require sign-in after upgrading.** Set `polytomic.auth.single_player: true` to keep the previous behavior, or configure a sign-in method (`polytomic.auth.google_client_id` and `polytomic.auth.google_client_secret`, or deployment-wide OIDC).
+
+### Fixed
+
+- **Default sign-in methods**: With `polytomic.auth.methods` left empty (the default), the chart set `AUTH_METHODS` to an empty string, which turned off Google sign-in even when a Google OAuth client was configured. The chart now omits `AUTH_METHODS` unless methods are listed, so Polytomic's default (`google,sso`) applies.
+
+### Documentation
+
+- Corrected the argument order of the `helm install` command in the chart README.
+- Corrected the documented format of `polytomic.kubernetes.tolerations`. Polytomic parses each toleration as `key=value:effect` (operator `Equal`) or `key:effect` (operator `Exists`); the previously documented `key:operator:value:effect` form produces an invalid effect.
+
+---
+
 ## [1.10.0] - 2026-10-07
 
 ### Added

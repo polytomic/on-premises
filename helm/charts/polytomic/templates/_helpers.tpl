@@ -434,7 +434,9 @@ REDIS_PASSWORD: {{ .Values.externalRedis.password | quote }}
 REDIS_POOL_SIZE: {{ .Values.externalRedis.poolSize | default "0" | quote }}
 {{- end }}
 POLYTOMIC_URL: {{ .Values.polytomic.auth.url | quote }}
-AUTH_METHODS: {{ join "," .Values.polytomic.auth.methods | quote }}
+{{- with .Values.polytomic.auth.methods }}
+AUTH_METHODS: {{ join "," . | quote }}
+{{- end }}
 GOOGLE_CLIENT_ID: {{ .Values.polytomic.auth.google_client_id | quote }}
 GOOGLE_CLIENT_SECRET: {{ .Values.polytomic.auth.google_client_secret | quote }}
 DEFAULT_OPERATIONAL_BUCKET: {{ .Values.polytomic.s3.operational_bucket }}{{- if .Values.polytomic.s3.region }}?region={{ .Values.polytomic.s3.region }}{{- end}}
