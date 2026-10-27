@@ -2,7 +2,7 @@
 
 Polytomic helm chart for kubernetes
 
-![Version: 1.11.0](https://img.shields.io/badge/Version-1.11.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 1.12.0](https://img.shields.io/badge/Version-1.12.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 ## Installing the Chart
 
@@ -371,7 +371,8 @@ externalRedis:
 | polytomic.extraEnv | object | `{}` | Extra environment variables to add to the Polytomic secret. These are added as-is to the secret's stringData, allowing arbitrary key-value pairs to be set without modifying the chart.  Example:   extraEnv:     MY_CUSTOM_VAR: "some-value"     ANOTHER_VAR: "another-value" |
 | polytomic.field_change_tracking | bool | `true` |  |
 | polytomic.integrations | object | `{}` | Integration credentials Configure OAuth credentials and API keys for third-party integrations. Only non-empty values will be included in the deployment secret. Supports all integration environment variables in UPPER_CASE format.  Common integrations:   SALESFORCE_CLIENT_ID / SALESFORCE_CLIENT_SECRET   HUBSPOT_CLIENT_ID / HUBSPOT_CLIENT_SECRET   GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET / GITHUB_DEPLOY_KEY   SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET   STRIPE_SECRET_KEY   GOOGLEADS_CLIENT_ID / GOOGLEADS_CLIENT_SECRET / GOOGLEADS_DEVELOPER_TOKEN   GSHEETS_API_KEY / GSHEETS_APP_ID / GSHEETS_CLIENT_ID / GSHEETS_CLIENT_SECRET   And many more - see documentation for full list  Example:   integrations:     SALESFORCE_CLIENT_ID: "your-client-id"     SALESFORCE_CLIENT_SECRET: "your-client-secret"     HUBSPOT_CLIENT_ID: "your-hubspot-id"     HUBSPOT_CLIENT_SECRET: "your-hubspot-secret" |
-| polytomic.kubernetes | object | `{"nodeSelectors":"","tolerations":""}` | Kubernetes task executor scheduling configuration These settings control how Polytomic schedules dynamically created job pods |
+| polytomic.kubernetes | object | `{"evictionProtection":false,"nodeSelectors":"","tolerations":""}` | Kubernetes task executor scheduling configuration These settings control how Polytomic schedules dynamically created job pods |
+| polytomic.kubernetes.evictionProtection | bool | `false` | Opt in to autoscaler eviction protection for task executor pods (requires Polytomic rel2026.07.29 or later). Adds safe-to-evict=false and karpenter.sh/do-not-disrupt=true annotations. Leave false on GKE Autopilot: safe-to-evict=false requests extended run time pods and can prevent scheduling. On Karpenter, enabling this blocks node consolidation while the task runs; it does not prevent involuntary disruption. |
 | polytomic.kubernetes.nodeSelectors | string | `""` | Node selectors for task executor pods (comma-separated key=value pairs) Format: key=value,key=value Example: "disktype=ssd,node-type=sync-worker" |
 | polytomic.kubernetes.tolerations | string | `""` | Tolerations for task executor pods (comma-separated) Format: key=value:effect (Equal) or key:effect (Exists), comma-separated Example: "dedicated=sync-jobs:NoSchedule,gpu:NoSchedule" |
 | polytomic.log_level | string | `"info"` |  |
