@@ -251,6 +251,11 @@ polytomic:
   # -- Kubernetes task executor scheduling configuration
   # These settings control how Polytomic schedules dynamically created job pods
   kubernetes:
+    # -- Opt in to autoscaler eviction protection for task executor pods (requires Polytomic rel2026.07.29 or later).
+    # Adds safe-to-evict=false and karpenter.sh/do-not-disrupt=true annotations.
+    # Leave false on GKE Autopilot: safe-to-evict=false requests extended run time pods and can prevent scheduling.
+    # On Karpenter, enabling this blocks node consolidation while the task runs; it does not prevent involuntary disruption.
+    evictionProtection: false
     # -- Node selectors for task executor pods (comma-separated key=value pairs)
     # Format: key=value,key=value
     # Example: "disktype=ssd,node-type=sync-worker"

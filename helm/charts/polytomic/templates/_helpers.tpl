@@ -455,6 +455,7 @@ EXECUTION_LOG_BUCKET: {{ .Values.polytomic.s3.operational_bucket | trimPrefix "s
 EXECUTION_LOG_REGION: {{ if .Values.polytomic.s3.gcs }}"gcs"{{ else }}{{ .Values.polytomic.s3.region | quote }}{{ end }}
 KUBERNETES: "true"
 KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
+KUBERNETES_EVICTION_PROTECTION: {{ .Values.polytomic.kubernetes.evictionProtection | default false | quote }}
 KUBERNETES_IMAGE: {{ include "polytomic.image" . }}
 KUBERNETES_VOLUME: {{ .Values.polytomic.sharedVolume.volumeName }}
 {{- if .Values.secret.name }}

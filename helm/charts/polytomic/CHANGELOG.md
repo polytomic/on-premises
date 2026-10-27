@@ -5,6 +5,14 @@ All notable changes to the Polytomic Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2026-10-27
+
+### Added
+
+- **Opt-in executor eviction protection**: `polytomic.kubernetes.evictionProtection` maps to `KUBERNETES_EVICTION_PROTECTION` and defaults to `false`. Enable it only where the autoscaler annotations are appropriate. Leave it disabled on GKE Autopilot, where `safe-to-evict=false` requests extended run time pods and can prevent scheduling. Requires Polytomic `rel2026.07.29` or later; older application images retain their own eviction-protection defaults.
+
+---
+
 ## [1.11.0] - 2026-10-26
 
 ### Changed

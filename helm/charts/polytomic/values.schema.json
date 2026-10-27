@@ -38,6 +38,15 @@
               "description": "Enable single-player mode (no authentication)"
             }
           }
+        },
+        "kubernetes": {
+          "type": "object",
+          "properties": {
+            "evictionProtection": {
+              "type": "boolean",
+              "description": "Opt in to autoscaler eviction protection for task pods; leave disabled on GKE Autopilot."
+            }
+          }
         }
       }
     },
